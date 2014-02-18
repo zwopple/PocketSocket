@@ -44,7 +44,7 @@ socket.delegate = self;
 
 ##### Gotchas
 
-* PSWebSocket does not ever retain itself, you must keep a strong reference to it while the connection is open
+* PSWebSocket does not ever retain itself, you must keep a strong reference to it
 * PSWebSocket will always enable compression if the server supports it
 * PSWebSocket will timeout the open call based on the timeout interval set on the NSURLRequest
 
@@ -56,7 +56,20 @@ The server API is in works, currently one can use the lower level driver API to 
 
 ###`PSWebSocketDriver`
 
-A `PSWebSocketDriver` instance is responsible for serializing and deserializing the websocket protocol and negotiated extensions. It is a standalone class that works regardless of the network IO used with it.
+An instance of `PSWebSocketDriver` is used to drive the entirety of any websocket connection. It deals with parsing incoming raw bytes and then writing back out appropriate bytes for responses. The driver has a limited set of commands:
+
+* `start` - starts the driver and will deal with the handshaking
+* `sendText:` - sends a text message
+* `sendBinary:` - sends a binary message
+* `sendCloseCode:reason:` - sends close message with code and optional reason
+* `sendPing:` - sends a ping message with optional data
+* `sendPong:` - sends a pong message with optional data
+* `execute:maxLength` - have the driver execute on a raw byte stream, it will return the length of bytes it consumed
+
+##### Client Mode
+
+
+##### Server Mode
 
 
 ### Authors
