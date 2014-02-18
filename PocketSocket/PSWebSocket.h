@@ -19,6 +19,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 
 @class PSWebSocket;
 
+/**
+ *  PSWebSocketDelegate
+ */
 @protocol PSWebSocketDelegate <NSObject>
 
 @required
@@ -29,6 +32,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 
 @end
 
+/**
+ *  PSWebSocket
+ */
 @interface PSWebSocket : NSObject
 
 #pragma mark - Properties
@@ -39,14 +45,52 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 
 #pragma mark - Initialization
 
+/**
+ *  Initialize a PSWebSocket instance in client mode.
+ *
+ *  @param request that is to be used to initiate the handshake
+ *
+ *  @return an initialized instance of PSWebSocket in client mode
+ */
 + (instancetype)clientSocketWithRequest:(NSURLRequest *)request;
 
 #pragma mark - Actions
 
+/**
+ *  Opens the websocket connection and initiates the handshake. Once
+ *  opened an instance of PSWebSocket can never be opened again. The
+ *  connection obeys any timeout interval set on the NSURLRequest used
+ *  to initialize the websocket.
+ */
 - (void)open;
+
+/**
+ *  Send a message over the websocket
+ *
+ *  @param message an instance of NSData or NSString to send
+ */
 - (void)send:(id)message;
+
+/**
+ *  Send a ping over the websocket
+ *
+ *  @param pingData data to include with the ping
+ *  @param handler  optional callback handler when the corrosponding pong is received
+ */
 - (void)ping:(NSData *)pingData handler:(void (^)(NSData *pongData))handler;
+
+
+/**
+ *  Close the websocket will default to code 1000 and nil reason
+ */
 - (void)close;
+
+/**
+ *  Close the websocket with a specific code and/or reason
+ *
+ *  @param code   close code reason
+ *  @param reason short textual reason why the connection was closed
+ */
 - (void)closeWithCode:(NSInteger)code reason:(NSString *)reason;
 
 @end
