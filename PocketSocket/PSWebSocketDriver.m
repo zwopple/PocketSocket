@@ -24,8 +24,8 @@
 #import "PSWebSocketStatusCodes.h"
 #if TARGET_OS_IPHONE
 #import <Endian.h>
-#import <CommonCrypto/CommonCrypto.h>
 #endif
+#import <CommonCrypto/CommonCrypto.h>
 
 @interface PSWebSocketFrame : NSObject
 

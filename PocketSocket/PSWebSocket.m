@@ -101,7 +101,7 @@
 	if((self = [self initWithMode:PSWebSocketModeClient request:request])) {
         NSURL *URL = request.URL;
         NSString *host = URL.host;
-        UInt32 port = request.URL.port.integerValue;
+        UInt32 port = (UInt32)request.URL.port.integerValue;
         if(port == 0) {
             port = (_secure) ? 443 : 80;
         }
