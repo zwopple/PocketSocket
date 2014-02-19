@@ -274,11 +274,20 @@
     }
     _pumpingInput = YES;
     
-    uint8_t chunkBuffer[2048];
+    uint8_t chunkBuffer[4096];
     while(_inputStream.hasBytesAvailable) {
-        NSInteger readLength = [_inputStream read:chunkBuffer maxLength:2048];
+        NSInteger readLength = [_inputStream read:chunkBuffer maxLength:sizeof(chunkBuffer)];
         if(readLength > 0) {
-            [_inputBuffer appendBytes:chunkBuffer length:readLength];
+            if(!_inputBuffer.hasBytesAvailable) {
+                NSInteger consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
+                if(consumedLength < readLength) {
+                    NSInteger offset = MAX(0, consumedLength);
+                    NSInteger remaining = readLength - offset;
+                    [_inputBuffer appendBytes:chunkBuffer + offset length:remaining];
+                }
+            } else {
+                [_inputBuffer appendBytes:chunkBuffer length:readLength];
+            }
         } else if(readLength < 0) {
             [self failWithError:_inputStream.streamError];
             break;
@@ -311,19 +320,16 @@
     _pumpingOutput = YES;
     
     while(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
-        @autoreleasepool {
-            NSInteger writeLength = [_outputStream write:_outputBuffer.bytes maxLength:_outputBuffer.bytesAvailable];
-            if(writeLength <= -1) {
-                _failed = YES;
-                [self disconnect];
-                NSString *reason = @"Failed to write to output stream";
-                NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
-                [self notifyDelegateDidFailWithError:error];
-                return;
-            }
-            _outputBuffer.offset += writeLength;
-            [_outputBuffer compact];
+        NSInteger writeLength = [_outputStream write:_outputBuffer.bytes maxLength:_outputBuffer.bytesAvailable];
+        if(writeLength <= -1) {
+            _failed = YES;
+            [self disconnect];
+            NSString *reason = @"Failed to write to output stream";
+            NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
+            [self notifyDelegateDidFailWithError:error];
+            return;
         }
+        _outputBuffer.offset += writeLength;
     }
     if(_closeWhenFinishedOutput &&
        !_outputBuffer.hasBytesAvailable &&
@@ -338,6 +344,8 @@
             [self notifyDelegateDidCloseWithCode:_closeCode reason:_closeReason wasClean:YES];
         }
     }
+    
+    [_outputBuffer compact];
     
     _pumpingOutput = NO;
     if(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
@@ -426,7 +434,6 @@
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)event {
     // @TODO HANDLE PINNED SSL CERTIFICATES
-    
     [self executeWork:^{
         switch(event) {
             case NSStreamEventOpenCompleted: {
