@@ -11,11 +11,11 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'
 
-  s.public_header_files = 'PocketSocket/PS{WebSocket,Driver,ErrorCodes,StatusCodes}.h',
+  s.public_header_files = 'PocketSocket/PS{WebSocket,WebSocketDriver,WebSocketTypes}.h',
   s.source_files = 'PocketSocket/PS*.{h,m}'
   
-  s.frameworks = 'CFNetworking', 'Foundation', 'Security', 'CommonCrypto'
-  s.osx.frameworks = 'System'
-  s.osx.libraries = 'CommonCrypto'
+  s.frameworks = 'CFNetworking', 'Foundation', 'Security'
+  s.ios.frameworks = 'CommonCrypto'
+  s.osx.libraries = 'system'
   s.libraries = 'z'
 end

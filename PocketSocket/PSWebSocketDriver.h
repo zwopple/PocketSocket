@@ -14,7 +14,6 @@
 
 #import <Foundation/Foundation.h>
 #import "PSWebSocketTypes.h"
-#import "PSWebSocketMessage.h"
 
 @class PSWebSocketDriver;
 

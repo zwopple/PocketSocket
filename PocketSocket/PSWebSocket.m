@@ -14,11 +14,9 @@
 
 #import "PSWebSocket.h"
 #import "PSWebSocketNetworkThread.h"
-#import "PSWebSocketTypes.h"
-#import "PSWebSocketMacros.h"
+#import "PSWebSocketInternal.h"
 #import "PSWebSocketDriver.h"
 #import "PSWebSocketBuffer.h"
-#import "PSWebSocketErrorCodes.h"
 
 @interface PSWebSocket() <NSStreamDelegate, PSWebSocketDriverDelegate> {
     PSWebSocketMode _mode;

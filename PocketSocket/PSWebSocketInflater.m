@@ -13,8 +13,7 @@
 //  limitations under the License.
 
 #import "PSWebSocketInflater.h"
-#import "PSWebSocketMacros.h"
-#import "PSWebSocketStatusCodes.h"
+#import "PSWebSocketInternal.h"
 #import <zlib.h>
 
 @interface PSWebSocketInflater() {

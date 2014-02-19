@@ -14,8 +14,7 @@
 
 #import "PSWebSocketDeflater.h"
 #import "PSWebSocketDeflater.h"
-#import "PSWebSocketMacros.h"
-#import "PSWebSocketStatusCodes.h"
+#import "PSWebSocketInternal.h"
 #import <zlib.h>
 
 @interface PSWebSocketDeflater() {

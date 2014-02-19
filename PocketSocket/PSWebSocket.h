@@ -13,8 +13,7 @@
 //  limitations under the License.
 
 #import <Foundation/Foundation.h>
-#import "PSWebSocketErrorCodes.h"
-#import "PSWebSocketStatusCodes.h"
+#import "PSWebSocketTypes.h"
 
 typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
     PSWebSocketReadyStateConnecting = 0,

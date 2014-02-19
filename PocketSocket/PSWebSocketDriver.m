@@ -13,15 +13,12 @@
 //  limitations under the License.
 
 #import "PSWebSocketDriver.h"
-#import "PSWebSocketTypes.h"
-#import "PSWebSocketMacros.h"
 #import "PSWebSocketBuffer.h"
 #import "PSWebSocketInflater.h"
 #import "PSWebSocketDeflater.h"
 #import "PSWebSocketBuffer.h"
 #import "PSWebSocketUTF8Decoder.h"
-#import "PSWebSocketErrorCodes.h"
-#import "PSWebSocketStatusCodes.h"
+#import "PSWebSocketInternal.h"
 #if TARGET_OS_IPHONE
 #import <Endian.h>
 #endif
