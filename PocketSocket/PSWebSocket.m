@@ -38,7 +38,7 @@
 @end
 @implementation PSWebSocket
 
-#pragma mark - Class Proeprties
+#pragma mark - Class Properties
 
 + (NSRunLoop *)runLoop {
     return [[PSWebSocketNetworkThread sharedNetworkThread] runLoop];

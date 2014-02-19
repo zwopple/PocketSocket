@@ -10,7 +10,7 @@ Objective-C websocket library for building things that work in realtime on iOS a
 * Passes all [Autobahn.ws](http://autobahn.ws) tests
 * Client & Server modes (see notes below)
 * TLS/SSL support
-* Decoupled library for easily using pieces of it with existing networking libraries
+* Standalone `PSWebSocketDriver` for easy BYO networking IO
 
 ### Dependencies
 
@@ -21,25 +21,59 @@ Objective-C websocket library for building things that work in realtime on iOS a
 * System.framework (OS X)
 * libz.dylib
 
-### Installing
+### Cocoapods Installation 
 
-Installing is best done via cocoapods. Add `pod 'PocketSocket'` to your Podfile and run `pod install`.
+Add `pod 'PocketSocket'` to your Podfile and run `pod install`.
 
-### Client API
+####`Using the PSWebSocket as a client`
 
-####`PSWebSocket`
-
-Every `PSWebSocket` instance must be created with an `NSURLRequest`. In client mode this NSURLRequest is sent along to make the intial handshake with the server. You can include extra headers in addition to the `Sec-WebSocket-Protocol`. All other `Sec-WebSocket-*` headers will not be copied.
-
-Once created one must call `open` which will initiate the connection to the server. From that point forward delegate methods will update you on the status and communication of the websocket.
-
-##### Example
+The client supports both the `ws` and secure `wss` protocols. It will automatically negotiate the certificates for you from the certificate chain on the device it’s running and support for pinned certificates is planned.
 
 ```objc
-NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"https://<path to server>"]];
-PSWebSocket *socket = [PSWebSocket clientSocketWithRequest:request];
-socket.delegate = self;
-[socket open];
+#import <PSWebSocket/PSWebSocket.h>
+
+@interface AppDelegate() <PSWebSocketDelegate>
+
+@property (nonatomic, strong) PSWebSocket *socket;
+
+@end
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
+    [self.window makeKeyAndVisible];
+    
+    // create the NSURLRequest that will be sent as the handshake
+    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:@"wss://example.com"]];
+    
+    // create the socket and assign delegate
+    self.socket = [PSWebSocket clientSocketWithRequest:request];
+    self.socket.delegate = self;
+    
+    // open socket
+    [self.socket open];
+    
+    return YES;
+}
+
+#pragma mark - PSWebSocketDelegate
+
+- (void)webSocketDidOpen:(PSWebSocket *)webSocket {
+    NSLog(@"The websocket handshake completed and is now open!");
+}
+- (void)webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message {
+    NSLog(@"The websocket received a message: %@", message);
+}
+- (void)webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error {
+    NSLog(@"The websocket handshake/connection failed with an error: %@", error);
+}
+- (void)webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
+    NSLog(@"The websocket closed with code: %@, reason: %@, wasClean: %@", @(code), reason, (wasClean) ? @"YES" : @"NO");
+}
+
+@end
+
 ```
 
 ##### Gotchas
