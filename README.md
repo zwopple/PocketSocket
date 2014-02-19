@@ -18,8 +18,7 @@ Objective-C websocket library for building things that work in realtime on iOS a
 * CFNetworking.framework
 * Foundation.framework
 * Security.framework
-* CommonCrypto.framework
-* System.framework (OS X)
+* libSystem.dylib
 * libz.dylib
 
 ### Installation 
@@ -29,7 +28,7 @@ Installation is recommended via cocoapods. Add `pod 'PocketSocket'` to your Podf
 ### Major Components
 
 * **`PSWebSocketDriver`** - Networkless driver to deal with the websocket protocol. It solely operates with parsing raw bytes into events and sending events as raw bytes.
-* **`PSWebSocket`** - Networking based socket around `NSInputStream` and `NSOutputStream` deals with ensuring a connection is maintained. USes the `PSWebSocketDriver` internally on the input and output. 
+* **`PSWebSocket`** - Networking based socket around `NSInputStream` and `NSOutputStream` deals with ensuring a connection is maintained. Uses the `PSWebSocketDriver` internally on the input and output. 
 
 ### Using PSWebSocket as a client
 
