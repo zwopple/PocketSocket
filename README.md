@@ -7,10 +7,11 @@ Objective-C websocket library for building things that work in realtime on iOS a
 
 * Conforms fully to [RFC6455](http://tools.ietf.org/html/rfc6455) websocket protocol
 * Support for websocket compression via the [permessage-deflate](http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-17) extension
-* Passes all [Autobahn.ws](http://autobahn.ws) tests
+* Passes all ~355 [Autobahn.ws tests](http://zwopple.github.io/PocketSocket/results/) with 100% compliance
 * Client & Server modes (see notes below)
 * TLS/SSL support
-* Standalone `PSWebSocketDriver` for easy BYO networking IO
+* Asynchronus IO
+* Standalone `PSWebSocketDriver` for easy “Bring your own” networking IO
 
 ### Dependencies
 
@@ -21,9 +22,9 @@ Objective-C websocket library for building things that work in realtime on iOS a
 * System.framework (OS X)
 * libz.dylib
 
-### Cocoapods Installation 
+### Installation 
 
-Add `pod 'PocketSocket'` to your Podfile and run `pod install`.
+Installation is recommended via cocoapods. Add `pod 'PocketSocket'` to your Podfile and run `pod install`.
 
 ### Major Components
 
@@ -94,7 +95,7 @@ Using PSWebSocket with a server is a bit trickier. Most HTTP servers parse incom
 ##### Steps to take:
 
 1. Formulate a `NSURLRequest` from the already read request headers, **any extra data past the headers that was read from the socket must be put into the HTTPBody of the NSURLRequest**
-2. Pass in the already opened `NSInputStream` and `NSOutputStream` for the given socket connection
+2. Create a `PSWebSocket` instance using `serverSocketWithRequest:inputStream:outputStream:` passing in the request and already opened `NSInputStream` and `NSOutputStream` for the given socket connection
 3. Unschedule the passed in input and output streams from any server run loop
 4. Open the websocket
 
@@ -103,13 +104,28 @@ As a helper you can use `[PSWebSocket isWebSocketRequest:(NSURLRequest *)]` to c
 
 ### Using PSWebSocketDriver
 
-The driver is the core of the websocket. It deals the handshake request/response lifecycle, packing messages into websocket frames to be sent over the wire and parsing websocket frames received over the wire.
+The driver is the core of `PSWebSocket`. It deals with the handshake request/response lifecycle, packing messages into websocket frames to be sent over the wire and parsing websocket frames received over the wire.
 
 It supports both client and server mode and has an identical API for each.
 
 To create an instance of it you use either `clientDriverWithRequest:` or `serverDriverWithRequest:` in the client mode you are to pass in a `NSURLRequest` that will be sent as a handshake request. In server mode you are to pass in the `NSURLRequest` that was the handshake request. It is extremely important that the `HTTPBody` in server mode include any extra data past the end of the headers that was already read.
 
 Beyond that have a look at the `PSWebSocketDriverDelegate` methods and the simple API for interacting with the driver.
+
+
+### Roadmap
+
+* Add support for pinned SSL certificates
+* Add `PSWebSocketServer` a strict websocket only server
+* Add autobahn tests for server mode
+* Improve performance
+* Examples, examples, examples!
+
+### Running Tests
+
+1. Install autobahntestsuite `sudo pip install autobahntestsuite`
+2. Start autobahn test server `wtest -m fuzzingserver`
+3. Run tests in Xcode
 
 
 ### Authors
