@@ -15,7 +15,5 @@ Pod::Spec.new do |s|
   s.source_files = 'PocketSocket/PS*.{h,m}'
   
   s.frameworks = 'CFNetwork', 'Foundation', 'Security'
-  s.ios.frameworks = 'CommonCrypto'
-  s.osx.libraries = 'system'
-  s.libraries = 'z'
+  s.libraries = 'z', 'system'
 end
