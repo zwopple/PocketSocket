@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.public_header_files = 'PocketSocket/PS{WebSocket,WebSocketDriver,WebSocketTypes}.h',
   s.source_files = 'PocketSocket/PS*.{h,m}'
   
-  s.frameworks = 'CFNetworking', 'Foundation', 'Security'
+  s.frameworks = 'CFNetwork', 'Foundation', 'Security'
   s.ios.frameworks = 'CommonCrypto'
   s.osx.libraries = 'system'
   s.libraries = 'z'
