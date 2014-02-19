@@ -25,9 +25,19 @@ Objective-C websocket library for building things that work in realtime on iOS a
 
 Add `pod 'PocketSocket'` to your Podfile and run `pod install`.
 
-####`Using the PSWebSocket as a client`
+### Major Components
+
+* **`PSWebSocketDriver`** - Networkless driver to deal with the websocket protocol. It solely operates with parsing raw bytes into events and sending events as raw bytes.
+* **`PSWebSocket`** - Networking based socket around `NSInputStream` and `NSOutputStream` deals with ensuring a connection is maintained. USes the `PSWebSocketDriver` internally on the input and output. 
+
+### Using PSWebSocket as a client
 
 The client supports both the `ws` and secure `wss` protocols. It will automatically negotiate the certificates for you from the certificate chain on the device it’s running and support for pinned certificates is planned.
+
+The client will always request the server turn on compression via the permessage-deflate extension. If the server accepts the request it will be enabled for the entire duration of the connection and used on all messages.
+
+If the initial `NSURLRequest` specifies a timeout greater than 0 the connection will timeout if it cannot open within that interval, otherwise it could wait forever depending on the system.
+
 
 ```objc
 #import <PSWebSocket/PSWebSocket.h>
@@ -61,6 +71,7 @@ The client supports both the `ws` and secure `wss` protocols. It will automatica
 
 - (void)webSocketDidOpen:(PSWebSocket *)webSocket {
     NSLog(@"The websocket handshake completed and is now open!");
+    [webSocket send:@"Hello world!"];
 }
 - (void)webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message {
     NSLog(@"The websocket received a message: %@", message);
@@ -76,34 +87,29 @@ The client supports both the `ws` and secure `wss` protocols. It will automatica
 
 ```
 
-##### Gotchas
+### Using PSWebSocket with a server
 
-* PSWebSocket does not ever retain itself, you must keep a strong reference to it
-* PSWebSocket will always enable compression if the server supports it
-* PSWebSocket will timeout the open call based on the timeout interval set on the NSURLRequest
+Using PSWebSocket with a server is a bit trickier. Most HTTP servers parse incoming requests and detach incoming websocket requests to be managed independently of the server. PSWebSocket expects the server to setup an `NSInputStream` and `NSOutputStream` and have already read the incoming handshake request before creating a PSWebSocket instance to manage the connection.
 
-### Server API
+##### Steps to take:
 
-The server API is in works, currently one can use the lower level driver API to deal with the protocol level framing and decoding.
+1. Formulate a `NSURLRequest` from the already read request headers, **any extra data past the headers that was read from the socket must be put into the HTTPBody of the NSURLRequest**
+2. Pass in the already opened `NSInputStream` and `NSOutputStream` for the given socket connection
+3. Unschedule the passed in input and output streams from any server run loop
+4. Open the websocket
 
-### Driver API
-
-###`PSWebSocketDriver`
-
-An instance of `PSWebSocketDriver` is used to drive the entirety of any websocket connection. It deals with parsing incoming raw bytes and then writing back out appropriate bytes for responses. The driver has a limited set of commands:
-
-* `start` - starts the driver and will deal with the handshaking
-* `sendText:` - sends a text message
-* `sendBinary:` - sends a binary message
-* `sendCloseCode:reason:` - sends close message with code and optional reason
-* `sendPing:` - sends a ping message with optional data
-* `sendPong:` - sends a pong message with optional data
-* `execute:maxLength` - have the driver execute on a raw byte stream, it will return the length of bytes it consumed
-
-##### Client Mode
+As a helper you can use `[PSWebSocket isWebSocketRequest:(NSURLRequest *)]` to check if the headers are suitable for a websocket connection.
 
 
-##### Server Mode
+### Using PSWebSocketDriver
+
+The driver is the core of the websocket. It deals the handshake request/response lifecycle, packing messages into websocket frames to be sent over the wire and parsing websocket frames received over the wire.
+
+It supports both client and server mode and has an identical API for each.
+
+To create an instance of it you use either `clientDriverWithRequest:` or `serverDriverWithRequest:` in the client mode you are to pass in a `NSURLRequest` that will be sent as a handshake request. In server mode you are to pass in the `NSURLRequest` that was the handshake request. It is extremely important that the `HTTPBody` in server mode include any extra data past the end of the headers that was already read.
+
+Beyond that have a look at the `PSWebSocketDriverDelegate` methods and the simple API for interacting with the driver.
 
 
 ### Authors

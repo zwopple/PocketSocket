@@ -37,6 +37,17 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  */
 @interface PSWebSocket : NSObject
 
+#pragma mark - Class Methods
+
+/**
+ *  Given a NSURLRequest determine if it is a websocket request based on it's headers
+ *
+ *  @param request request to check
+ *
+ *  @return whether or not the given request is a websocket request
+ */
++ (BOOL)isWebSocketRequest:(NSURLRequest *)request;
+
 #pragma mark - Properties
 
 @property (nonatomic, assign, readonly) PSWebSocketReadyState readyState;
@@ -53,6 +64,17 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  *  @return an initialized instance of PSWebSocket in client mode
  */
 + (instancetype)clientSocketWithRequest:(NSURLRequest *)request;
+
+/**
+ *  Initialize a PSWebSocket instance in server mode
+ *
+ *  @param request      request that is to be used to initiate the handshake response
+ *  @param inputStream  opened input stream to be taken over by the websocket
+ *  @param outputStream opened output stream to be taken over by the websocket
+ *
+ *  @return an initialized instance of PSWebSocket in server mode
+ */
++ (instancetype)serverSocketWithRequest:(NSURLRequest *)request inputStream:(NSInputStream *)inputStream outputStream:(NSOutputStream *)outputStream;
 
 #pragma mark - Actions
 

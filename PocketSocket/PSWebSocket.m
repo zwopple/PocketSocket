@@ -38,6 +38,12 @@
 @end
 @implementation PSWebSocket
 
+#pragma mark - Class Methods
+
++ (BOOL)isWebSocketRequest:(NSURLRequest *)request {
+    return [PSWebSocketDriver isWebSocketRequest:request];
+}
+
 #pragma mark - Class Properties
 
 + (NSRunLoop *)runLoop {
