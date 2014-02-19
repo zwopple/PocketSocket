@@ -18,7 +18,7 @@ Objective-C websocket library for building things that work in realtime on iOS a
 * CFNetworking.framework
 * Foundation.framework
 * Security.framework
-* CommonCrypto.framework (iOS)
+* CommonCrypto.framework
 * System.framework (OS X)
 * libz.dylib
 
