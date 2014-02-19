@@ -1,0 +1,232 @@
+{
+   "agent": "com.zwopple.PSWebSocket",
+   "behavior": "OK",
+   "behaviorClose": "OK",
+   "case": 30,
+   "closedByMe": false,
+   "createStats": true,
+   "createWirelog": true,
+   "description": "Send small text message, then send again with <b>RSV = 3</b>, then send Ping. Octets are sent in frame-wise chops. Octets are sent in octet-wise chops.",
+   "droppedByMe": true,
+   "duration": 1,
+   "expectation": "Echo for first message is received, but then connection is failed immediately, since RSV must be 0, when no extension defining RSV meaning has been negoiated. The Pong is not received.",
+   "expected": {
+      "NON-STRICT": [],
+      "OK": [
+         [
+            "message",
+            "Hello, world!",
+            false
+         ]
+      ]
+   },
+   "expectedClose": {
+      "closeCode": [
+         1002
+      ],
+      "closedByMe": false,
+      "requireClean": false
+   },
+   "failedByMe": false,
+   "httpRequest": "GET /runCase?case=30&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: yjm303TR6GeVcOL0I06rIg==\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: dZw0qmCDH06YSnhduRos8r1biJI=\r\n\r\n",
+   "id": "3.3",
+   "isServer": true,
+   "localCloseCode": 1000,
+   "localCloseReason": null,
+   "received": [
+      [
+         "message",
+         "Hello, world!",
+         false
+      ]
+   ],
+   "remoteCloseCode": 1002,
+   "remoteCloseReason": "Data frames must never use rsv2 or rsv3 bits",
+   "reportCompressionRatio": false,
+   "reportTime": false,
+   "result": "Actual events match at least one expected.",
+   "resultClose": "Connection was properly closed",
+   "rxFrameStats": {
+      "1": 1,
+      "8": 1
+   },
+   "rxOctetStats": {
+      "6": 1,
+      "19": 1,
+      "46": 1,
+      "299": 1
+   },
+   "started": "2014-02-19T03:26:03Z",
+   "trafficStats": null,
+   "txFrameStats": {
+      "1": 2,
+      "8": 1,
+      "9": 1
+   },
+   "txOctetStats": {
+      "2": 1,
+      "4": 1,
+      "15": 2,
+      "168": 1
+   },
+   "wasClean": true,
+   "wasCloseHandshakeTimeout": false,
+   "wasNotCleanReason": null,
+   "wasOpenHandshakeTimeout": false,
+   "wasServerConnectionDropTimeout": false,
+   "wirelog": [
+      [
+         "RO",
+         [
+            299,
+            "474554202f72756e436173653f636173653d3330266167656e743d636f6d2e7a776f70706c652e5053576562536f636b657420485454502f312e310d0a486f73 ..."
+         ]
+      ],
+      [
+         "TO",
+         [
+            168,
+            "485454502f312e312031303120537769746368696e672050726f746f636f6c730d0a5365727665723a204175746f6261686e5465737453756974652f302e362e ..."
+         ],
+         false
+      ],
+      [
+         "TF",
+         [
+            13,
+            "Hello, world!"
+         ],
+         1,
+         true,
+         0,
+         null,
+         null,
+         null,
+         true
+      ],
+      [
+         "TO",
+         [
+            15,
+            "810d48656c6c6f2c20776f726c6421"
+         ],
+         true
+      ],
+      [
+         "TF",
+         [
+            13,
+            "Hello, world!"
+         ],
+         1,
+         true,
+         3,
+         null,
+         null,
+         null,
+         true
+      ],
+      [
+         "TF",
+         [
+            0,
+            ""
+         ],
+         9,
+         true,
+         0,
+         null,
+         null,
+         null,
+         true
+      ],
+      [
+         "KL",
+         1
+      ],
+      [
+         "TO",
+         [
+            15,
+            "b10d48656c6c6f2c20776f726c6421"
+         ],
+         true
+      ],
+      [
+         "TO",
+         [
+            2,
+            "8900"
+         ],
+         true
+      ],
+      [
+         "RO",
+         [
+            6,
+            "818d5334bd26"
+         ]
+      ],
+      [
+         "RO",
+         [
+            19,
+            "1b51d14a3c189d513c46d1427288aed605a83d"
+         ]
+      ],
+      [
+         "RF",
+         [
+            13,
+            "Hello, world!"
+         ],
+         1,
+         true,
+         0,
+         true,
+         "5334bd26"
+      ],
+      [
+         "RO",
+         [
+            46,
+            "d5efec5ca264885ba464c558a525c548a5718853b373cd4ff670db58f677db4be425c74ff677db4be525ca54a276"
+         ]
+      ],
+      [
+         "RF",
+         [
+            46,
+            "0x03ea44617461206672616d6573206d757374206e65766572207573652072737632206f7220727376332062697473"
+         ],
+         8,
+         true,
+         0,
+         true,
+         "d605a83d"
+      ],
+      [
+         "TF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         null,
+         null,
+         null,
+         false
+      ],
+      [
+         "TO",
+         [
+            4,
+            "880203e8"
+         ],
+         false
+      ]
+   ]
+}
