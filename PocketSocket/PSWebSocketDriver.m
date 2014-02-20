@@ -260,11 +260,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     // validate extensions
     NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
-    if(extensionComponents.count > 0) {
-        if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
-            [self failWithErrorCode:PSWebSocketErrorCodeHandshakeFailed reason:@"invalid permessage-deflate extension parameters"];
-            return;
-        }
+    if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
+        [self failWithErrorCode:PSWebSocketErrorCodeHandshakeFailed reason:@"invalid permessage-deflate extension parameters"];
+        return;
     }
     
     // set key
@@ -506,15 +504,15 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         return 0;
     }
     
-    const uint8_t *meta = (const uint8_t *)bytes;
+    const uint8_t *header = (const uint8_t *)bytes;
     
-    BOOL fin = !!(meta[0] & PSWebSocketFinMask);
-    BOOL rsv1 = !!(meta[0] & PSWebSocketRsv1Mask);
-    BOOL rsv2 = !!(meta[0] & PSWebSocketRsv2Mask);
-    BOOL rsv3 = !!(meta[0] & PSWebSocketRsv3Mask);
-    PSWebSocketOpCode opcode = (meta[0] & PSWebSocketOpCodeMask);
-    BOOL masked = !!(meta[1] & PSWebSocketMaskMask);
-    uint64_t payloadLength = (meta[1] & PSWebSocketPayloadLenMask);
+    BOOL fin = !!(header[0] & PSWebSocketFinMask);
+    BOOL rsv1 = !!(header[0] & PSWebSocketRsv1Mask);
+    BOOL rsv2 = !!(header[0] & PSWebSocketRsv2Mask);
+    BOOL rsv3 = !!(header[0] & PSWebSocketRsv3Mask);
+    PSWebSocketOpCode opcode = (header[0] & PSWebSocketOpCodeMask);
+    BOOL masked = !!(header[1] & PSWebSocketMaskMask);
+    uint64_t payloadLength = (header[1] & PSWebSocketPayloadLenMask);
     uint64_t headerExtraLength = (masked) ? sizeof(uint32_t) : 0;
     if(payloadLength == 126) {
         headerExtraLength += sizeof(uint16_t);
@@ -665,8 +663,10 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     // unmask bytes if client -> server
     if(_mode == PSWebSocketModeServer) {
         uint8_t *unmaskedBytes = (uint8_t *)bytes;
+        uint32_t maskKey = frame.maskKey;
+        uint8_t *maskKeyFragments = (uint8_t *)&maskKey;
         for(NSInteger i = 0; i < consumeLength; ++i) {
-            unmaskedBytes[i] = unmaskedBytes[i] ^ (uint8_t)(frame.maskKey + frame.maskOffset++ % sizeof(frame.maskKey));
+            unmaskedBytes[i] = unmaskedBytes[i] ^ maskKeyFragments[frame.maskOffset++ % sizeof(maskKey)];
         }
     }
     
@@ -845,9 +845,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
 }
 - (BOOL)pmdConfigureWithExtensionsHeaderComponents:(NSArray *)components {
     _pmdEnabled = NO;
-    _pmdClientWindowBits = -15;
+    _pmdClientWindowBits = -11;
     _pmdClientNoContextTakeover = NO;
-    _pmdServerWindowBits = -15;
+    _pmdServerWindowBits = -11;
     _pmdServerNoContextTakeover = NO;
     
     for(NSString *component in components) {
@@ -860,9 +860,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             _pmdClientWindowBits = -[subcomponents[0] integerValue];
         } else if([component isEqualToString:@"server_max_window_bits"] && subcomponents.count > 1) {
             _pmdServerWindowBits = -[subcomponents[0] integerValue];
-        } else if([component isEqualToString:@"client_no_context_takeover"]) {
+        } else if([component isEqualToString:@"client_no_context_takeover"] && _mode == PSWebSocketModeClient) {
             _pmdClientNoContextTakeover = YES;
-        } else if([component isEqualToString:@"server_no_context_takeover"]) {
+        } else if([component isEqualToString:@"server_no_context_takeover"] && _mode == PSWebSocketModeClient) {
             _pmdServerNoContextTakeover = YES;
         }
     }

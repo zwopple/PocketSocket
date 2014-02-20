@@ -67,9 +67,9 @@
 		_readyState = PSWebSocketReadyStateConnecting;
         _workQueue = dispatch_queue_create(nil, nil);
         if(_mode == PSWebSocketModeClient) {
-            _driver = [PSWebSocketDriver clientDriverWithRequest:request];
+            _driver = [PSWebSocketDriver clientDriverWithRequest:_request];
         } else {
-            _driver = [PSWebSocketDriver serverDriverWithRequest:request];
+            _driver = [PSWebSocketDriver serverDriverWithRequest:_request];
         }
         _driver.delegate = self;
         _secure = ([_request.URL.scheme hasPrefix:@"https"] || [_request.URL.scheme hasPrefix:@"wss"]);
@@ -202,13 +202,16 @@
 #pragma mark - Connection
 
 - (void)connect {
-    // schedule streams
-    [_inputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    
     // delegate
     _inputStream.delegate = self;
     _outputStream.delegate = self;
+    
+    // driver
+    [_driver start];
+    
+    // schedule streams
+    [_inputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
+    [_outputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
     
     // open streams
     if(_inputStream.streamStatus == NSStreamStatusNotOpen) {
@@ -217,9 +220,6 @@
     if(_outputStream.streamStatus == NSStreamStatusNotOpen) {
         [_outputStream open];
     }
-    
-    // driver
-    [_driver start];
     
     // pump
     [self pumpInput];

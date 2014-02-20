@@ -48,7 +48,6 @@
 		_waitGroup = dispatch_group_create();
         dispatch_group_enter(_waitGroup);
         
-        self.name = @"com.zwopple.PSWebSocket.NetworkThread";
         [self start];
 	}
 	return self;

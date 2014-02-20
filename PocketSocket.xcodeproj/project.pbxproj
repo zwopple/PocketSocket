@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EE2A05DB18B5BBEC0066EEA4 /* PSWebSocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2A05DA18B5BBEC0066EEA4 /* PSWebSocketServer.m */; };
 		EE337EC318B4AE1F003F95B9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EEE5E38418B385DE00BAE47A /* libz.dylib */; };
 		EE337EC418B4AE23003F95B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEE5E30D18B37DD500BAE47A /* Foundation.framework */; };
 		EE337EC618B4AE28003F95B9 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EE337EC518B4AE28003F95B9 /* CFNetwork.framework */; };
@@ -55,6 +56,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EE2A05D918B5BBEC0066EEA4 /* PSWebSocketServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWebSocketServer.h; sourceTree = "<group>"; };
+		EE2A05DA18B5BBEC0066EEA4 /* PSWebSocketServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWebSocketServer.m; sourceTree = "<group>"; };
 		EE337EC518B4AE28003F95B9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		EE337EC718B4AE2C003F95B9 /* libcommonCrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcommonCrypto.dylib; path = usr/lib/system/libcommonCrypto.dylib; sourceTree = SDKROOT; };
 		EE337EC918B4AE34003F95B9 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
@@ -153,6 +156,8 @@
 			children = (
 				EEE5E35118B37DF300BAE47A /* PSWebSocket.h */,
 				EEE5E35218B37DF300BAE47A /* PSWebSocket.m */,
+				EE2A05D918B5BBEC0066EEA4 /* PSWebSocketServer.h */,
+				EE2A05DA18B5BBEC0066EEA4 /* PSWebSocketServer.m */,
 				EEE5E33318B37DEC00BAE47A /* PSWebSocketDriver.h */,
 				EEE5E33418B37DEC00BAE47A /* PSWebSocketDriver.m */,
 				EEE5E33D18B37DEC00BAE47A /* PSWebSocketTypes.h */,
@@ -302,6 +307,7 @@
 				EEE5E34318B37DEC00BAE47A /* PSWebSocketDriver.m in Sources */,
 				EEE5E34918B37DEC00BAE47A /* PSWebSocketInflater.m in Sources */,
 				EEE5E34D18B37DEC00BAE47A /* PSWebSocketNetworkThread.m in Sources */,
+				EE2A05DB18B5BBEC0066EEA4 /* PSWebSocketServer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
