@@ -117,7 +117,7 @@ The server currently only supports the `ws` protocol. The server binds to the ho
 - (void)serverDidStop:(PSWebSocketServer *)server {
     NSLog(@"Server did stop…");
 }
-- (BOOL)server:(PSWebSocketServer *)server acceptConnectionWithRequest:(NSURLRequest *)request {
+- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request {
     NSLog(@"Server should accept request: %@", request);
     return YES;
 }
