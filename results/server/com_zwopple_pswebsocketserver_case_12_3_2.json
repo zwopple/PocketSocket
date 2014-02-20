@@ -1,0 +1,235 @@
+{
+   "agent": "com.zwopple.PSWebSocketServer",
+   "behavior": "OK",
+   "behaviorClose": "OK",
+   "case": 327,
+   "closedByMe": true,
+   "createStats": true,
+   "createWirelog": true,
+   "description": "Send 1000 messages of payload size 64 to measure implementation/network RTT (round trip time) / latency.",
+   "droppedByMe": false,
+   "duration": 756,
+   "expectation": "Receive echo'ed messages (with payload as sent). Timeout case after 60 secs.",
+   "expected": {},
+   "expectedClose": {
+      "closeCode": [
+         1000
+      ],
+      "closedByMe": true,
+      "requireClean": true
+   },
+   "failedByMe": false,
+   "httpRequest": "?",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nSec-WebSocket-Accept: JRubY2T7D0gAG2A13r9RpH8yn8g=\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits=11; server_max_window_bits=11\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\r\n",
+   "id": "12.3.2",
+   "isServer": false,
+   "localCloseCode": 1000,
+   "localCloseReason": null,
+   "received": [],
+   "remoteCloseCode": 1000,
+   "remoteCloseReason": null,
+   "reportCompressionRatio": true,
+   "reportTime": true,
+   "result": "Ok, received all echo'ed messages in time.",
+   "resultClose": "Connection was properly closed",
+   "rxFrameStats": {
+      "2": 1000,
+      "8": 1
+   },
+   "rxOctetStats": {
+      "2": 696,
+      "13": 3,
+      "16": 1,
+      "19": 1,
+      "20": 1,
+      "22": 2,
+      "25": 4,
+      "28": 4,
+      "29": 8,
+      "30": 7,
+      "31": 6,
+      "32": 7,
+      "33": 11,
+      "34": 17,
+      "35": 23,
+      "36": 26,
+      "37": 34,
+      "38": 44,
+      "39": 55,
+      "40": 53,
+      "41": 76,
+      "42": 99,
+      "43": 86,
+      "44": 88,
+      "45": 70,
+      "46": 66,
+      "47": 74,
+      "48": 43,
+      "49": 35,
+      "50": 17,
+      "51": 13,
+      "52": 10,
+      "53": 5,
+      "54": 1,
+      "55": 1,
+      "56": 1,
+      "57": 3,
+      "58": 1,
+      "60": 2,
+      "62": 1,
+      "67": 1,
+      "229": 1
+   },
+   "started": "2014-02-20T12:26:30Z",
+   "trafficStats": {
+      "incomingCompressionRatio": 0.651484375,
+      "incomingOctetsAppLevel": 64000,
+      "incomingOctetsWebSocketLevel": 41695,
+      "incomingOctetsWireLevel": 43695,
+      "incomingWebSocketFrames": 1000,
+      "incomingWebSocketMessages": 1000,
+      "incomingWebSocketOverhead": 0.04796738218011752,
+      "outgoingCompressionRatio": 0.6514375,
+      "outgoingOctetsAppLevel": 64000,
+      "outgoingOctetsWebSocketLevel": 41692,
+      "outgoingOctetsWireLevel": 47692,
+      "outgoingWebSocketFrames": 1000,
+      "outgoingWebSocketMessages": 1000,
+      "outgoingWebSocketOverhead": 0.14391250119927085,
+      "preopenIncomingOctetsWireLevel": 229,
+      "preopenOutgoingOctetsWireLevel": 337
+   },
+   "txFrameStats": {
+      "2": 1000,
+      "8": 1
+   },
+   "txOctetStats": {
+      "8": 1,
+      "19": 3,
+      "22": 1,
+      "24": 1,
+      "25": 1,
+      "26": 2,
+      "29": 1,
+      "31": 3,
+      "32": 1,
+      "33": 3,
+      "34": 5,
+      "35": 6,
+      "36": 7,
+      "37": 6,
+      "38": 8,
+      "39": 14,
+      "40": 23,
+      "41": 25,
+      "42": 31,
+      "43": 43,
+      "44": 37,
+      "45": 61,
+      "46": 74,
+      "47": 73,
+      "48": 96,
+      "49": 91,
+      "50": 90,
+      "51": 74,
+      "52": 58,
+      "53": 66,
+      "54": 31,
+      "55": 23,
+      "56": 16,
+      "57": 9,
+      "58": 4,
+      "59": 3,
+      "60": 1,
+      "61": 2,
+      "62": 1,
+      "63": 2,
+      "64": 1,
+      "66": 1,
+      "68": 1,
+      "71": 1,
+      "337": 1
+   },
+   "wasClean": true,
+   "wasCloseHandshakeTimeout": false,
+   "wasNotCleanReason": null,
+   "wasOpenHandshakeTimeout": false,
+   "wasServerConnectionDropTimeout": false,
+   "wirelog": [
+      [
+         "TO",
+         [
+            337,
+            "474554202f20485454502f312e310d0a557365722d4167656e743a204175746f6261686e5465737453756974652f302e362e302d302e382e310d0a486f73743a ..."
+         ],
+         false
+      ],
+      [
+         "RO",
+         [
+            229,
+            "485454502f312e312031303120537769746368696e672050726f746f636f6c730d0a5365632d576562536f636b65742d4163636570743a204a52756259325437 ..."
+         ]
+      ],
+      [
+         "WLM",
+         false
+      ],
+      [
+         "TI",
+         60
+      ],
+      [
+         "WLM",
+         true
+      ],
+      [
+         "TF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         "cc63a9b7",
+         null,
+         null,
+         false
+      ],
+      [
+         "TO",
+         [
+            8,
+            "8882cc63a9b7cf8b"
+         ],
+         false
+      ],
+      [
+         "RO",
+         [
+            2,
+            "8802"
+         ]
+      ],
+      [
+         "RO",
+         [
+            2,
+            "03e8"
+         ]
+      ],
+      [
+         "RF",
+         [
+            2,
+            "0x03e8"
+         ],
+         8,
+         true,
+         0,
+         false,
+         null
+      ]
+   ]
+}
