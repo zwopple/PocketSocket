@@ -7,7 +7,7 @@ Objective-C websocket library for building things that work in realtime on iOS a
 
 * Conforms fully to [RFC6455](http://tools.ietf.org/html/rfc6455) websocket protocol
 * Support for websocket compression via the [permessage-deflate](http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-17) extension
-* Passes all ~355 [Autobahn.ws tests](http://zwopple.github.io/PocketSocket/results/) with 100% compliance
+* Passes all ~355 Autobahn [Client Tests](http://zwopple.github.io/PocketSocket/results/client/) & [Server Tests](http://zwopple.github.io/PocketSocket/results/server/) with 100% compliance
 * Client & Server modes (see notes below)
 * TLS/SSL support
 * Asynchronus IO
@@ -29,6 +29,7 @@ Installation is recommended via cocoapods. Add `pod 'PocketSocket'` to your Podf
 
 * **`PSWebSocketDriver`** - Networkless driver to deal with the websocket protocol. It solely operates with parsing raw bytes into events and sending events as raw bytes.
 * **`PSWebSocket`** - Networking based socket around `NSInputStream` and `NSOutputStream` deals with ensuring a connection is maintained. Uses the `PSWebSocketDriver` internally on the input and output. 
+* **`PSWebSocketServer`** - Networking based socket server around `CFSocket`. It creates one PSWebSocket instance per incoming request.
 
 ### Using PSWebSocket as a client
 
@@ -87,18 +88,54 @@ If the initial `NSURLRequest` specifies a timeout greater than 0 the connection 
 
 ```
 
-### Using PSWebSocket with a server
+### Using PSWebSocket via PSWebSocketServer
 
-Using PSWebSocket with a server is a bit trickier. Most HTTP servers parse incoming requests and detach incoming websocket requests to be managed independently of the server. PSWebSocket expects the server to setup an `NSInputStream` and `NSOutputStream` and have already read the incoming handshake request before creating a PSWebSocket instance to manage the connection.
+The server currently only supports the `ws` protocol. The server binds to the host address and port specified and accepts incoming connections. It parses the first HTTP request in each connection and then asks the delegate whether or not to accept it and complete the websocket handshake. The server expects to remain the delegate of all `PSWebSocket` instances it manages so be careful not to manage them yourself or detach them from the server.
 
-##### Steps to take:
 
-1. Formulate a `NSURLRequest` from the already read request headers, **any extra data past the headers that was read from the socket must be put into the HTTPBody of the NSURLRequest**
-2. Create a `PSWebSocket` instance using `serverSocketWithRequest:inputStream:outputStream:` passing in the request and already opened `NSInputStream` and `NSOutputStream` for the given socket connection
-3. Unschedule the passed in input and output streams from any server run loop
-4. Open the websocket
+```objc
+#import <PSWebSocket/PSWebSocketServer.h>
 
-As a helper you can use `[PSWebSocket isWebSocketRequest:(NSURLRequest *)]` to check if the headers are suitable for a websocket connection.
+@interface AppDelegate() <PSWebSocketServerDelegate>
+
+@property (nonatomic, strong) PSWebSocketServer *server;
+
+@end
+@implementation AppDelegate
+
+- (void)applicationDidFinishLaunching:(NSNotification *)notification {
+    _server = [PSWebSocketServer serverWithHost:nil port:9001];
+    _server.delegate = self;
+    [_server start];
+}
+
+#pragma mark - PSWebSocketServerDelegate
+
+- (void)serverDidStart:(PSWebSocketServer *)server {
+    NSLog(@"Server did start…");
+}
+- (void)serverDidStop:(PSWebSocketServer *)server {
+    NSLog(@"Server did stop…");
+}
+- (BOOL)server:(PSWebSocketServer *)server acceptConnectionWithRequest:(NSURLRequest *)request {
+    NSLog(@"Server should accept request: %@", request);
+    return YES;
+}
+- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message {
+    NSLog(@"Server websocket did receive message: %@", message);
+}
+- (void)server:(PSWebSocketServer *)server webSocketDidOpen:(PSWebSocket *)webSocket {
+    NSLog(@"Server websocket did open");
+}
+- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
+    NSLog(@"Server websocket did close with code: %@, reason: %@, wasClean: %@", @(code), reason, @(wasClean));
+}
+- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error {
+    NSLog(@"Server websocket did fail with error: %@", error);
+}
+
+@end
+```
 
 
 ### Using PSWebSocketDriver
@@ -107,7 +144,7 @@ The driver is the core of `PSWebSocket`. It deals with the handshake request/res
 
 It supports both client and server mode and has an identical API for each.
 
-To create an instance of it you use either `clientDriverWithRequest:` or `serverDriverWithRequest:` in the client mode you are to pass in a `NSURLRequest` that will be sent as a handshake request. In server mode you are to pass in the `NSURLRequest` that was the handshake request. It is extremely important that the `HTTPBody` in server mode include any extra data past the end of the headers that was already read.
+To create an instance of it you use either `clientDriverWithRequest:` or `serverDriverWithRequest:` in the client mode you are to pass in a `NSURLRequest` that will be sent as a handshake request. In server mode you are to pass in the `NSURLRequest` that was the handshake request.
 
 Beyond that have a look at the `PSWebSocketDriverDelegate` methods and the simple API for interacting with the driver.
 
