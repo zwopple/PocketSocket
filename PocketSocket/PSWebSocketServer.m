@@ -180,23 +180,31 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     _running = YES;
     
     if(!silent) {
-        // notify started
+        [self notifyDelegateDidStart];
     }
 }
 - (void)disconnectGracefully:(BOOL)silent {
     if(!_running) {
         return;
     }
-    // wait for open connections to finish
     
-    // disconnect
-    [self disconnect:silent];
-}
-- (void)disconnect:(BOOL)silent {
-    if(!_running) {
-        return;
+    for(PSWebSocketServerConnection *connection in _connections.allObjects) {
+        [self disconnectConnectionGracefully:connection statusCode:500 description:@"Service Going Away"];
+    }
+    for(PSWebSocket *webSocket in _webSockets.allObjects) {
+        [webSocket close];
     }
     
+    [self pumpOutput];
+    
+    // disconnect
+    [self executeWork:^{
+        [self disconnect:silent];
+    }];
+    
+    _running = NO;
+}
+- (void)disconnect:(BOOL)silent {
     if(_socketRunLoopSource) {
         CFRunLoopRef runLoop = [[self runLoop] getCFRunLoop];
         CFRunLoopRemoveSource(runLoop, _socketRunLoopSource, kCFRunLoopDefaultMode);
@@ -216,7 +224,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     _running = NO;
     
     if(!silent) {
-        // notify stopped
+        [self notifyDelegateDidStop];
     }
 }
 
@@ -273,19 +281,18 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 #pragma mark - PSWebSocketDelegate
 
 - (void)webSocketDidOpen:(PSWebSocket *)webSocket {
-//    NSLog(@"webSocketDidOpen:");
+    [self notifyDelegateWebSocketDidOpen:webSocket];
 }
 - (void)webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message {
-//    NSLog(@"webSocket: didReceiveMessage: %@", message);
-    [webSocket send:message];
+    [self notifyDelegateWebSocket:webSocket didReceiveMessage:message];
 }
 - (void)webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error {
-//    NSLog(@"webSocket: didFailWithError: %@", error);
     [self detachWebSocket:webSocket];
+    [self notifyDelegateWebSocket:webSocket didFailWithError:error];
 }
 - (void)webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     [self detachWebSocket:webSocket];
-//    NSLog(@"webSocket: didCloseWithCode: %@, reason: %@, wasClean: %@", @(code), reason, (wasClean) ? @"YES" : @"NO");
+    [self notifyDelegateWebSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
 }
 
 #pragma mark - Connections
@@ -417,6 +424,18 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
                 continue;
             }
             
+            if(_delegate) {
+                __block BOOL accept = NO;
+                [self executeDelegateAndWait:^{
+                    accept = [_delegate server:self acceptWebSocketWithRequest:request];
+                }];
+                if(!accept) {
+                    [self disconnectConnection:connection];
+                    CFRelease(msg);
+                    continue;
+                }
+            }
+            
             // detach connection
             [self detatchConnection:connection];
             
@@ -518,26 +537,38 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 
 #pragma mark - Delegation
 
-//- (void)notifyDelegateDidOpen {
-//    [self executeDelegate:^{
-//        [_delegate webSocketDidOpen:self];
-//    }];
-//}
-//- (void)notifyDelegateDidReceiveMessage:(id)message {
-//    [self executeDelegate:^{
-//        [_delegate webSocket:self didReceiveMessage:message];
-//    }];
-//}
-//- (void)notifyDelegateDidFailWithError:(NSError *)error {
-//    [self executeDelegate:^{
-//        [_delegate webSocket:self didFailWithError:error];
-//    }];
-//}
-//- (void)notifyDelegateDidCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-//    [self executeDelegate:^{
-//        [_delegate webSocket:self didCloseWithCode:code reason:reason wasClean:wasClean];
-//    }];
-//}
+- (void)notifyDelegateDidStart {
+    [self executeDelegate:^{
+        [_delegate serverDidStart:self];
+    }];
+}
+- (void)notifyDelegateDidStop {
+    [self executeDelegate:^{
+        [_delegate serverDidStop:self];
+    }];
+}
+
+- (void)notifyDelegateWebSocketDidOpen:(PSWebSocket *)webSocket {
+    [self executeDelegate:^{
+        [_delegate server:self webSocketDidOpen:webSocket];
+    }];
+}
+- (void)notifyDelegateWebSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message {
+    [self executeDelegate:^{
+        [_delegate server:self webSocket:webSocket didReceiveMessage:message];
+    }];
+}
+
+- (void)notifyDelegateWebSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error {
+    [self executeDelegate:^{
+        [_delegate server:self webSocket:webSocket didFailWithError:error];
+    }];
+}
+- (void)notifyDelegateWebSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
+    [self executeDelegate:^{
+        [_delegate server:self webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
+    }];
+}
 
 #pragma mark - Queueing
 
@@ -549,14 +580,14 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     NSParameterAssert(work);
     dispatch_sync(_workQueue, work);
 }
-//- (void)executeDelegate:(void (^)(void))work {
-//    NSParameterAssert(work);
-//    dispatch_async((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
-//}
-//- (void)executeDelegateAndWait:(void (^)(void))work {
-//    NSParameterAssert(work);
-//    dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
-//}
+- (void)executeDelegate:(void (^)(void))work {
+    NSParameterAssert(work);
+    dispatch_async((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+}
+- (void)executeDelegateAndWait:(void (^)(void))work {
+    NSParameterAssert(work);
+    dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+}
 
 @end
 

@@ -13,8 +13,31 @@
 //  limitations under the License.
 
 #import <Foundation/Foundation.h>
+#import "PSWebSocket.h"
+
+@class PSWebSocketServer;
+
+@protocol PSWebSocketServerDelegate <NSObject>
+
+@required
+
+- (void)serverDidStart:(PSWebSocketServer *)server;
+- (void)serverDidStop:(PSWebSocketServer *)server;
+
+- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;
+- (void)server:(PSWebSocketServer *)server webSocketDidOpen:(PSWebSocket *)webSocket;
+- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
+- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
+- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
+
+@end
 
 @interface PSWebSocketServer : NSObject
+
+#pragma mark - Properties
+
+@property (nonatomic, weak) id <PSWebSocketServerDelegate> delegate;
+@property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 #pragma mark - Initialization
 
@@ -23,5 +46,6 @@
 #pragma mark - Actions
 
 - (void)start;
+- (void)stop;
 
 @end
