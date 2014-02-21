@@ -32,13 +32,13 @@
     BOOL rsv3;
     PSWebSocketOpCode opcode;
     BOOL masked;
-    uint64_t payloadLength;
+    NSUInteger payloadLength;
     BOOL control;
-    uint32_t headerExtraLength;
+    NSUInteger headerExtraLength;
     uint8_t maskKey[4];
     uint32_t maskOffset;
     NSMutableData *buffer;
-    uint64_t payloadRemainingLength;
+    NSUInteger payloadRemainingLength;
 }
 @end
 @implementation PSWebSocketFrame
@@ -579,8 +579,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             frame->rsv3 = rsv3;
             frame->opcode = opcode;
             frame->masked = masked;
-            frame->payloadLength = payloadLength;
-            frame->payloadRemainingLength = payloadLength;
+            frame->payloadLength = (NSUInteger)payloadLength;
+            frame->payloadRemainingLength = (NSUInteger)payloadLength;
             frame->headerExtraLength = headerExtraLength;
             frame->control = control;
             
@@ -625,8 +625,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             } else if(payloadLength == 127) {
                 payloadLength = EndianU64_BtoN(*(uint64_t *)bytes);
             }
-            frame->payloadLength = payloadLength;
-            frame->payloadRemainingLength = payloadLength;
+            frame->payloadLength = (NSUInteger)payloadLength;
+            frame->payloadRemainingLength = (NSUInteger)payloadLength;
             
             if(frame->masked) {
                 memcpy(frame->maskKey, (uint8_t *)bytes + (frame->headerExtraLength - sizeof(uint32_t)), sizeof(uint32_t));
@@ -652,8 +652,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             // get current frame
             PSWebSocketFrame *frame = [_frames lastObject];
             
-            uint64_t consumeLength = MIN(frame->payloadRemainingLength, maxLength);
-            uint64_t offset = frame->buffer.length;
+            NSUInteger consumeLength = MIN(frame->payloadRemainingLength, maxLength);
+            NSUInteger offset = frame->buffer.length;
             
             // unmask bytes if client -> server
             if(_mode == PSWebSocketModeServer) {
