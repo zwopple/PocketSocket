@@ -393,9 +393,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
 - (NSInteger)readBytes:(void *)bytes maxLength:(NSUInteger)maxLength error:(NSError *__autoreleasing *)outError {
     NSAssert(maxLength > 0, @"Must have 1 or more bytes");
     switch(_state) {
-            //
-            // HANDSHAKE RESPONSE
-            //
+        //
+        // HANDSHAKE RESPONSE
+        //
         case PSWebSocketDriverStateHandshakeResponse: {
             NSAssert(maxLength > 0, @"Must have 1 or more bytes");
             NSAssert(_state == PSWebSocketDriverStateHandshakeResponse, @"Invalid state for reading handshake response");
@@ -483,9 +483,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             
             return preBoundaryLength;
         }
-            //
-            // FRAME HEADER
-            //
+        //
+        // FRAME HEADER
+        //
         case PSWebSocketDriverStateFrameHeader: {
             NSAssert(maxLength > 0, @"Must have 1 or more bytes");
             
@@ -605,9 +605,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             }
             return 2;
         }
-            //
-            // FRAME HEADER EXTRA
-            //
+        //
+        // FRAME HEADER EXTRA
+        //
         case PSWebSocketDriverStateFrameHeaderExtra: {
             NSAssert(maxLength > 0, @"Must have 1 or more bytes");
             
@@ -643,9 +643,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             }
             return frame->headerExtraLength;
         }
-            //
-            // FRAME PAYLOAD
-            //
+        //
+        // FRAME PAYLOAD
+        //
         case PSWebSocketDriverStateFramePayload: {
             NSAssert(maxLength > 0, @"Must have 1 or more bytes");
             
