@@ -652,8 +652,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             // get current frame
             PSWebSocketFrame *frame = [_frames lastObject];
             
-            NSUInteger consumeLength = MIN(frame->payloadRemainingLength, maxLength);
-            NSUInteger offset = frame->buffer.length;
+            uint64_t consumeLength = MIN(frame->payloadRemainingLength, maxLength);
+            uint64_t offset = frame->buffer.length;
             
             // unmask bytes if client -> server
             if(_mode == PSWebSocketModeServer) {
