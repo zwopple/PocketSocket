@@ -24,24 +24,22 @@
 #endif
 #import <CommonCrypto/CommonCrypto.h>
 
-@interface PSWebSocketFrame : NSObject
-
-#pragma mark - Properties
-
-@property (nonatomic, assign) BOOL fin;
-@property (nonatomic, assign) BOOL rsv1;
-@property (nonatomic, assign) BOOL rsv2;
-@property (nonatomic, assign) BOOL rsv3;
-@property (nonatomic, assign) PSWebSocketOpCode opcode;
-@property (nonatomic, assign) BOOL masked;
-@property (nonatomic, assign) NSUInteger payloadLength;
-@property (nonatomic, assign) BOOL control;
-@property (nonatomic, assign) uint32_t headerExtraLength;
-@property (nonatomic, assign) uint32_t maskKey;
-@property (nonatomic, assign) uint32_t maskOffset;
-@property (nonatomic, strong) NSMutableData *buffer;
-@property (nonatomic, assign) NSUInteger payloadRemainingLength;
-
+@interface PSWebSocketFrame : NSObject {
+@public
+    BOOL fin;
+    BOOL rsv1;
+    BOOL rsv2;
+    BOOL rsv3;
+    PSWebSocketOpCode opcode;
+    BOOL masked;
+    NSUInteger payloadLength;
+    BOOL control;
+    uint32_t headerExtraLength;
+    uint8_t maskKey[4];
+    uint32_t maskOffset;
+    NSMutableData *buffer;
+    NSUInteger payloadRemainingLength;
+}
 @end
 @implementation PSWebSocketFrame
 
@@ -143,21 +141,19 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     NSInteger bytesRead = 0;
     NSUInteger totalBytesRead = 0;
     while(totalBytesRead < maxLength) {
-        @autoreleasepool {
-            bytesRead = [self readBytes:bytes maxLength:maxLength - totalBytesRead error:&error];
-            if(bytesRead < 0) {
-                if(error) {
-                    [self failWithError:error];
-                } else {
-                    [self failWithErrorCode:-1 reason:@"An unknown error occurred"];
-                }
-                break;
-            } else if(bytesRead == 0) {
-                break;
+        bytesRead = [self readBytes:bytes maxLength:maxLength - totalBytesRead error:&error];
+        if(bytesRead < 0) {
+            if(error) {
+                [self failWithError:error];
+            } else {
+                [self failWithErrorCode:-1 reason:@"An unknown error occurred"];
             }
-            totalBytesRead += bytesRead;
-            bytes += bytesRead;
+            break;
+        } else if(bytesRead == 0) {
+            break;
         }
+        totalBytesRead += bytesRead;
+        bytes += bytesRead;
     }
     return totalBytesRead;
 }
@@ -302,8 +298,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     uint8_t *headerBytes = header.mutableBytes;
     
     headerBytes[0] |= PSWebSocketFinMask;
-//  headerBytes[0] |= (ZWPWebSocketRsv2Mask);
-//  headerBytes[0] |= (ZWPWebSocketRsv3Mask);
+    //  headerBytes[0] |= (ZWPWebSocketRsv2Mask);
+    //  headerBytes[0] |= (ZWPWebSocketRsv3Mask);
     headerBytes[0] |= (PSWebSocketOpCodeMask & opcode);
     
     // determine payload payload
@@ -397,354 +393,358 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
 - (NSInteger)readBytes:(void *)bytes maxLength:(NSUInteger)maxLength error:(NSError *__autoreleasing *)outError {
     NSAssert(maxLength > 0, @"Must have 1 or more bytes");
     switch(_state) {
-        case PSWebSocketDriverStateHandshakeResponse:
-            return [self readHandshakeResponseBytes:bytes maxLength:maxLength error:outError];
-        case PSWebSocketDriverStateFrameHeader:
-            return [self readFrameHeaderBytes:bytes maxLength:maxLength error:outError];
-        case PSWebSocketDriverStateFrameHeaderExtra:
-            return [self readFrameHeaderExtraBytes:bytes maxLength:maxLength error:outError];
-        case PSWebSocketDriverStateFramePayload:
-            return [self readFramePayloadBytes:bytes maxLength:maxLength error:outError];
+            //
+            // HANDSHAKE RESPONSE
+            //
+        case PSWebSocketDriverStateHandshakeResponse: {
+            NSAssert(maxLength > 0, @"Must have 1 or more bytes");
+            NSAssert(_state == PSWebSocketDriverStateHandshakeResponse, @"Invalid state for reading handshake response");
+            
+            uint8_t boundary[] = {'\r', '\n','\r', '\n'};
+            NSUInteger preBoundaryLength = 0;
+            NSUInteger matched = 0;
+            for(NSUInteger i = 0; i < maxLength; ++i) {
+                const uint8_t byte = ((const uint8_t *)bytes)[i];
+                const uint8_t boundaryByte = boundary[matched];
+                if(byte == boundaryByte) {
+                    if(++matched == sizeof(boundary)) {
+                        preBoundaryLength = i + 1;
+                        break;
+                    }
+                } else {
+                    matched = 0;
+                }
+            }
+            if(preBoundaryLength == 0) {
+                // do not allow too much data for headers
+                if(maxLength >= 16384) {
+                    PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"HTTP headers did not finish after reading 16384 bytes");
+                    return -1;
+                }
+                return 0;
+            }
+            
+            // create handshake
+            CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(NULL, NO);
+            CFHTTPMessageAppendBytes(msg, (const UInt8 *)bytes, preBoundaryLength);
+            
+            
+            // validate complete
+            if(!CFHTTPMessageIsHeaderComplete(msg)) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"HTTP headers found CRLFCRLF but not complete");
+                CFRelease(msg);
+                return -1;
+            }
+            
+            // get values
+            NSInteger statusCode = CFHTTPMessageGetResponseStatusCode(msg);
+            NSDictionary *headers = [CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(msg)) copy];
+            CFRelease(msg);
+            
+            // validate status
+            if(statusCode != 101) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Handshake failed");
+                return - 1;
+            }
+            
+            // validate protocol
+            NSArray *protocolComponents = [_request.allHTTPHeaderFields[@"Sec-WebSocket-Protocol"] componentsSeparatedByString:@" "];
+            if(headers[@"Sec-WebSocket-Protocol"] && ![protocolComponents containsObject:headers[@"Sec-WebSocket-Protocol"]]) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Protocol");
+                return -1;
+            }
+            _protocol = headers[@"Sec-WebSocket-Protocol"];
+            
+            // validate accept
+            if(![headers[@"Sec-WebSocket-Accept"] isEqualToString:[self acceptHeaderForKey:_handshakeSecKey]]) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Accept");
+                return -1;
+            }
+            
+            // validate version
+            if(headers[@"Sec-WebSocket-Version"] && ![headers[@"Sec-WebSocket-Version"] isEqualToString:@"13"]) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Version");
+                return -1;
+            }
+            
+            // extensions
+            NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
+            
+            // per-message deflate
+            if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"permessage-deflate could not negotiate parameters");
+                return -1;
+            }
+            
+            // transition state
+            _state = PSWebSocketDriverStateFrameHeader;
+            
+            [_delegate driverDidOpen:self];
+            
+            return preBoundaryLength;
+        }
+            //
+            // FRAME HEADER
+            //
+        case PSWebSocketDriverStateFrameHeader: {
+            NSAssert(maxLength > 0, @"Must have 1 or more bytes");
+            
+            if(maxLength < 2) {
+                return 0;
+            }
+            
+            const uint8_t *header = (const uint8_t *)bytes;
+            
+            BOOL fin = !!(header[0] & PSWebSocketFinMask);
+            BOOL rsv1 = !!(header[0] & PSWebSocketRsv1Mask);
+            BOOL rsv2 = !!(header[0] & PSWebSocketRsv2Mask);
+            BOOL rsv3 = !!(header[0] & PSWebSocketRsv3Mask);
+            PSWebSocketOpCode opcode = (header[0] & PSWebSocketOpCodeMask);
+            BOOL masked = !!(header[1] & PSWebSocketMaskMask);
+            uint64_t payloadLength = (header[1] & PSWebSocketPayloadLenMask);
+            uint32_t headerExtraLength = (masked) ? sizeof(uint32_t) : 0;
+            if(payloadLength == 126) {
+                headerExtraLength += sizeof(uint16_t);
+            } else if(payloadLength == 127) {
+                headerExtraLength += sizeof(uint64_t);
+            }
+            
+            // validate opcode
+            if(!PSWebSocketOpCodeIsValid(opcode)) {
+                PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Invalid opcode");
+                return -1;
+            }
+            
+            // determine if control frame
+            BOOL control = PSWebSocketOpCodeIsControl(opcode);
+            
+            // validate control frame
+            if(control) {
+                // control frames must be final
+                if(!fin) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Control frames must be final");
+                    return -1;
+                }
+                // control frames must not have any reserved bits set
+                if(rsv1 || rsv2 || rsv3) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Control frames must not use reserved bits");
+                    return -1;
+                }
+                // control frames must not have payload >= 126
+                if(payloadLength >= 126) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Control frames payload must < 126");
+                    return -1;
+                }
+            }
+            // validate data frame
+            else {
+                // data continuation frames must follow an initial data frame
+                if(opcode == PSWebSocketOpCodeContinuation && _frames.count == 0) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data continuation frames must follow an initial data frame");
+                    return -1;
+                }
+                // non data continuation frames must not follow an initial data frame
+                if(opcode != PSWebSocketOpCodeContinuation && _frames.count > 0) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data frames must not follow an initial data frame unless continuations");
+                    return -1;
+                }
+                // rsv1 only set if permessage-deflate is enabled
+                if(rsv1 && !_pmdEnabled) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data frames must only use rsv1 bit if permessage-deflate extension is on");
+                    return -1;
+                }
+                // rsv2 and rsv3 must never be set
+                if(rsv2 || rsv3) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data frames must never use rsv2 or rsv3 bits");
+                    return -1;
+                }
+            }
+            
+            // ensure not masked if client mode
+            if(masked && _mode == PSWebSocketModeClient) {
+                PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Frames must never be masked from server");
+                return -1;
+            }
+            // ensure masked if server mode
+            if(!masked && _mode == PSWebSocketModeServer) {
+                PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Frames must always be masked from client");
+                return -1;
+            }
+            
+            // create frame
+            PSWebSocketFrame *frame = [[PSWebSocketFrame alloc] init];
+            frame->fin = fin;
+            frame->rsv1 = rsv1;
+            frame->rsv2 = rsv2;
+            frame->rsv3 = rsv3;
+            frame->opcode = opcode;
+            frame->masked = masked;
+            frame->payloadLength = payloadLength;
+            frame->payloadRemainingLength = payloadLength;
+            frame->headerExtraLength = headerExtraLength;
+            frame->control = control;
+            
+            if(!frame->control && _frames.count > 0) {
+                _initialFrame = [_frames lastObject];
+                frame->opcode = _initialFrame->opcode;
+                frame->buffer = _initialFrame->buffer;
+            } else {
+                frame->buffer = [NSMutableData data];
+            }
+            [_frames addObject:frame];
+            
+            if(headerExtraLength > 0) {
+                _state = PSWebSocketDriverStateFrameHeaderExtra;
+            } else if(payloadLength > 0) {
+                _state = PSWebSocketDriverStateFramePayload;
+            } else {
+                _state = PSWebSocketDriverStateFrameHeader;
+                if(![self processFramesAndDelegate:outError]) {
+                    return -1;
+                }
+            }
+            return 2;
+        }
+            //
+            // FRAME HEADER EXTRA
+            //
+        case PSWebSocketDriverStateFrameHeaderExtra: {
+            NSAssert(maxLength > 0, @"Must have 1 or more bytes");
+            
+            // get current frame
+            PSWebSocketFrame *frame = [_frames lastObject];
+            
+            // we need at least current frames header extra length
+            if(maxLength < frame->headerExtraLength) {
+                return 0;
+            }
+            
+            uint64_t payloadLength = frame->payloadLength;
+            if(payloadLength == 126) {
+                payloadLength = EndianU16_BtoN(*(uint16_t *)bytes);
+            } else if(payloadLength == 127) {
+                payloadLength = EndianU64_BtoN(*(uint64_t *)bytes);
+            }
+            frame->payloadLength = payloadLength;
+            frame->payloadRemainingLength = payloadLength;
+            
+            if(frame->masked) {
+                memcpy(frame->maskKey, (uint8_t *)bytes + (frame->headerExtraLength - sizeof(uint32_t)), sizeof(uint32_t));
+                frame->maskOffset = 0;
+            }
+            
+            if(frame->payloadLength > 0) {
+                _state = PSWebSocketDriverStateFramePayload;
+            } else {
+                _state = PSWebSocketDriverStateFrameHeader;
+                if(![self processFramesAndDelegate:outError]) {
+                    return -1;
+                }
+            }
+            return frame->headerExtraLength;
+        }
+            //
+            // FRAME PAYLOAD
+            //
+        case PSWebSocketDriverStateFramePayload: {
+            NSAssert(maxLength > 0, @"Must have 1 or more bytes");
+            
+            // get current frame
+            PSWebSocketFrame *frame = [_frames lastObject];
+            
+            NSUInteger consumeLength = MIN(frame->payloadRemainingLength, maxLength);
+            NSUInteger offset = frame->buffer.length;
+            
+            // unmask bytes if client -> server
+            if(_mode == PSWebSocketModeServer) {
+                uint8_t *unmaskedBytes = (uint8_t *)bytes;
+                uint8_t *maskKey = frame->maskKey;
+                for(NSInteger i = 0; i < consumeLength; ++i) {
+                    unmaskedBytes[i] = unmaskedBytes[i] ^ maskKey[frame->maskOffset++ % sizeof(uint32_t)];
+                }
+            }
+            
+            // inflate if necessary
+            if(_pmdEnabled && !frame->control && (frame->rsv1 || _initialFrame->rsv1)) {
+                // reset inflater if we need to
+                if((_pmdClientNoContextTakeover && _mode == PSWebSocketModeServer) ||
+                   (_pmdServerNoContextTakeover && _mode == PSWebSocketModeClient)) {
+                    [_inflater reset];
+                }
+                
+                // begin the inflater
+                if(frame->payloadLength == frame->payloadRemainingLength) {
+                    if(![_inflater begin:frame->buffer error:outError]) {
+                        return -1;
+                    }
+                }
+                
+                // inflate bytes
+                if(![_inflater appendBytes:bytes length:consumeLength error:outError]) {
+                    return -1;
+                }
+                
+                // end inflater
+                if(frame->fin && frame->payloadRemainingLength == consumeLength) {
+                    if(![_inflater end:outError]) {
+                        return -1;
+                    }
+                }
+            }
+            // otherwise append
+            else {
+                [frame->buffer appendBytes:bytes length:consumeLength];
+            }
+            
+            // validate utf-8 if necessary
+            if(frame->opcode == PSWebSocketOpCodeText) {
+                uint8_t *bytes = (uint8_t *)(frame->buffer.bytes + offset);
+                for(NSUInteger i = 0; i < frame->buffer.length - offset; ++i) {
+                    // get validation result
+                    PSWebSocketUTF8DecoderDecode(&_utf8DecoderState, &_utf8DecoderCodePoint, *(bytes + i));
+                    
+                    // read bad code point
+                    if(_utf8DecoderState == PSWebSocketUTF8DecoderReject) {
+                        PSWebSocketSetOutError(outError, PSWebSocketStatusCodeInvalidUTF8, @"Invalid UTF-8");
+                        return -1;
+                    }
+                }
+                
+                // need more bytes & no data will be left
+                if(_utf8DecoderState > 1 && frame->fin && frame->payloadRemainingLength - consumeLength == 0) {
+                    PSWebSocketSetOutError(outError, PSWebSocketStatusCodeInvalidUTF8, @"Invalid UTF-8");
+                    return -1;
+                }
+            }
+            
+            // remove consumed length from remaining payload length
+            frame->payloadRemainingLength -= consumeLength;
+            
+            if(frame->payloadRemainingLength == 0) {
+                _state = PSWebSocketDriverStateFrameHeader;
+                if(![self processFramesAndDelegate:outError]) {
+                    return -1;
+                }
+            }
+            return consumeLength;
+        }
         default:
             return 0;
     }
     return 0;
 }
-- (NSInteger)readHandshakeResponseBytes:(void *)bytes maxLength:(NSUInteger)maxLength error:(NSError *__autoreleasing *)outError {
-    NSAssert(maxLength > 0, @"Must have 1 or more bytes");
-    NSAssert(_state == PSWebSocketDriverStateHandshakeResponse, @"Invalid state for reading handshake response");
-    
-    uint8_t boundary[] = {'\r', '\n','\r', '\n'};
-    NSUInteger preBoundaryLength = 0;
-    NSUInteger matched = 0;
-    for(NSUInteger i = 0; i < maxLength; ++i) {
-        const uint8_t byte = ((const uint8_t *)bytes)[i];
-        const uint8_t boundaryByte = boundary[matched];
-        if(byte == boundaryByte) {
-            if(++matched == sizeof(boundary)) {
-                preBoundaryLength = i + 1;
-                break;
-            }
-        } else {
-            matched = 0;
-        }
-    }
-    if(preBoundaryLength == 0) {
-        // do not allow too much data for headers
-        if(maxLength >= 16384) {
-            PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"HTTP headers did not finish after reading 16384 bytes");
-            return -1;
-        }
-        return 0;
-    }
-    
-    // create handshake
-    CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(NULL, NO);
-    CFHTTPMessageAppendBytes(msg, (const UInt8 *)bytes, preBoundaryLength);
-    
-    
-    // validate complete
-    if(!CFHTTPMessageIsHeaderComplete(msg)) {
-        PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"HTTP headers found CRLFCRLF but not complete");
-        CFRelease(msg);
-        return -1;
-    }
-    
-    // get values
-    NSInteger statusCode = CFHTTPMessageGetResponseStatusCode(msg);
-    NSDictionary *headers = [CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(msg)) copy];
-    CFRelease(msg);
-    
-    // validate status
-    if(statusCode != 101) {
-        PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Handshake failed");
-        return - 1;
-    }
-    
-    // validate protocol
-    NSArray *protocolComponents = [_request.allHTTPHeaderFields[@"Sec-WebSocket-Protocol"] componentsSeparatedByString:@" "];
-    if(headers[@"Sec-WebSocket-Protocol"] && ![protocolComponents containsObject:headers[@"Sec-WebSocket-Protocol"]]) {
-        PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Protocol");
-        return -1;
-    }
-    _protocol = headers[@"Sec-WebSocket-Protocol"];
-    
-    // validate accept
-    if(![headers[@"Sec-WebSocket-Accept"] isEqualToString:[self acceptHeaderForKey:_handshakeSecKey]]) {
-        PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Accept");
-        return -1;
-    }
-    
-    // validate version
-    if(headers[@"Sec-WebSocket-Version"] && ![headers[@"Sec-WebSocket-Version"] isEqualToString:@"13"]) {
-        PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Version");
-        return -1;
-    }
-    
-    // extensions
-    NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
-    
-    // per-message deflate
-    if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
-        PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"permessage-deflate could not negotiate parameters");
-        return -1;
-    }
-    
-    // transition state
-    _state = PSWebSocketDriverStateFrameHeader;
-    
-    [_delegate driverDidOpen:self];
-    
-    return preBoundaryLength;
-}
-- (NSInteger)readFrameHeaderBytes:(void *)bytes maxLength:(NSUInteger)maxLength error:(NSError *__autoreleasing *)outError {
-    NSAssert(maxLength > 0, @"Must have 1 or more bytes");
-    
-    if(maxLength < 2) {
-        return 0;
-    }
-    
-    const uint8_t *header = (const uint8_t *)bytes;
-    
-    BOOL fin = !!(header[0] & PSWebSocketFinMask);
-    BOOL rsv1 = !!(header[0] & PSWebSocketRsv1Mask);
-    BOOL rsv2 = !!(header[0] & PSWebSocketRsv2Mask);
-    BOOL rsv3 = !!(header[0] & PSWebSocketRsv3Mask);
-    PSWebSocketOpCode opcode = (header[0] & PSWebSocketOpCodeMask);
-    BOOL masked = !!(header[1] & PSWebSocketMaskMask);
-    uint64_t payloadLength = (header[1] & PSWebSocketPayloadLenMask);
-    uint64_t headerExtraLength = (masked) ? sizeof(uint32_t) : 0;
-    if(payloadLength == 126) {
-        headerExtraLength += sizeof(uint16_t);
-    } else if(payloadLength == 127) {
-        headerExtraLength += sizeof(uint64_t);
-    }
-    
-    // validate opcode
-    if(!PSWebSocketOpCodeIsValid(opcode)) {
-        PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Invalid opcode");
-        return -1;
-    }
-    
-    // determine if control frame
-    BOOL control = PSWebSocketOpCodeIsControl(opcode);
-    
-    // validate control frame
-    if(control) {
-        // control frames must be final
-        if(!fin) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Control frames must be final");
-            return -1;
-        }
-        // control frames must not have any reserved bits set
-        if(rsv1 || rsv2 || rsv3) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Control frames must not use reserved bits");
-            return -1;
-        }
-        // control frames must not have payload >= 126
-        if(payloadLength >= 126) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Control frames payload must < 126");
-            return -1;
-        }
-    }
-    // validate data frame
-    else {
-        // data continuation frames must follow an initial data frame
-        if(opcode == PSWebSocketOpCodeContinuation && _frames.count == 0) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data continuation frames must follow an initial data frame");
-            return -1;
-        }
-        // non data continuation frames must not follow an initial data frame
-        if(opcode != PSWebSocketOpCodeContinuation && _frames.count > 0) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data frames must not follow an initial data frame unless continuations");
-            return -1;
-        }
-        // rsv1 only set if permessage-deflate is enabled
-        if(rsv1 && !_pmdEnabled) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data frames must only use rsv1 bit if permessage-deflate extension is on");
-            return -1;
-        }
-        // rsv2 and rsv3 must never be set
-        if(rsv2 || rsv3) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Data frames must never use rsv2 or rsv3 bits");
-            return -1;
-        }
-    }
-    
-    // ensure not masked if client mode
-    if(masked && _mode == PSWebSocketModeClient) {
-        PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Frames must never be masked from server");
-        return -1;
-    }
-    // ensure masked if server mode
-    if(!masked && _mode == PSWebSocketModeServer) {
-        PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Frames must always be masked from client");
-        return -1;
-    }
-    
-    // create frame
-    PSWebSocketFrame *frame = [[PSWebSocketFrame alloc] init];
-    frame.fin = fin;
-    frame.rsv1 = rsv1;
-    frame.rsv2 = rsv2;
-    frame.rsv3 = rsv3;
-    frame.opcode = opcode;
-    frame.masked = masked;
-    frame.payloadLength = payloadLength;
-    frame.payloadRemainingLength = payloadLength;
-    frame.headerExtraLength = headerExtraLength;
-    frame.control = control;
-    
-    if(!frame.control && _frames.count > 0) {
-        _initialFrame = [_frames lastObject];
-        frame.opcode = _initialFrame.opcode;
-        frame.buffer = _initialFrame.buffer;
-    } else {
-        frame.buffer = [NSMutableData data];
-    }
-    [_frames addObject:frame];
-    
-    if(headerExtraLength > 0) {
-        _state = PSWebSocketDriverStateFrameHeaderExtra;
-    } else if(payloadLength > 0) {
-        _state = PSWebSocketDriverStateFramePayload;
-    } else {
-        _state = PSWebSocketDriverStateFrameHeader;
-        if(![self processFramesAndDelegate:outError]) {
-            return -1;
-        }
-    }
-    return 2;
-}
-- (NSInteger)readFrameHeaderExtraBytes:(void *)bytes maxLength:(NSUInteger)maxLength error:(NSError *__autoreleasing *)outError {
-    NSAssert(maxLength > 0, @"Must have 1 or more bytes");
-    
-    // get current frame
-    PSWebSocketFrame *frame = [_frames lastObject];
-    
-    // we need at least current frames header extra length
-    if(maxLength < frame.headerExtraLength) {
-        return 0;
-    }
-    
-    uint64_t payloadLength = frame.payloadLength;
-    if(payloadLength == 126) {
-        payloadLength = EndianU16_BtoN(*(uint16_t *)bytes);
-    } else if(payloadLength == 127) {
-        payloadLength = EndianU64_BtoN(*(uint64_t *)bytes);
-    }
-    frame.payloadLength = payloadLength;
-    frame.payloadRemainingLength = frame.payloadLength;
-    
-    if(frame.masked) {
-        frame.maskKey = *(uint32_t *)(bytes + frame.headerExtraLength - sizeof(frame.maskKey));
-        frame.maskOffset = 0;
-    }
-    
-    if(frame.payloadLength > 0) {
-        _state = PSWebSocketDriverStateFramePayload;
-    } else {
-        _state = PSWebSocketDriverStateFrameHeader;
-        if(![self processFramesAndDelegate:outError]) {
-            return -1;
-        }
-    }
-    return frame.headerExtraLength;
-}
-- (NSInteger)readFramePayloadBytes:(void *)bytes maxLength:(NSUInteger)maxLength error:(NSError *__autoreleasing *)outError {
-    NSAssert(maxLength > 0, @"Must have 1 or more bytes");
-    
-    // get current frame
-    PSWebSocketFrame *frame = [_frames lastObject];
-    
-    NSUInteger consumeLength = MIN(frame.payloadRemainingLength, maxLength);
-    NSUInteger offset = frame.buffer.length;
-    
-    // unmask bytes if client -> server
-    if(_mode == PSWebSocketModeServer) {
-        uint8_t *unmaskedBytes = (uint8_t *)bytes;
-        uint32_t maskKey = frame.maskKey;
-        uint8_t *maskKeyFragments = (uint8_t *)&maskKey;
-        for(NSInteger i = 0; i < consumeLength; ++i) {
-            unmaskedBytes[i] = unmaskedBytes[i] ^ maskKeyFragments[frame.maskOffset++ % sizeof(maskKey)];
-        }
-    }
-    
-    // inflate if necessary
-    if(_pmdEnabled && !frame.control && (frame.rsv1 || _initialFrame.rsv1)) {
-        // reset inflater if we need to
-        if((_pmdClientNoContextTakeover && _mode == PSWebSocketModeServer) ||
-           (_pmdServerNoContextTakeover && _mode == PSWebSocketModeClient)) {
-            [_inflater reset];
-        }
-        
-        // begin the inflater
-        if(frame.payloadLength == frame.payloadRemainingLength) {
-            if(![_inflater begin:frame.buffer error:outError]) {
-                return -1;
-            }
-        }
-        
-        // inflate bytes
-        if(![_inflater appendBytes:bytes length:consumeLength error:outError]) {
-            return -1;
-        }
-        
-        // end inflater
-        if(frame.fin && frame.payloadRemainingLength == consumeLength) {
-            if(![_inflater end:outError]) {
-                return -1;
-            }
-        }
-    }
-    // otherwise append
-    else {
-        [frame.buffer appendBytes:bytes length:consumeLength];
-    }
-    
-    // validate utf-8 if necessary
-    if(frame.opcode == PSWebSocketOpCodeText) {
-        uint8_t *bytes = (uint8_t *)(frame.buffer.bytes + offset);
-        for(NSUInteger i = 0; i < frame.buffer.length - offset; ++i) {
-            // get validation result
-            PSWebSocketUTF8DecoderDecode(&_utf8DecoderState, &_utf8DecoderCodePoint, *(bytes + i));
-            
-            // read bad code point
-            if(_utf8DecoderState == PSWebSocketUTF8DecoderReject) {
-                PSWebSocketSetOutError(outError, PSWebSocketStatusCodeInvalidUTF8, @"Invalid UTF-8");
-                return -1;
-            }
-        }
-        
-        // need more bytes & no data will be left
-        if(_utf8DecoderState > 1 && frame.fin && frame.payloadRemainingLength - consumeLength == 0) {
-            PSWebSocketSetOutError(outError, PSWebSocketStatusCodeInvalidUTF8, @"Invalid UTF-8");
-            return -1;
-        }
-    }
-    
-    // remove consumed length from remaining payload length
-    frame.payloadRemainingLength -= consumeLength;
-    
-    if(frame.payloadRemainingLength == 0) {
-        _state = PSWebSocketDriverStateFrameHeader;
-        if(![self processFramesAndDelegate:outError]) {
-            return -1;
-        }
-    }
-    return consumeLength;
-}
+
 - (BOOL)processFramesAndDelegate:(NSError *__autoreleasing *)outError {
     // get current frame
     PSWebSocketFrame *frame = [_frames lastObject];
     
     // skip if not final
-    if(!frame.fin) {
+    if(!frame->fin) {
         return YES;
     }
     
     // remove frames
-    if(frame.control) {
+    if(frame->control) {
         [_frames removeLastObject];
     } else {
         [_frames removeAllObjects];
@@ -753,19 +753,19 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         _utf8DecoderCodePoint = 0;
     }
     
-    switch(frame.opcode) {
+    switch(frame->opcode) {
         case PSWebSocketOpCodeBinary:
-            [_delegate driver:self didReceiveMessage:frame.buffer];
+            [_delegate driver:self didReceiveMessage:frame->buffer];
             break;
         case PSWebSocketOpCodePong:
-            [_delegate driver:self didReceivePong:frame.buffer];
+            [_delegate driver:self didReceivePong:frame->buffer];
             break;
         case PSWebSocketOpCodePing: {
-            [_delegate driver:self didReceivePing:frame.buffer];
+            [_delegate driver:self didReceivePing:frame->buffer];
             break;
         }
         case PSWebSocketOpCodeText: {
-            NSString *utf8 = [[NSString alloc] initWithData:frame.buffer encoding:NSUTF8StringEncoding];
+            NSString *utf8 = [[NSString alloc] initWithData:frame->buffer encoding:NSUTF8StringEncoding];
             if(!utf8) {
                 PSWebSocketSetOutError(outError, PSWebSocketStatusCodeInvalidUTF8, @"Invalid UTF-8");
                 return NO;
@@ -774,26 +774,26 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             break;
         }
         case PSWebSocketOpCodeClose:
-            if(frame.buffer.length >= 2) {
+            if(frame->buffer.length >= 2) {
                 uint16_t closeCode = 0;
-                [frame.buffer getBytes:&closeCode length:sizeof(closeCode)];
+                [frame->buffer getBytes:&closeCode length:sizeof(closeCode)];
                 closeCode = EndianU16_BtoN(closeCode);
                 if(!PSWebSocketCloseCodeIsValid(closeCode)) {
                     PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Invalid close code");
                     return NO;
                 }
                 NSString *reason = nil;
-                if(frame.buffer.length > 2) {
-                    reason = [[NSString alloc] initWithBytes:frame.buffer.mutableBytes + sizeof(uint16_t)
-                                                                length:frame.buffer.length - sizeof(uint16_t)
-                                                              encoding:NSUTF8StringEncoding];
+                if(frame->buffer.length > 2) {
+                    reason = [[NSString alloc] initWithBytes:frame->buffer.mutableBytes + sizeof(uint16_t)
+                                                      length:frame->buffer.length - sizeof(uint16_t)
+                                                    encoding:NSUTF8StringEncoding];
                     if(!reason) {
                         PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Invalid close reason; must be UTF-8");
                         return NO;
                     }
                 }
                 [_delegate driver:self didCloseWithCode:closeCode reason:reason];
-            } else if(frame.buffer.length >= 1) {
+            } else if(frame->buffer.length >= 1) {
                 PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Invalid close payload");
                 return NO;
             } else {
@@ -828,7 +828,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         
         // client mode
         if(_mode == PSWebSocketModeClient) {
-             // say we'll take whatever window bits the server gives us
+            // say we'll take whatever window bits the server gives us
             [components addObject:@"client_max_window_bits"];
         }
         // server mode
