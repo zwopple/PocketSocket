@@ -21,8 +21,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=60&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: BQ/KDkXmSm8ROSr3ozlhVA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: W2Le7MGIyvUiF50GHvFT+NN1RM0=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=60&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: whX17Jxb8umgrk6UhEOWzg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: XJErco7jw7JaciXgCc1PzH81d9w=\r\n\r\n",
    "id": "5.16",
    "isServer": true,
    "localCloseCode": 1000,
@@ -38,10 +38,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "66": 1,
+      "6": 1,
+      "60": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:14Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 4,
@@ -213,8 +214,15 @@
       [
          "RO",
          [
-            66,
-            "88bcefe46676ec0e22179b854615808a121f81910702868b08568996071b8a97461b9a971256898b0a1a8093461781c40f1886900f1783c402179b8546109d85 ..."
+            6,
+            "88bc8388b033"
+         ]
+      ],
+      [
+         "RO",
+         [
+            60,
+            "8062f452f7e99050ece6c45aedfdd147eae7de13e5fad15ee6fb905ef6fbc413e5e7dc5fecff9052eda8d95deafcd952efa8d452f7e99055f1e9dd56"
          ]
       ],
       [
@@ -227,7 +235,7 @@
          true,
          0,
          true,
-         "efe46676"
+         "8388b033"
       ],
       [
          "TF",

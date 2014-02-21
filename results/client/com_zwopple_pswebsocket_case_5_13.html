@@ -202,7 +202,7 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <center><a href="http://autobahn.ws/testsuite" title="Autobahn WebSockets Testsuite"><img src="http://autobahn.ws/static/img/ws_protocol_test_report.png"          border="0" width="820" height="46" alt="Autobahn WebSockets Testsuite Report"></img></a></center>
       <center><a href="http://autobahn.ws"           title="Autobahn WebSockets">          <img src="http://autobahn.ws/static/img/ws_protocol_test_report_autobahn.png" border="0" width="300" height="68" alt="Autobahn WebSockets">                 </img></a></center>
       <br/>
-      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 5.13</b></span> : Pass - <span style="font-size: 0.9em;"><b>1</b> ms @ 2014-02-19T03:26:03Z</a></p>
+      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 5.13</b></span> : Pass - <span style="font-size: 0.9em;"><b>1</b> ms @ 2014-02-21T00:16:14Z</a></p>
       <p class="case_text_block case_desc"><b>Case Description</b><br/><br/>Send unfragmented Text Message after Continuation Frame with FIN = false, where there is nothing to continue, sent in per-frame chops.</p>
       <p class="case_text_block case_expect"><b>Case Expectation</b><br/><br/>The connection is failed immediately, since there is no message to continue.</p>
 
@@ -216,17 +216,17 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <h2>Opening Handshake</h2>
       <pre class="http_dump">GET /runCase?case=57&agent=com.zwopple.PSWebSocket HTTP/1.1
 Host: localhost:9001
-Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
-Connection: upgrade
+Sec-WebSocket-Key: w7T/ESj8Rnct4TzTdUn/lw==
 Sec-WebSocket-Version: 13
-Origin: http://localhost:9001
 Upgrade: websocket
-Sec-WebSocket-Key: GkE2S/RKATCop8zlUtGf7g==</pre>
+Origin: http://localhost:9001
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+Connection: upgrade</pre>
       <pre class="http_dump">HTTP/1.1 101 Switching Protocols
 Server: AutobahnTestSuite/0.6.0-0.8.1
 Upgrade: WebSocket
 Connection: Upgrade
-Sec-WebSocket-Accept: Z65jZGgPhIsS//Ny/Dsu+gqTwUY=</pre>
+Sec-WebSocket-Accept: gomBb7vmuAWN4t8m5NW4j5swfTg=</pre>
       <br/><hr/>
       <h2>Closing Behavior</h2>
       <table>
@@ -291,10 +291,10 @@ Sec-WebSocket-Accept: Z65jZGgPhIsS//Ny/Dsu+gqTwUY=</pre>
          <pre class="wirelog_tx_frame_sync">               Hello, world!</pre>
          <pre class="wirelog_kill_after">005 FAIL CONNECTION AFTER 1.000000 sec</pre>
          <pre class="wirelog_tx_octets_sync">006 TX OCTETS: 810d48656c6c6f2c20776f726c6421</pre>
-         <pre class="wirelog_rx_octets">007 RX OCTETS: 88bc236772ac</pre>
-         <pre class="wirelog_rx_octets">008 RX OCTETS: 208d36cd570652cf4c0906c54d1213d84a081c8c451513c1461452c15614068c45081ec04c1052cd4d471bc24a131bcd4f47</pre>
-         <pre class="wirelog_rx_octets">               16cd570652ca51061fc9</pre>
-         <pre class="wirelog_rx_frame">009 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=60, MASKED=True, MASK=3233363737326163</pre>
+         <pre class="wirelog_rx_octets">007 RX OCTETS: 88bc42071260</pre>
+         <pre class="wirelog_rx_octets">008 RX OCTETS: 41ed5601366632032d6966092c7273142b687c402475730d2774320d3774664024687e0c2d7032012c277b0e2b737b012e27</pre>
+         <pre class="wirelog_rx_octets">               76013666320630667f05</pre>
+         <pre class="wirelog_rx_frame">009 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=60, MASKED=True, MASK=3432303731323630</pre>
          <pre class="wirelog_rx_frame">               0x03ea4461746120636f6e74696e756174696f6e206672616d6573206d75737420666f6c6c6f7720616e20696e697469616c</pre>
          <pre class="wirelog_rx_frame">               2064617461206672616d65</pre>
          <pre class="wirelog_tx_frame">010 TX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASK=None, PAYLOAD-REPEAT-LEN=None, CHOPSIZE=None, SYNC=False</pre>

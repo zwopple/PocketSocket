@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send binary message message with payload of length 8 * 2**20 (16M).",
    "droppedByMe": true,
-   "duration": 4350,
+   "duration": 3664,
    "expectation": "Receive echo'ed binary message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=261&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: mMjy2rqSEniCqlyirmieHw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: T0lewk3wloXfwlJN764N1V2Woig=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=261&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: I1Ot01N+BMn+KsrsCzF3yw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: VopNwpIpC1ZzVljYSHxXNo1Zctc=\r\n\r\n",
    "id": "9.2.5",
    "isServer": true,
    "localCloseCode": 1000,
@@ -40,9 +40,11 @@
       "8": 1,
       "14": 1,
       "300": 1,
-      "65536": 128
+      "4704": 1,
+      "60832": 1,
+      "65536": 127
    },
-   "started": "2014-02-19T03:26:53Z",
+   "started": "2014-02-21T00:17:01Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1,
@@ -104,7 +106,7 @@
          "RO",
          [
             8,
-            "88827a8d83317965"
+            "8882984620259bae"
          ]
       ],
       [
@@ -117,7 +119,7 @@
          true,
          0,
          true,
-         "7a8d8331"
+         "98462025"
       ]
    ]
 }

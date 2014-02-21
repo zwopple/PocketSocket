@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send binary message message with payload of length 1 * 2**20 (1M). Sent out data in chops of 64 octets.",
    "droppedByMe": true,
-   "duration": 4493,
+   "duration": 3860,
    "expectation": "Receive echo'ed binary message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=287&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: /OfN/PbJKUCZD9YH3D9Www==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: DPa3hkRKTFyHT32LyCglJfwawJI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=287&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: k7EyVMSnWMJ+7eM2rDJwiw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: lz5AMyhv8V4FJyVYhPGUXRQ95iw=\r\n\r\n",
    "id": "9.6.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -43,7 +43,7 @@
       "300": 1,
       "65536": 16
    },
-   "started": "2014-02-19T03:29:40Z",
+   "started": "2014-02-21T00:18:38Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1,
@@ -106,14 +106,14 @@
          "RO",
          [
             6,
-            "88827586721a"
+            "8882c46a9967"
          ]
       ],
       [
          "RO",
          [
             2,
-            "766e"
+            "c782"
          ]
       ],
       [
@@ -126,7 +126,7 @@
          true,
          0,
          true,
-         "7586721a"
+         "c46a9967"
       ]
    ]
 }

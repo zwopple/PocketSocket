@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send text message message with payload of length 125.",
    "droppedByMe": true,
-   "duration": 1,
+   "duration": 2,
    "expectation": "Receive echo'ed text message (with payload as sent). Clean close with normal code.",
    "expected": {
       "OK": [
@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=2&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: Fc8tJ8xWnwnltbQiZjwJ8A==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: iMIlxmcY9l6AQQNoAP4vqqnEXT8=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=2&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: +2TP2Fj/Gt/QHeyhEb5sqA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: eAPm8JUGQh6LtsWbJ/ye1RD4u00=\r\n\r\n",
    "id": "1.1.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,12 +51,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "6": 1,
+      "8": 1,
       "131": 1,
       "298": 1
    },
-   "started": "2014-02-19T03:26:02Z",
+   "started": "2014-02-21T00:16:12Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,7 +117,7 @@
          "RO",
          [
             131,
-            "81fdd7570846fd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d226cfd7d ..."
+            "81fd95435ed7bf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf6974fdbf69 ..."
          ]
       ],
       [
@@ -131,7 +130,7 @@
          true,
          0,
          true,
-         "d7570846"
+         "95435ed7"
       ],
       [
          "TF",
@@ -158,15 +157,8 @@
       [
          "RO",
          [
-            6,
-            "888274374525"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "77df"
+            8,
+            "8882cbf8a081c810"
          ]
       ],
       [
@@ -179,7 +171,7 @@
          true,
          0,
          true,
-         "74374525"
+         "cbf8a081"
       ]
    ]
 }

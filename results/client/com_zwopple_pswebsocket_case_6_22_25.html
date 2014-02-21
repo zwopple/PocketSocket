@@ -202,7 +202,7 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <center><a href="http://autobahn.ws/testsuite" title="Autobahn WebSockets Testsuite"><img src="http://autobahn.ws/static/img/ws_protocol_test_report.png"          border="0" width="820" height="46" alt="Autobahn WebSockets Testsuite Report"></img></a></center>
       <center><a href="http://autobahn.ws"           title="Autobahn WebSockets">          <img src="http://autobahn.ws/static/img/ws_protocol_test_report_autobahn.png" border="0" width="300" height="68" alt="Autobahn WebSockets">                 </img></a></center>
       <br/>
-      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 6.22.25</b></span> : Pass - <span style="font-size: 0.9em;"><b>1</b> ms @ 2014-02-19T03:26:11Z</a></p>
+      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 6.22.25</b></span> : Pass - <span style="font-size: 0.9em;"><b>1</b> ms @ 2014-02-21T00:16:24Z</a></p>
       <p class="case_text_block case_desc"><b>Case Description</b><br/><br/>Send a text message with payload which is valid UTF-8 in one fragment.<br><br>Payload: 0xf38fbfbe</p>
       <p class="case_text_block case_expect"><b>Case Expectation</b><br/><br/>The message is echo'ed back to us.</p>
 
@@ -216,17 +216,17 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <h2>Opening Handshake</h2>
       <pre class="http_dump">GET /runCase?case=193&agent=com.zwopple.PSWebSocket HTTP/1.1
 Host: localhost:9001
-Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
-Connection: upgrade
+Sec-WebSocket-Key: DMta1peCtmKkeUZgGMtGYQ==
 Sec-WebSocket-Version: 13
-Origin: http://localhost:9001
 Upgrade: websocket
-Sec-WebSocket-Key: HdnJueYQks8ja4KXOJj7Iw==</pre>
+Origin: http://localhost:9001
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+Connection: upgrade</pre>
       <pre class="http_dump">HTTP/1.1 101 Switching Protocols
 Server: AutobahnTestSuite/0.6.0-0.8.1
 Upgrade: WebSocket
 Connection: Upgrade
-Sec-WebSocket-Accept: aLmFRAppffvRKGuwKeKVK7Qe/k8=</pre>
+Sec-WebSocket-Accept: Ef2OgbM8Hf3893oWQ2YtoybiltU=</pre>
       <br/><hr/>
       <h2>Closing Behavior</h2>
       <table>
@@ -288,16 +288,16 @@ Sec-WebSocket-Accept: aLmFRAppffvRKGuwKeKVK7Qe/k8=</pre>
          <pre class="wirelog_tx_frame">               󏿾</pre>
          <pre class="wirelog_tx_octets">003 TX OCTETS: 8104f38fbfbe</pre>
          <pre class="wirelog_kill_after">004 FAIL CONNECTION AFTER 0.500000 sec</pre>
-         <pre class="wirelog_rx_octets">005 RX OCTETS: 818403b4c9f8</pre>
-         <pre class="wirelog_rx_octets">006 RX OCTETS: f03b7646</pre>
-         <pre class="wirelog_rx_frame">007 RX FRAME : OPCODE=1, FIN=True, RSV=0, PAYLOAD-LEN=4, MASKED=True, MASK=3033623463396638</pre>
+         <pre class="wirelog_rx_octets">005 RX OCTETS: 8184053f64af</pre>
+         <pre class="wirelog_rx_octets">006 RX OCTETS: f6b0db11</pre>
+         <pre class="wirelog_rx_frame">007 RX FRAME : OPCODE=1, FIN=True, RSV=0, PAYLOAD-LEN=4, MASKED=True, MASK=3035336636346166</pre>
          <pre class="wirelog_rx_frame">               󏿾</pre>
          <pre class="wirelog_tx_frame">008 TX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASK=None, PAYLOAD-REPEAT-LEN=None, CHOPSIZE=None, SYNC=False</pre>
          <pre class="wirelog_tx_frame">               0x03e8</pre>
          <pre class="wirelog_tx_octets">009 TX OCTETS: 880203e8</pre>
-         <pre class="wirelog_rx_octets">010 RX OCTETS: 8882eb7e9455</pre>
-         <pre class="wirelog_rx_octets">011 RX OCTETS: e896</pre>
-         <pre class="wirelog_rx_frame">012 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=6562376539343535</pre>
+         <pre class="wirelog_rx_octets">010 RX OCTETS: 88822e337db9</pre>
+         <pre class="wirelog_rx_octets">011 RX OCTETS: 2ddb</pre>
+         <pre class="wirelog_rx_frame">012 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=3265333337646239</pre>
          <pre class="wirelog_rx_frame">               0x03e8</pre>
          <pre class="wirelog_tcp_closed_by_me">013 TCP DROPPED BY ME</pre>
       </div>

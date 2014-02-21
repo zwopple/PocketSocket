@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send fragmented text message message with message payload of length 4 * 2**20 (4M). Sent out in fragments of 64k.",
    "droppedByMe": true,
-   "duration": 6765,
+   "duration": 5027,
    "expectation": "Receive echo'ed text message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=268&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: kIjihFGNJGHaSPuYU5Xl3A==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: X2pUwDcD7KWhF0BWrAug7UA+Cwc=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=268&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: 6OzGnPnzh7in4zzybvp/7g==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: u/WPj5RH2BwYLd9wnoSKzLNaKcQ=\r\n\r\n",
    "id": "9.3.6",
    "isServer": true,
    "localCloseCode": 1000,
@@ -42,7 +42,7 @@
       "300": 1,
       "65536": 64
    },
-   "started": "2014-02-19T03:27:37Z",
+   "started": "2014-02-21T00:17:36Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 64,
@@ -106,7 +106,7 @@
          "RO",
          [
             8,
-            "8882c2c0c0f6c128"
+            "8882c45ae328c7b2"
          ]
       ],
       [
@@ -119,7 +119,7 @@
          true,
          0,
          true,
-         "c2c0c0f6"
+         "c45ae328"
       ]
    ]
 }

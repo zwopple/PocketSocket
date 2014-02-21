@@ -202,7 +202,7 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <center><a href="http://autobahn.ws/testsuite" title="Autobahn WebSockets Testsuite"><img src="http://autobahn.ws/static/img/ws_protocol_test_report.png"          border="0" width="820" height="46" alt="Autobahn WebSockets Testsuite Report"></img></a></center>
       <center><a href="http://autobahn.ws"           title="Autobahn WebSockets">          <img src="http://autobahn.ws/static/img/ws_protocol_test_report_autobahn.png" border="0" width="300" height="68" alt="Autobahn WebSockets">                 </img></a></center>
       <br/>
-      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 9.5.1</b></span> : Pass - <span style="font-size: 0.9em;"><b>6733</b> ms @ 2014-02-19T03:29:14Z</a></p>
+      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 9.5.1</b></span> : Pass - <span style="font-size: 0.9em;"><b>4647</b> ms @ 2014-02-21T00:18:21Z</a></p>
       <p class="case_text_block case_desc"><b>Case Description</b><br/><br/>Send text message message with payload of length 1 * 2**20 (1M). Sent out data in chops of 64 octets.</p>
       <p class="case_text_block case_expect"><b>Case Expectation</b><br/><br/>Receive echo'ed text message (with payload as sent).</p>
 
@@ -216,17 +216,17 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <h2>Opening Handshake</h2>
       <pre class="http_dump">GET /runCase?case=281&agent=com.zwopple.PSWebSocket HTTP/1.1
 Host: localhost:9001
-Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
-Connection: upgrade
+Sec-WebSocket-Key: HNoI1JwgDEk1PYDjxxz7fw==
 Sec-WebSocket-Version: 13
-Origin: http://localhost:9001
 Upgrade: websocket
-Sec-WebSocket-Key: 8KdwXSHdpXvoR2jy82Ndnw==</pre>
+Origin: http://localhost:9001
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+Connection: upgrade</pre>
       <pre class="http_dump">HTTP/1.1 101 Switching Protocols
 Server: AutobahnTestSuite/0.6.0-0.8.1
 Upgrade: WebSocket
 Connection: Upgrade
-Sec-WebSocket-Accept: nwwzJ8Jwy+j5zlS2h0OkwQwaPbU=</pre>
+Sec-WebSocket-Accept: TAhTs+3JhK07xLHq0Rs2ErS2PyY=</pre>
       <br/><hr/>
       <h2>Closing Behavior</h2>
       <table>
@@ -289,8 +289,8 @@ Sec-WebSocket-Accept: nwwzJ8Jwy+j5zlS2h0OkwQwaPbU=</pre>
          <pre class="wirelog_tx_frame">003 TX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASK=None, PAYLOAD-REPEAT-LEN=None, CHOPSIZE=None, SYNC=False</pre>
          <pre class="wirelog_tx_frame">               0x03e8</pre>
          <pre class="wirelog_tx_octets">004 TX OCTETS: 880203e8</pre>
-         <pre class="wirelog_rx_octets">005 RX OCTETS: 8882b0b8b858b350</pre>
-         <pre class="wirelog_rx_frame">006 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=6230623862383538</pre>
+         <pre class="wirelog_rx_octets">005 RX OCTETS: 8882cdfd3d30ce15</pre>
+         <pre class="wirelog_rx_frame">006 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=6364666433643330</pre>
          <pre class="wirelog_rx_frame">               0x03e8</pre>
          <pre class="wirelog_tcp_closed_by_me">007 TCP DROPPED BY ME</pre>
       </div>

@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send binary message message with payload of length 1 * 2**20 (1M). Sent out data in chops of 256 octets.",
    "droppedByMe": true,
-   "duration": 1835,
+   "duration": 1513,
    "expectation": "Receive echo'ed text message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=289&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: izYw33BQz1DXxunZ4G/IPA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: vFre34Ayal4MhSCyndv6I3UlnEI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=289&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: xpZvtgYi/hW5SoExPAlXiQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: u0bwGoUSh9g96aoPWnbaB4Gg8yk=\r\n\r\n",
    "id": "9.6.3",
    "isServer": true,
    "localCloseCode": 1000,
@@ -37,12 +37,13 @@
       "8": 1
    },
    "rxOctetStats": {
-      "8": 1,
+      "2": 1,
+      "6": 1,
       "14": 1,
       "300": 1,
       "65536": 16
    },
-   "started": "2014-02-19T03:29:48Z",
+   "started": "2014-02-21T00:18:45Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1,
@@ -104,8 +105,15 @@
       [
          "RO",
          [
-            8,
-            "8882e8981c7aeb70"
+            6,
+            "8882bc5a9a25"
+         ]
+      ],
+      [
+         "RO",
+         [
+            2,
+            "bfb2"
          ]
       ],
       [
@@ -118,7 +126,7 @@
          true,
          0,
          true,
-         "e8981c7a"
+         "bc5a9a25"
       ]
    ]
 }

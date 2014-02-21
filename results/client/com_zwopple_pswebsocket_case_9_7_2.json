@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send 1000 text messages of payload size 16 to measure implementation/network RTT (round trip time) / latency.",
    "droppedByMe": true,
-   "duration": 806,
+   "duration": 721,
    "expectation": "Receive echo'ed text messages (with payload as sent). Timeout case after 60 secs.",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=294&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: dItE0uufKAMBKo0XkFy2NA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 5XdTn07mww50c4b5SaPFyOLMzTI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=294&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: xnYssd0CrXvxYSkK5ctpFw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: NVoDmXmOYpa3wk8Ly9fNqXLOvCg=\r\n\r\n",
    "id": "9.7.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -38,12 +38,12 @@
    },
    "rxOctetStats": {
       "2": 1,
-      "6": 607,
-      "16": 606,
-      "22": 394,
+      "6": 698,
+      "16": 697,
+      "22": 303,
       "300": 1
    },
-   "started": "2014-02-19T03:29:54Z",
+   "started": "2014-02-21T00:18:50Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1000,
@@ -113,14 +113,14 @@
          "RO",
          [
             6,
-            "88827c7589be"
+            "88827d55dea9"
          ]
       ],
       [
          "RO",
          [
             2,
-            "7f9d"
+            "7ebd"
          ]
       ],
       [
@@ -133,7 +133,7 @@
          true,
          0,
          true,
-         "7c7589be"
+         "7d55dea9"
       ]
    ]
 }

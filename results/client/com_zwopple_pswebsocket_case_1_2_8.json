@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send binary message message with payload of length 65536. Sent out data in chops of 997 octets.",
    "droppedByMe": true,
-   "duration": 76,
+   "duration": 68,
    "expectation": "Receive echo'ed binary message (with payload as sent). Clean close with normal code.",
    "expected": {
       "OK": [
@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=16&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: UGogrftD5JbdBOmz+q62rQ==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: vzTrcd6LFGzDNPZQzpiOAqy2fKY=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=16&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: SJW15R1MgV6md8DTPVvdqA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: F61qqspkk5nz8hdIpHYFnVtJIas=\r\n\r\n",
    "id": "1.2.8",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,12 +51,13 @@
       "8": 1
    },
    "rxOctetStats": {
-      "8": 1,
+      "2": 1,
+      "6": 1,
       "14": 1,
       "299": 1,
       "65536": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1,
@@ -639,14 +640,14 @@
          "RO",
          [
             14,
-            "82ff00000000000100003addd355"
+            "82ff0000000000010000f7653c52"
          ]
       ],
       [
          "RO",
          [
             65536,
-            "c4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dabc4232dab ..."
+            "099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac099bc2ac ..."
          ]
       ],
       [
@@ -659,7 +660,7 @@
          true,
          0,
          true,
-         "3addd355"
+         "f7653c52"
       ],
       [
          "TF",
@@ -686,8 +687,15 @@
       [
          "RO",
          [
-            8,
-            "8882d4b822d6d750"
+            6,
+            "8882744a1a79"
+         ]
+      ],
+      [
+         "RO",
+         [
+            2,
+            "77a2"
          ]
       ],
       [
@@ -700,7 +708,7 @@
          true,
          0,
          true,
-         "d4b822d6"
+         "744a1a79"
       ]
    ]
 }

@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send 1000 binary messages of payload size 256 to measure implementation/network RTT (round trip time) / latency.",
    "droppedByMe": true,
-   "duration": 1259,
+   "duration": 1051,
    "expectation": "Receive echo'ed binary messages (with payload as sent). Timeout case after 120 secs.",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=302&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: bmoYlVaCOzYsU4B1LIHv/g==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Uh0DxV87i7uB4TMRrG5SIChnEpI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=302&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: T6cx02s9Nj2j4/MuiNTZ0g==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 3KqooV+qf3la9K5HfL8XCVcD4Sg=\r\n\r\n",
    "id": "9.8.4",
    "isServer": true,
    "localCloseCode": 1000,
@@ -37,12 +37,12 @@
       "8": 1
    },
    "rxOctetStats": {
-      "8": 328,
-      "256": 327,
-      "264": 673,
+      "8": 269,
+      "256": 268,
+      "264": 732,
       "300": 1
    },
-   "started": "2014-02-19T03:30:13Z",
+   "started": "2014-02-21T00:19:06Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1000,
@@ -112,7 +112,7 @@
          "RO",
          [
             8,
-            "888271e81b2d7200"
+            "88828875382e8b9d"
          ]
       ],
       [
@@ -125,7 +125,7 @@
          true,
          0,
          true,
-         "71e81b2d"
+         "8875382e"
       ]
    ]
 }

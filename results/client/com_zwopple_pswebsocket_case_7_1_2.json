@@ -21,8 +21,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=211&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: KDe4/ouWR+Fpf6LtAFwkgA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: bPQKAr5NiiC6vhbR+se241IcMNc=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=211&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: UdVSW4kC23MIrxTiKotbeA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: KsqObt937mOXgLpv8u2x2383lCs=\r\n\r\n",
    "id": "7.1.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -38,11 +38,10 @@
       "8": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "6": 1,
+      "8": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:12Z",
+   "started": "2014-02-21T00:16:25Z",
    "trafficStats": null,
    "txFrameStats": {
       "8": 2
@@ -124,15 +123,8 @@
       [
          "RO",
          [
-            6,
-            "8882270cfc13"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "24e4"
+            8,
+            "888283063bd480ee"
          ]
       ],
       [
@@ -145,7 +137,7 @@
          true,
          0,
          true,
-         "270cfc13"
+         "83063bd4"
       ]
    ]
 }

@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=173&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: wYcm+OdOCt+usn8i6pf8uw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: +r8N6xy4Ic384iMMKVylIZMEWxk=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=173&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: zi/p7+JCB9mu1O4BvE3EDw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: jiqc72Nd+caCk9r5vERdQ53Ww6o=\r\n\r\n",
    "id": "6.22.5",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "10": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:10Z",
+   "started": "2014-02-21T00:16:23Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,7 +118,7 @@
          "RO",
          [
             10,
-            "818488fdbfee78520050"
+            "818471fa0d9f8155b221"
          ]
       ],
       [
@@ -131,7 +131,7 @@
          true,
          0,
          true,
-         "88fdbfee"
+         "71fa0d9f"
       ],
       [
          "TF",
@@ -159,14 +159,14 @@
          "RO",
          [
             6,
-            "888223b0e1c0"
+            "8882037197d0"
          ]
       ],
       [
          "RO",
          [
             2,
-            "2058"
+            "0099"
          ]
       ],
       [
@@ -179,7 +179,7 @@
          true,
          0,
          true,
-         "23b0e1c0"
+         "037197d0"
       ]
    ]
 }

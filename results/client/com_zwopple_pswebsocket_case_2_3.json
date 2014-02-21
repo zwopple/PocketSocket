@@ -26,8 +26,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=19&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: N9yIhOAO1QxiGBV9ZMuJxw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: O8ysKCfImm6f2LhA5HXyGCNldt8=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=19&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: 1BMjmav8AYtWsoe8gl8ftg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: SHLY4aoFgucOGYMvTUd8OOTQHKU=\r\n\r\n",
    "id": "2.3",
    "isServer": true,
    "localCloseCode": 1000,
@@ -49,12 +49,11 @@
       "10": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "6": 1,
+      "8": 1,
       "14": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "8": 1,
@@ -116,7 +115,7 @@
          "RO",
          [
             14,
-            "8a88e3f153a7e30ead5a1f0a5358"
+            "8a8844eee41844111ae5b815e4e7"
          ]
       ],
       [
@@ -129,7 +128,7 @@
          true,
          0,
          true,
-         "e3f153a7"
+         "44eee418"
       ],
       [
          "TF",
@@ -156,15 +155,8 @@
       [
          "RO",
          [
-            6,
-            "888287da5554"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "8432"
+            8,
+            "88820bc4333f082c"
          ]
       ],
       [
@@ -177,7 +169,7 @@
          true,
          0,
          true,
-         "87da5554"
+         "0bc4333f"
       ]
    ]
 }

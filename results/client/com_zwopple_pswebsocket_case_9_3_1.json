@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send fragmented text message message with message payload of length 4 * 2**20 (4M). Sent out in fragments of 64.",
    "droppedByMe": true,
-   "duration": 6267,
+   "duration": 5368,
    "expectation": "Receive echo'ed text message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=263&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: pB5+EgoBREHIMo8kCFwLJw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: WVb7WsPmlYjr/HvO3qsQHVRu1uc=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=263&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: og/xdT77Uj7NBzgV9ygvgw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Id5Ce/qZE3g0KFrWn350YZ46/ug=\r\n\r\n",
    "id": "9.3.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -42,7 +42,7 @@
       "300": 1,
       "65536": 64
    },
-   "started": "2014-02-19T03:27:06Z",
+   "started": "2014-02-21T00:17:11Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 65536,
@@ -106,7 +106,7 @@
          "RO",
          [
             8,
-            "8882c7f9083cc411"
+            "8882b5e2db77b60a"
          ]
       ],
       [
@@ -119,7 +119,7 @@
          true,
          0,
          true,
-         "c7f9083c"
+         "b5e2db77"
       ]
    ]
 }

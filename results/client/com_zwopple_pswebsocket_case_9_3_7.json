@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send fragmented text message message with message payload of length 4 * 2**20 (4M). Sent out in fragments of 256k.",
    "droppedByMe": true,
-   "duration": 8355,
+   "duration": 5173,
    "expectation": "Receive echo'ed text message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=269&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: y0rC6TMa2sk/Vpg7Nctctg==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ak5vx8aISm1fFYursH0oWm/yxyw=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=269&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: 532+hQe2uFc3r1cEqjVKRQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: iiCovTXC7HACwGHvamWuNVygnqM=\r\n\r\n",
    "id": "9.3.7",
    "isServer": true,
    "localCloseCode": 1000,
@@ -42,7 +42,7 @@
       "300": 1,
       "65536": 64
    },
-   "started": "2014-02-19T03:27:44Z",
+   "started": "2014-02-21T00:17:41Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 16,
@@ -106,7 +106,7 @@
          "RO",
          [
             8,
-            "88825915df4d5afd"
+            "8882477c447b4494"
          ]
       ],
       [
@@ -119,7 +119,7 @@
          true,
          0,
          true,
-         "5915df4d"
+         "477c447b"
       ]
    ]
 }

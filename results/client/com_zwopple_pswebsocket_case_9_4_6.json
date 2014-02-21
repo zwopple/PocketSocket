@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send fragmented binary message message with message payload of length 4 * 2**20 (4M). Sent out in fragments of 64k.",
    "droppedByMe": true,
-   "duration": 7605,
+   "duration": 2525,
    "expectation": "Receive echo'ed binary message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=277&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: s3CSX3dHSmD4hGXBFFPP1g==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: /UuriGAOUdaXMVNvQc53GdfUGX8=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=277&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: f+16xcetOjtqKPKLpklBVg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: PbsepCNPrVoKSS6hPCr+nWFkaHA=\r\n\r\n",
    "id": "9.4.6",
    "isServer": true,
    "localCloseCode": 1000,
@@ -42,7 +42,7 @@
       "300": 1,
       "65536": 64
    },
-   "started": "2014-02-19T03:28:49Z",
+   "started": "2014-02-21T00:18:11Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 64,
@@ -106,7 +106,7 @@
          "RO",
          [
             8,
-            "88828a7df4918995"
+            "88829930439a9ad8"
          ]
       ],
       [
@@ -119,7 +119,7 @@
          true,
          0,
          true,
-         "8a7df491"
+         "9930439a"
       ]
    ]
 }

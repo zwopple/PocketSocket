@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send 1000 text messages of payload size 256 to measure implementation/network RTT (round trip time) / latency.",
    "droppedByMe": true,
-   "duration": 1846,
+   "duration": 1478,
    "expectation": "Receive echo'ed text messages (with payload as sent). Timeout case after 120 secs.",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=296&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: pdRX3iSfJSVmiwkRiEDCKA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: /FNvpOTKHQ6DwfQITRGxkugDMc8=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=296&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: L8y6g6IgMPIJOorgUN23aA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Z0fk70UKpnIL12TwgT3endhy0dk=\r\n\r\n",
    "id": "9.7.4",
    "isServer": true,
    "localCloseCode": 1000,
@@ -37,12 +37,12 @@
       "8": 1
    },
    "rxOctetStats": {
-      "8": 151,
-      "256": 150,
-      "264": 850,
+      "8": 192,
+      "256": 191,
+      "264": 809,
       "300": 1
    },
-   "started": "2014-02-19T03:29:56Z",
+   "started": "2014-02-21T00:18:51Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1000,
@@ -112,7 +112,7 @@
          "RO",
          [
             8,
-            "888236dd4dd83535"
+            "88827c0c34f47fe4"
          ]
       ],
       [
@@ -125,7 +125,7 @@
          true,
          0,
          true,
-         "36dd4dd8"
+         "7c0c34f4"
       ]
    ]
 }

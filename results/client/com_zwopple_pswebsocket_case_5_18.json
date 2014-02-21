@@ -21,8 +21,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=62&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: PnXC9BgOzMQREhyJLk4LyQ==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: h7oewmWBTohieClar5qXnBSqVKM=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=62&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: bS22pnuubc84lZz2qH5GsQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: m0TcmblcIKzLLc+wVqG0BtRTon8=\r\n\r\n",
    "id": "5.18",
    "isServer": true,
    "localCloseCode": 1000,
@@ -38,10 +38,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "78": 1,
+      "6": 1,
+      "72": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:14Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 2,
@@ -124,8 +125,15 @@
       [
          "RO",
          [
-            78,
-            "88c87d3145257edb0144095065430f5028400e1128500e45654b12456543125d294a0a11244b5d582b4c095824495d5524511c1123571c5c2005085f29400e42 ..."
+            6,
+            "88c8e6356c50"
+         ]
+      ],
+      [
+         "RO",
+         [
+            72,
+            "e5df283192544c36945401359515012595414c3e89414c368959003f91150d3ec65c0239925c0d3cc6510d2487150a2287580970935b003595464c33895b1839 ..."
          ]
       ],
       [
@@ -138,7 +146,7 @@
          true,
          0,
          true,
-         "7d314525"
+         "e6356c50"
       ],
       [
          "TF",

@@ -28,8 +28,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=39&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: BVCYfdRfRg/8ZNjIsk8Qtg==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: fF+GhD0j6xQ7qT44qNKp2807WBY=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=39&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: jhx9BwPmFoqA6P/nZK47Vw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: TsVDjF1RKWI/R8AMGus4JKzx21Q=\r\n\r\n",
    "id": "4.1.5",
    "isServer": true,
    "localCloseCode": 1000,
@@ -52,12 +52,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "6": 1,
-      "13": 1,
+      "19": 1,
       "22": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -275,23 +274,8 @@
       [
          "RO",
          [
-            6,
-            "818dbafc16b0"
-         ]
-      ],
-      [
-         "TO",
-         [
-            1,
-            "48"
-         ],
-         true
-      ],
-      [
-         "RO",
-         [
-            13,
-            "f2997adcd5d036c7d58e7ad49b"
+            19,
+            "818daedd5138e6b83d54c1f1714fc1af3d5c8f"
          ]
       ],
       [
@@ -304,7 +288,15 @@
          true,
          0,
          true,
-         "bafc16b0"
+         "aedd5138"
+      ],
+      [
+         "TO",
+         [
+            1,
+            "48"
+         ],
+         true
       ],
       [
          "TO",
@@ -318,7 +310,7 @@
          "RO",
          [
             22,
-            "8890b2aed89db14491f3c4cfb4f4d68eb7edd1c1bcf8"
+            "889061b9397f6253701117d855160599560f02d65d1a"
          ]
       ],
       [
@@ -331,7 +323,7 @@
          true,
          0,
          true,
-         "b2aed89d"
+         "61b9397f"
       ],
       [
          "TF",

@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=102&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: OdnDTrgfngza7pD6YDWwUA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Qj1tynjeZbnwKg7v9VClACNSI7k=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=102&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: Ze/6xJ57xxda+fGlYa55RA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ++rDWwq7CnQtVYIMAVNY0tk9yEE=\r\n\r\n",
    "id": "6.9.3",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,11 +51,12 @@
       "8": 1
    },
    "rxOctetStats": {
-      "8": 1,
+      "2": 1,
+      "6": 1,
       "9": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:09Z",
+   "started": "2014-02-21T00:16:20Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -117,7 +118,7 @@
          "RO",
          [
             9,
-            "818395623e037add81"
+            "81831660f948f9df46"
          ]
       ],
       [
@@ -130,7 +131,7 @@
          true,
          0,
          true,
-         "95623e03"
+         "1660f948"
       ],
       [
          "TF",
@@ -157,8 +158,15 @@
       [
          "RO",
          [
-            8,
-            "8882a2a735d8a14f"
+            6,
+            "8882c917c542"
+         ]
+      ],
+      [
+         "RO",
+         [
+            2,
+            "caff"
          ]
       ],
       [
@@ -171,7 +179,7 @@
          true,
          0,
          true,
-         "a2a735d8"
+         "c917c542"
       ]
    ]
 }

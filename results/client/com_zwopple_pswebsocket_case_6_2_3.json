@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=70&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: cM7RG2OjbonszW0fDPpRbg==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ZYoV+7EVyJl5gqEVjJ3Enaw4eqA=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=70&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: QuAaWzSPHsze1Y4/TzP7pQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: MMAxOBoaUgFM8KBj7WdvNMXr+3Q=\r\n\r\n",
    "id": "6.2.3",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,12 +51,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "6": 1,
+      "8": 1,
       "35": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:05Z",
+   "started": "2014-02-21T00:16:16Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 29,
@@ -758,7 +757,7 @@
          "RO",
          [
             35,
-            "819d0689ada54eecc1c969a46f10464a3266b04a0966ba4a0d66a7a4f8f140a4958427"
+            "819d963a1779de5f7b15f917d5ccd6f988ba20f9b3ba2af9b7ba3717422dd0172f58b7"
          ]
       ],
       [
@@ -771,7 +770,7 @@
          true,
          0,
          true,
-         "0689ada5"
+         "963a1779"
       ],
       [
          "TF",
@@ -798,15 +797,8 @@
       [
          "RO",
          [
-            6,
-            "8882d5e5683b"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "d60d"
+            8,
+            "8882f5827443f66a"
          ]
       ],
       [
@@ -819,7 +811,7 @@
          true,
          0,
          true,
-         "d5e5683b"
+         "f5827443"
       ]
    ]
 }

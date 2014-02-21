@@ -21,8 +21,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=55&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: kEKpPuOni1tN+BRezY6jcQ==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: jJnEtwJp+ykx/vqgHXCTOhLE7GQ=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=55&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: DQKXTYSZ1zxW7rDC9Bx5Hg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: BhUuaJZa8wapfKf+1C4ZJtu+mTM=\r\n\r\n",
    "id": "5.11",
    "isServer": true,
    "localCloseCode": 1000,
@@ -41,7 +41,7 @@
       "66": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 1,
@@ -49,7 +49,7 @@
       "8": 1
    },
    "txOctetStats": {
-      "1": 4,
+      "1": 5,
       "168": 1
    },
    "wasClean": true,
@@ -138,10 +138,18 @@
          true
       ],
       [
+         "TO",
+         [
+            1,
+            "6e"
+         ],
+         true
+      ],
+      [
          "RO",
          [
             66,
-            "88bc61998c636273c80215f8ac000ef7f80a0feced1708f6e24307ebed0e04eaac0e14eaf84307f6e00f0eeeac020fb9e50d08ede5020db9e80215f8ac0513f8 ..."
+            "88bc86cf05a3852541c2f2ae25c0e9a171cae8ba64d7efa06b83e0bd64cee3bc25cef3bc7183e0a069cfe9b825c2e8ef6ccdefbb6cc2eaef61c2f2ae25c5f4ae ..."
          ]
       ],
       [
@@ -154,7 +162,7 @@
          true,
          0,
          true,
-         "61998c63"
+         "86cf05a3"
       ],
       [
          "TF",

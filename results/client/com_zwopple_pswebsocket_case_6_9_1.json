@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=100&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: JrV1a9uQI+6y/LsLJ3aQaA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: iTZbS0zDFL/UyppcrL87AXMA3iY=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=100&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: 16ygT8koUKlFxdN7AI06QQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: fnNAZEF3FsdLpFK9ZXLj3FjN17w=\r\n\r\n",
    "id": "6.9.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "7": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:09Z",
+   "started": "2014-02-21T00:16:20Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,7 +118,7 @@
          "RO",
          [
             7,
-            "818192b482afed"
+            "8181f24368298d"
          ]
       ],
       [
@@ -131,7 +131,7 @@
          true,
          0,
          true,
-         "92b482af"
+         "f2436829"
       ],
       [
          "TF",
@@ -159,14 +159,14 @@
          "RO",
          [
             6,
-            "8882a97da097"
+            "888243805e2e"
          ]
       ],
       [
          "RO",
          [
             2,
-            "aa95"
+            "4068"
          ]
       ],
       [
@@ -179,7 +179,7 @@
          true,
          0,
          true,
-         "a97da097"
+         "43805e2e"
       ]
    ]
 }

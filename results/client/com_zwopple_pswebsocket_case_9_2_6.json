@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send binary message message with payload of length 16 * 2**20 (16M).",
    "droppedByMe": true,
-   "duration": 8711,
+   "duration": 7174,
    "expectation": "Receive echo'ed binary message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=262&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: h/AFtMC7xCXUdVmT8zo9Jg==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: kSaI8Kqa0ncf6r8PAnOsA2EuBR8=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=262&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: 7f5H9zvdDXin3Bl9DZrLyQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 06W7RS7yagStt+50lHHAeJ8ssSU=\r\n\r\n",
    "id": "9.2.6",
    "isServer": true,
    "localCloseCode": 1000,
@@ -40,11 +40,9 @@
       "8": 1,
       "14": 1,
       "300": 1,
-      "6988": 1,
-      "58548": 1,
-      "65536": 255
+      "65536": 256
    },
-   "started": "2014-02-19T03:26:57Z",
+   "started": "2014-02-21T00:17:04Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1,
@@ -106,7 +104,7 @@
          "RO",
          [
             8,
-            "88829293ccd6917b"
+            "8882951fc10296f7"
          ]
       ],
       [
@@ -119,7 +117,7 @@
          true,
          0,
          true,
-         "9293ccd6"
+         "951fc102"
       ]
    ]
 }

@@ -28,8 +28,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=43&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: 5SWtgDxFRzvF/9kgm3D/wg==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Ob/jMRLGyydI2W2dfIbPmVplbHk=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=43&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: px+4gMIqcsKDRlobVvxc9A==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 2EA6LTt6UtW9mpROHEQP/YcpG+8=\r\n\r\n",
    "id": "4.2.4",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "22": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -165,7 +165,7 @@
          "RO",
          [
             19,
-            "818dcc662f568403433aa34a0f21a3144332ed"
+            "818d7455a9d93c30c5b51b7989ae1b27c5bd55"
          ]
       ],
       [
@@ -178,13 +178,13 @@
          true,
          0,
          true,
-         "cc662f56"
+         "7455a9d9"
       ],
       [
          "RO",
          [
             22,
-            "88902d80d7dc2e6a9eb25be1bbb549a0b8ac4eefb3b9"
+            "88904e20a7f54dcaee9b3841cb9c2a00c8852d4fc390"
          ]
       ],
       [
@@ -197,7 +197,7 @@
          true,
          0,
          true,
-         "2d80d7dc"
+         "4e20a7f5"
       ],
       [
          "TF",

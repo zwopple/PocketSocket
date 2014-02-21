@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=170&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: 7qtM9AwrUBzgMv86JIFBqw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: PsTqmlJ1FGeEyoasBw8c/Rm6j7Q=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=170&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: miMWthj7Ayi4pKsSkqAxfA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 9ryERoilvQxSO1TC+Wj3/gLOa/U=\r\n\r\n",
    "id": "6.22.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "6": 2,
       "300": 1
    },
-   "started": "2014-02-19T03:26:10Z",
+   "started": "2014-02-21T00:16:23Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,14 +118,14 @@
          "RO",
          [
             6,
-            "8183d12ee322"
+            "8183f9337822"
          ]
       ],
       [
          "RO",
          [
             3,
-            "3e915c"
+            "168cc7"
          ]
       ],
       [
@@ -138,7 +138,7 @@
          true,
          0,
          true,
-         "d12ee322"
+         "f9337822"
       ],
       [
          "TF",
@@ -166,14 +166,14 @@
          "RO",
          [
             6,
-            "8882ec753ac2"
+            "888275c241b4"
          ]
       ],
       [
          "RO",
          [
             2,
-            "ef9d"
+            "762a"
          ]
       ],
       [
@@ -186,7 +186,7 @@
          true,
          0,
          true,
-         "ec753ac2"
+         "75c241b4"
       ]
    ]
 }

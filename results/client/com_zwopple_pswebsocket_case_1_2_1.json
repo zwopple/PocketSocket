@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=9&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: Ko22FRix73y6BwkEbznoaA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 8dJe1pN2I5e2M1/cFepSUqhO5L0=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=9&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: cCA7OH1WF9z/oXBNkrDk9A==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: A384VEU5W3HcA7S/iGVw6oVTk7U=\r\n\r\n",
    "id": "1.2.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -55,7 +55,7 @@
       "6": 2,
       "298": 1
    },
-   "started": "2014-02-19T03:26:02Z",
+   "started": "2014-02-21T00:16:12Z",
    "trafficStats": null,
    "txFrameStats": {
       "2": 1,
@@ -117,7 +117,7 @@
          "RO",
          [
             6,
-            "82807a4ca524"
+            "82800c84ef23"
          ]
       ],
       [
@@ -130,7 +130,7 @@
          true,
          0,
          true,
-         "7a4ca524"
+         "0c84ef23"
       ],
       [
          "TF",
@@ -158,14 +158,14 @@
          "RO",
          [
             6,
-            "8882d27252a5"
+            "888247f8ae12"
          ]
       ],
       [
          "RO",
          [
             2,
-            "d19a"
+            "4410"
          ]
       ],
       [
@@ -178,7 +178,7 @@
          true,
          0,
          true,
-         "d27252a5"
+         "47f8ae12"
       ]
    ]
 }

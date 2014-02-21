@@ -21,8 +21,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=28&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: B6Cm0awfiMZmHvmgjjwV+Q==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: H8Ne2ye33ANqUU+wQ0jL/1nGIhU=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=28&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: p+0Opk1Z7q0LoFv2vr4+Xw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 3tYpRIAuFgMYXVSfxkeeHzeBY/Y=\r\n\r\n",
    "id": "3.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -38,11 +38,10 @@
       "8": 1
    },
    "rxOctetStats": {
-      "6": 1,
-      "46": 1,
+      "52": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -103,15 +102,8 @@
       [
          "RO",
          [
-            6,
-            "88ae96522e8c"
-         ]
-      ],
-      [
-         "RO",
-         [
-            46,
-            "95b86aede2330eeae43343e9e57243f9e5260ee2f3244bfeb6275de9b6205dfaa47241feb6205dfaa5724ce5e221"
+            52,
+            "88aed5dd59d8d6371db9a1bc79bea7bc34bda6fd34ada6a979b6b0ab3caaf5a82abdf5af2aaee7fd36aaf5af2aaee6fd3bb1a1ae"
          ]
       ],
       [
@@ -124,7 +116,7 @@
          true,
          0,
          true,
-         "96522e8c"
+         "d5dd59d8"
       ],
       [
          "TF",

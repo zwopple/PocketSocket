@@ -28,8 +28,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=59&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: VmcC81KZrjHZIM/KCji6bw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: EdMk/lwAod4zpA7Fn/isGKBXUfA=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=59&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: kroqct0SIAeEnJc9dysLzQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: tg/RsKgRUBE/NvU4cnB+77w85a8=\r\n\r\n",
    "id": "5.15",
    "isServer": true,
    "localCloseCode": 1000,
@@ -53,11 +53,10 @@
    },
    "rxOctetStats": {
       "6": 1,
-      "18": 1,
-      "66": 1,
+      "84": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:14Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 2,
@@ -186,14 +185,14 @@
          "RO",
          [
             6,
-            "8192a3a1b21b"
+            "8192b5e73d40"
          ]
       ],
       [
          "RO",
          [
-            18,
-            "c5d3d37ccec4dc6f92c7c07ac4ccd775d793"
+            84,
+            "d3955c27d882533484814f21d28a582ec1d588bc3ec6a4df3d2ce0be4aa784bc51a8d0b650b3c5ab57a9caff58b4c5b25bb584b24bb5d0ff58a9c8b351b184be ..."
          ]
       ],
       [
@@ -206,14 +205,7 @@
          true,
          0,
          true,
-         "a3a1b21b"
-      ],
-      [
-         "RO",
-         [
-            66,
-            "88bc094b4ab50aa10ed47d2a6ad666253edc673e2bc1602424956f392bd86c386ad87c383e956f2426d9663c6ad4676b23db603f23d4656b2ed47d2a6ad37b2a ..."
-         ]
+         "b5e73d40"
       ],
       [
          "RF",
@@ -225,7 +217,7 @@
          true,
          0,
          true,
-         "094b4ab5"
+         "3ec6a4df"
       ],
       [
          "TF",

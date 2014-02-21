@@ -21,8 +21,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=57&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: GkE2S/RKATCop8zlUtGf7g==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Z65jZGgPhIsS//Ny/Dsu+gqTwUY=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=57&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: w7T/ESj8Rnct4TzTdUn/lw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: gomBb7vmuAWN4t8m5NW4j5swfTg=\r\n\r\n",
    "id": "5.13",
    "isServer": true,
    "localCloseCode": 1000,
@@ -42,7 +42,7 @@
       "60": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:14Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 1,
@@ -128,14 +128,14 @@
          "RO",
          [
             6,
-            "88bc236772ac"
+            "88bc42071260"
          ]
       ],
       [
          "RO",
          [
             60,
-            "208d36cd570652cf4c0906c54d1213d84a081c8c451513c1461452c15614068c45081ec04c1052cd4d471bc24a131bcd4f4716cd570652ca51061fc9"
+            "41ed5601366632032d6966092c7273142b687c402475730d2774320d3774664024687e0c2d7032012c277b0e2b737b012e2776013666320630667f05"
          ]
       ],
       [
@@ -148,7 +148,7 @@
          true,
          0,
          true,
-         "236772ac"
+         "42071260"
       ],
       [
          "TF",

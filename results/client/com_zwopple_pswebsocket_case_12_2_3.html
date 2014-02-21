@@ -202,7 +202,7 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <center><a href="http://autobahn.ws/testsuite" title="Autobahn WebSockets Testsuite"><img src="http://autobahn.ws/static/img/ws_protocol_test_report.png"          border="0" width="820" height="46" alt="Autobahn WebSockets Testsuite Report"></img></a></center>
       <center><a href="http://autobahn.ws"           title="Autobahn WebSockets">          <img src="http://autobahn.ws/static/img/ws_protocol_test_report_autobahn.png" border="0" width="300" height="68" alt="Autobahn WebSockets">                 </img></a></center>
       <br/>
-      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 12.2.3</b></span> : Pass - <span style="font-size: 0.9em;"><b>1327</b> ms @ 2014-02-19T03:36:07Z</a></p>
+      <p class="case case_ok">com.zwopple.PSWebSocket - <span style="font-size: 1.3em;"><b>Case 12.2.3</b></span> : Pass - <span style="font-size: 0.9em;"><b>992</b> ms @ 2014-02-21T00:23:22Z</a></p>
       <p class="case_text_block case_desc"><b>Case Description</b><br/><br/>Send 1000 messages of payload size 256 to measure implementation/network RTT (round trip time) / latency.</p>
       <p class="case_text_block case_expect"><b>Case Expectation</b><br/><br/>Receive echo'ed messages (with payload as sent). Timeout case after 120 secs.</p>
 
@@ -216,17 +216,17 @@ pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; 
       <h2>Opening Handshake</h2>
       <pre class="http_dump">GET /runCase?case=318&agent=com.zwopple.PSWebSocket HTTP/1.1
 Host: localhost:9001
-Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
-Connection: upgrade
+Sec-WebSocket-Key: Qydbg/0WLfKUSPJo9sALug==
 Sec-WebSocket-Version: 13
-Origin: http://localhost:9001
 Upgrade: websocket
-Sec-WebSocket-Key: JgyzJPtzDHBIVxdO/xlJwg==</pre>
+Origin: http://localhost:9001
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+Connection: upgrade</pre>
       <pre class="http_dump">HTTP/1.1 101 Switching Protocols
 Server: AutobahnTestSuite/0.6.0-0.8.1
 Upgrade: WebSocket
 Connection: Upgrade
-Sec-WebSocket-Accept: BG9k1Ryi9C/oqaoxaBGuYVcEMLw=
+Sec-WebSocket-Accept: s79gZcXN8H4QQA4Ih2UuwvFdmbQ=
 Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=11</pre>
       <br/><hr/>
       <h2>Closing Behavior</h2>
@@ -251,71 +251,66 @@ Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=11</pre>
       <table>
          <tr class="stats_header"><td>Chop Size</td><td>Count</td><td>Octets</td></tr>
          <tr class="stats_row"><td>5</td><td>1</td><td>5</td></tr>
-         <tr class="stats_row"><td>6</td><td>1</td><td>6</td></tr>
-         <tr class="stats_row"><td>8</td><td>274</td><td>2192</td></tr>
-         <tr class="stats_row"><td>72</td><td>1</td><td>72</td></tr>
+         <tr class="stats_row"><td>6</td><td>2</td><td>12</td></tr>
+         <tr class="stats_row"><td>8</td><td>240</td><td>1920</td></tr>
+         <tr class="stats_row"><td>66</td><td>1</td><td>66</td></tr>
          <tr class="stats_row"><td>211</td><td>1</td><td>211</td></tr>
-         <tr class="stats_row"><td>217</td><td>1</td><td>217</td></tr>
-         <tr class="stats_row"><td>218</td><td>1</td><td>218</td></tr>
-         <tr class="stats_row"><td>219</td><td>2</td><td>438</td></tr>
-         <tr class="stats_row"><td>220</td><td>1</td><td>220</td></tr>
-         <tr class="stats_row"><td>221</td><td>1</td><td>221</td></tr>
-         <tr class="stats_row"><td>222</td><td>3</td><td>666</td></tr>
-         <tr class="stats_row"><td>224</td><td>4</td><td>896</td></tr>
-         <tr class="stats_row"><td>225</td><td>2</td><td>450</td></tr>
-         <tr class="stats_row"><td>226</td><td>1</td><td>226</td></tr>
-         <tr class="stats_row"><td>227</td><td>3</td><td>681</td></tr>
-         <tr class="stats_row"><td>228</td><td>3</td><td>684</td></tr>
-         <tr class="stats_row"><td>229</td><td>1</td><td>229</td></tr>
-         <tr class="stats_row"><td>230</td><td>6</td><td>1380</td></tr>
-         <tr class="stats_row"><td>231</td><td>2</td><td>462</td></tr>
-         <tr class="stats_row"><td>232</td><td>6</td><td>1392</td></tr>
-         <tr class="stats_row"><td>233</td><td>4</td><td>932</td></tr>
-         <tr class="stats_row"><td>234</td><td>7</td><td>1638</td></tr>
-         <tr class="stats_row"><td>235</td><td>5</td><td>1175</td></tr>
-         <tr class="stats_row"><td>236</td><td>7</td><td>1652</td></tr>
-         <tr class="stats_row"><td>237</td><td>3</td><td>711</td></tr>
-         <tr class="stats_row"><td>239</td><td>7</td><td>1673</td></tr>
-         <tr class="stats_row"><td>240</td><td>5</td><td>1200</td></tr>
-         <tr class="stats_row"><td>241</td><td>4</td><td>964</td></tr>
-         <tr class="stats_row"><td>242</td><td>6</td><td>1452</td></tr>
-         <tr class="stats_row"><td>243</td><td>13</td><td>3159</td></tr>
-         <tr class="stats_row"><td>244</td><td>14</td><td>3416</td></tr>
-         <tr class="stats_row"><td>245</td><td>17</td><td>4165</td></tr>
-         <tr class="stats_row"><td>246</td><td>36</td><td>8856</td></tr>
-         <tr class="stats_row"><td>247</td><td>26</td><td>6422</td></tr>
-         <tr class="stats_row"><td>248</td><td>38</td><td>9424</td></tr>
-         <tr class="stats_row"><td>249</td><td>19</td><td>4731</td></tr>
-         <tr class="stats_row"><td>250</td><td>31</td><td>7750</td></tr>
-         <tr class="stats_row"><td>251</td><td>36</td><td>9036</td></tr>
-         <tr class="stats_row"><td>252</td><td>37</td><td>9324</td></tr>
-         <tr class="stats_row"><td>253</td><td>52</td><td>13156</td></tr>
-         <tr class="stats_row"><td>254</td><td>48</td><td>12192</td></tr>
-         <tr class="stats_row"><td>255</td><td>50</td><td>12750</td></tr>
-         <tr class="stats_row"><td>256</td><td>50</td><td>12800</td></tr>
-         <tr class="stats_row"><td>257</td><td>49</td><td>12593</td></tr>
-         <tr class="stats_row"><td>258</td><td>46</td><td>11868</td></tr>
-         <tr class="stats_row"><td>259</td><td>41</td><td>10619</td></tr>
-         <tr class="stats_row"><td>260</td><td>32</td><td>8320</td></tr>
-         <tr class="stats_row"><td>261</td><td>34</td><td>8874</td></tr>
-         <tr class="stats_row"><td>262</td><td>57</td><td>14934</td></tr>
-         <tr class="stats_row"><td>263</td><td>32</td><td>8416</td></tr>
-         <tr class="stats_row"><td>264</td><td>39</td><td>10296</td></tr>
-         <tr class="stats_row"><td>265</td><td>31</td><td>8215</td></tr>
-         <tr class="stats_row"><td>266</td><td>25</td><td>6650</td></tr>
-         <tr class="stats_row"><td>267</td><td>16</td><td>4272</td></tr>
-         <tr class="stats_row"><td>268</td><td>5</td><td>1340</td></tr>
-         <tr class="stats_row"><td>269</td><td>2</td><td>538</td></tr>
-         <tr class="stats_row"><td>270</td><td>29</td><td>7830</td></tr>
-         <tr class="stats_row"><td>271</td><td>1</td><td>271</td></tr>
-         <tr class="stats_row"><td>272</td><td>1</td><td>272</td></tr>
-         <tr class="stats_row"><td>274</td><td>1</td><td>274</td></tr>
+         <tr class="stats_row"><td>233</td><td>1</td><td>233</td></tr>
+         <tr class="stats_row"><td>234</td><td>1</td><td>234</td></tr>
+         <tr class="stats_row"><td>236</td><td>1</td><td>236</td></tr>
+         <tr class="stats_row"><td>237</td><td>2</td><td>474</td></tr>
+         <tr class="stats_row"><td>238</td><td>1</td><td>238</td></tr>
+         <tr class="stats_row"><td>239</td><td>2</td><td>478</td></tr>
+         <tr class="stats_row"><td>240</td><td>2</td><td>480</td></tr>
+         <tr class="stats_row"><td>241</td><td>2</td><td>482</td></tr>
+         <tr class="stats_row"><td>242</td><td>1</td><td>242</td></tr>
+         <tr class="stats_row"><td>243</td><td>3</td><td>729</td></tr>
+         <tr class="stats_row"><td>244</td><td>3</td><td>732</td></tr>
+         <tr class="stats_row"><td>245</td><td>4</td><td>980</td></tr>
+         <tr class="stats_row"><td>246</td><td>6</td><td>1476</td></tr>
+         <tr class="stats_row"><td>247</td><td>5</td><td>1235</td></tr>
+         <tr class="stats_row"><td>248</td><td>5</td><td>1240</td></tr>
+         <tr class="stats_row"><td>249</td><td>7</td><td>1743</td></tr>
+         <tr class="stats_row"><td>250</td><td>9</td><td>2250</td></tr>
+         <tr class="stats_row"><td>251</td><td>7</td><td>1757</td></tr>
+         <tr class="stats_row"><td>252</td><td>6</td><td>1512</td></tr>
+         <tr class="stats_row"><td>253</td><td>13</td><td>3289</td></tr>
+         <tr class="stats_row"><td>254</td><td>12</td><td>3048</td></tr>
+         <tr class="stats_row"><td>255</td><td>14</td><td>3570</td></tr>
+         <tr class="stats_row"><td>256</td><td>11</td><td>2816</td></tr>
+         <tr class="stats_row"><td>257</td><td>25</td><td>6425</td></tr>
+         <tr class="stats_row"><td>258</td><td>24</td><td>6192</td></tr>
+         <tr class="stats_row"><td>259</td><td>30</td><td>7770</td></tr>
+         <tr class="stats_row"><td>260</td><td>19</td><td>4940</td></tr>
+         <tr class="stats_row"><td>261</td><td>17</td><td>4437</td></tr>
+         <tr class="stats_row"><td>262</td><td>126</td><td>33012</td></tr>
+         <tr class="stats_row"><td>263</td><td>30</td><td>7890</td></tr>
+         <tr class="stats_row"><td>264</td><td>48</td><td>12672</td></tr>
+         <tr class="stats_row"><td>265</td><td>55</td><td>14575</td></tr>
+         <tr class="stats_row"><td>266</td><td>72</td><td>19152</td></tr>
+         <tr class="stats_row"><td>267</td><td>55</td><td>14685</td></tr>
+         <tr class="stats_row"><td>268</td><td>25</td><td>6700</td></tr>
+         <tr class="stats_row"><td>269</td><td>8</td><td>2152</td></tr>
+         <tr class="stats_row"><td>270</td><td>305</td><td>82350</td></tr>
+         <tr class="stats_row"><td>271</td><td>3</td><td>813</td></tr>
+         <tr class="stats_row"><td>272</td><td>3</td><td>816</td></tr>
+         <tr class="stats_row"><td>273</td><td>2</td><td>546</td></tr>
+         <tr class="stats_row"><td>274</td><td>2</td><td>548</td></tr>
          <tr class="stats_row"><td>275</td><td>1</td><td>275</td></tr>
-         <tr class="stats_row"><td>278</td><td>1</td><td>278</td></tr>
-         <tr class="stats_row"><td>279</td><td>1</td><td>279</td></tr>
+         <tr class="stats_row"><td>276</td><td>1</td><td>276</td></tr>
+         <tr class="stats_row"><td>277</td><td>3</td><td>831</td></tr>
+         <tr class="stats_row"><td>278</td><td>5</td><td>1390</td></tr>
+         <tr class="stats_row"><td>279</td><td>3</td><td>837</td></tr>
+         <tr class="stats_row"><td>280</td><td>3</td><td>840</td></tr>
+         <tr class="stats_row"><td>281</td><td>3</td><td>843</td></tr>
+         <tr class="stats_row"><td>282</td><td>2</td><td>564</td></tr>
+         <tr class="stats_row"><td>284</td><td>4</td><td>1136</td></tr>
+         <tr class="stats_row"><td>285</td><td>2</td><td>570</td></tr>
+         <tr class="stats_row"><td>286</td><td>1</td><td>286</td></tr>
+         <tr class="stats_row"><td>288</td><td>1</td><td>288</td></tr>
          <tr class="stats_row"><td>290</td><td>1</td><td>290</td></tr>
          <tr class="stats_row"><td>300</td><td>1</td><td>300</td></tr>
-         <tr class="stats_total"><td>Total</td><td>1276</td><td>256448</td></tr>
+         <tr class="stats_total"><td>Total</td><td>1243</td><td>266089</td></tr>
       </table>
       <h3>Octets Transmitted by Chop Size</h3>
       <table>
@@ -400,8 +395,8 @@ Sec-WebSocket-Extensions: permessage-deflate; server_max_window_bits=11</pre>
          <pre class="wirelog_tx_frame">005 TX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASK=None, PAYLOAD-REPEAT-LEN=None, CHOPSIZE=None, SYNC=False</pre>
          <pre class="wirelog_tx_frame">               0x03e8</pre>
          <pre class="wirelog_tx_octets">006 TX OCTETS: 880203e8</pre>
-         <pre class="wirelog_rx_octets">007 RX OCTETS: 8882287342b72b9b</pre>
-         <pre class="wirelog_rx_frame">008 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=3238373334326237</pre>
+         <pre class="wirelog_rx_octets">007 RX OCTETS: 88825ee505415d0d</pre>
+         <pre class="wirelog_rx_frame">008 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=3565653530353431</pre>
          <pre class="wirelog_rx_frame">               0x03e8</pre>
          <pre class="wirelog_tcp_closed_by_me">009 TCP DROPPED BY ME</pre>
       </div>

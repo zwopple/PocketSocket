@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=194&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: 4P2AmPoyGHd+UWabu/+JuA==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 5+zx60l2rqkiTT/FAErqkqK5BWg=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=194&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: hCmLXKod87dKBi5+0xquSw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: kws4VAzlR8XO/5esxO8VMjX5mdc=\r\n\r\n",
    "id": "6.22.26",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "10": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:11Z",
+   "started": "2014-02-21T00:16:24Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,7 +118,7 @@
          "RO",
          [
             10,
-            "8184d313465c209cf9e3"
+            "8184b4f0ef3f477f5080"
          ]
       ],
       [
@@ -131,7 +131,7 @@
          true,
          0,
          true,
-         "d313465c"
+         "b4f0ef3f"
       ],
       [
          "TF",
@@ -159,14 +159,14 @@
          "RO",
          [
             6,
-            "888265db8c63"
+            "888293ca6163"
          ]
       ],
       [
          "RO",
          [
             2,
-            "6633"
+            "9022"
          ]
       ],
       [
@@ -179,7 +179,7 @@
          true,
          0,
          true,
-         "65db8c63"
+         "93ca6163"
       ]
    ]
 }

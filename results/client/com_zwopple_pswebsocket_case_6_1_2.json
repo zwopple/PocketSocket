@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=66&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: cXgoGZMGWaM8tvvxgAzbBw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: TDbVgwyUUAvVoBtJ/UX3EjqNEZQ=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=66&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: lDzO1/7KCtd3j+hpn/KbxQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: OBkWYZ3iN3S2PsWfaYLR0mumv/E=\r\n\r\n",
    "id": "6.1.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,11 +51,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "6": 2,
+      "6": 1,
+      "8": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:05Z",
+   "started": "2014-02-21T00:16:16Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 2,
@@ -162,7 +162,7 @@
          "RO",
          [
             6,
-            "8180fb6f302c"
+            "818088486984"
          ]
       ],
       [
@@ -175,7 +175,7 @@
          true,
          0,
          true,
-         "fb6f302c"
+         "88486984"
       ],
       [
          "TF",
@@ -202,15 +202,8 @@
       [
          "RO",
          [
-            6,
-            "8882c6ee6a43"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "c506"
+            8,
+            "8882a86f5901ab87"
          ]
       ],
       [
@@ -223,7 +216,7 @@
          true,
          0,
          true,
-         "c6ee6a43"
+         "a86f5901"
       ]
    ]
 }

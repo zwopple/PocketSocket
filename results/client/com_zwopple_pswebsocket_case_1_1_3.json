@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send text message message with payload of length 126.",
    "droppedByMe": true,
-   "duration": 1,
+   "duration": 2,
    "expectation": "Receive echo'ed text message (with payload as sent). Clean close with normal code.",
    "expected": {
       "OK": [
@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=3&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: chAgJ1F9KiEcXw0pP3pSgQ==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: EEdN6dlnsGFCxo1b/I0A3bAap4Q=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=3&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: f2PIOipwOdBaNyGxRlzd/Q==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: nohwFckvTxL/HjuFkXDt0N/lR40=\r\n\r\n",
    "id": "1.1.3",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,11 +51,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "8": 1,
-      "134": 1,
+      "8": 2,
+      "126": 1,
       "298": 1
    },
-   "started": "2014-02-19T03:26:02Z",
+   "started": "2014-02-21T00:16:12Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -116,8 +116,15 @@
       [
          "RO",
          [
-            134,
-            "81fe007e0f485c012562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b2562762b ..."
+            8,
+            "81fe007ec8659dbe"
+         ]
+      ],
+      [
+         "RO",
+         [
+            126,
+            "e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794e24fb794 ..."
          ]
       ],
       [
@@ -130,7 +137,7 @@
          true,
          0,
          true,
-         "0f485c01"
+         "c8659dbe"
       ],
       [
          "TF",
@@ -158,7 +165,7 @@
          "RO",
          [
             8,
-            "88823efbdb313d13"
+            "8882c84f624ccba7"
          ]
       ],
       [
@@ -171,7 +178,7 @@
          true,
          0,
          true,
-         "3efbdb31"
+         "c84f624c"
       ]
    ]
 }

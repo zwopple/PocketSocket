@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=89&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: nwaED86VwK/nQ1fVIuNR1A==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: QKqsx7rmJsya9SfJn1VbzaQczDs=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=89&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: ej0aPdQ/L4GsoohKaTqOgA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: iN/GKa2+aVpIGaqqU/4f6UYsj1g=\r\n\r\n",
    "id": "6.6.7",
    "isServer": true,
    "localCloseCode": 1000,
@@ -52,11 +52,11 @@
    },
    "rxOctetStats": {
       "2": 1,
-      "6": 2,
-      "7": 1,
+      "6": 1,
+      "13": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:09Z",
+   "started": "2014-02-21T00:16:20Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -117,15 +117,8 @@
       [
          "RO",
          [
-            6,
-            "81877458bf87"
-         ]
-      ],
-      [
-         "RO",
-         [
-            7,
-            "bae25e3acd973c"
+            13,
+            "8187da08495814b2a8e563c7ca"
          ]
       ],
       [
@@ -138,7 +131,7 @@
          true,
          0,
          true,
-         "7458bf87"
+         "da084958"
       ],
       [
          "TF",
@@ -166,14 +159,14 @@
          "RO",
          [
             6,
-            "8882fff097a7"
+            "888232387744"
          ]
       ],
       [
          "RO",
          [
             2,
-            "fc18"
+            "31d0"
          ]
       ],
       [
@@ -186,7 +179,7 @@
          true,
          0,
          true,
-         "fff097a7"
+         "32387744"
       ]
    ]
 }

@@ -21,8 +21,8 @@
       "requireClean": false
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=54&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: HqWCrzHph/H4/7AAhhZM4g==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Dr0RQrDKAE9DWjevJ+CEToT8zaU=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=54&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: /0GlU99Pl3RFD8TjiqKs0g==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: /1EHLwFCuRA14yGVrK1KAj9xrS4=\r\n\r\n",
    "id": "5.10",
    "isServer": true,
    "localCloseCode": 1000,
@@ -38,11 +38,10 @@
       "8": 1
    },
    "rxOctetStats": {
-      "6": 1,
-      "60": 1,
+      "66": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 1,
@@ -127,15 +126,8 @@
       [
          "RO",
          [
-            6,
-            "88bc6d539114"
-         ]
-      ],
-      [
-         "RO",
-         [
-            60,
-            "6eb9d5751932b177023de57d0326f060043cff340b21f0790820b1791820e5340b3cfd780224b1750373f87a0427f8750173f5751932b1721f32fc71"
+            66,
+            "88bcc29ee9ddc174adbcb6ffc9beadf09db4aceb88a9abf187fda4ec88b0a7edc9b0b7ed9dfda4f185b1ade9c9bcacbe80b3abea80bcaebe8dbcb6ffc9bbb0ff ..."
          ]
       ],
       [
@@ -148,7 +140,7 @@
          true,
          0,
          true,
-         "6d539114"
+         "c29ee9dd"
       ],
       [
          "TF",

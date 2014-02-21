@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=69&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: R8WvyN7WkFceDo3UiNPJgQ==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: FWVSqQkktZEdeNetaCxeCRKHHjI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=69&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: K4Q35SkEB1bjAeRF2ZcA1A==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: Cmba87t6tUpodi3HyYUYMeq8DWg=\r\n\r\n",
    "id": "6.2.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "35": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:05Z",
+   "started": "2014-02-21T00:16:16Z",
    "trafficStats": null,
    "txFrameStats": {
       "0": 1,
@@ -142,7 +142,7 @@
          "RO",
          [
             35,
-            "819d48093b37006c575b2724f98208caa4f4feca9ff4f4ca9bf4e9246e630e24031669"
+            "819d9d5087c8d535eba4f27d457ddd93180b2b93230b2193270b3c7dd29cdb7dbfe9bc"
          ]
       ],
       [
@@ -155,7 +155,7 @@
          true,
          0,
          true,
-         "48093b37"
+         "9d5087c8"
       ],
       [
          "TF",
@@ -183,14 +183,14 @@
          "RO",
          [
             6,
-            "8882331217c1"
+            "88823f2e25f3"
          ]
       ],
       [
          "RO",
          [
             2,
-            "30fa"
+            "3cc6"
          ]
       ],
       [
@@ -203,7 +203,7 @@
          true,
          0,
          true,
-         "331217c1"
+         "3f2e25f3"
       ]
    ]
 }

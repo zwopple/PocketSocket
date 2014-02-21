@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=68&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: xfGzsOEaNng8PQC7B1tqDw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: hqTyeEecakeTkqPAkageXnFRZdI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=68&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: Et+NLYg3XqlbqwSMI+/AXg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: FMEcqPJOVIxWX1LSbM+hOZOGltw=\r\n\r\n",
    "id": "6.2.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "29": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:05Z",
+   "started": "2014-02-21T00:16:16Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,14 +118,14 @@
          "RO",
          [
             6,
-            "819db8c741da"
+            "819d00590eef"
          ]
       ],
       [
          "RO",
          [
             29,
-            "f0a22db6d7ea836ff804de190e04e5190404e11919ea148efeea79fb99"
+            "483c62836f74cc5a409a912cb69aaa2cbc9aae2ca1745bbb467436ce21"
          ]
       ],
       [
@@ -138,7 +138,7 @@
          true,
          0,
          true,
-         "b8c741da"
+         "00590eef"
       ],
       [
          "TF",
@@ -166,7 +166,7 @@
          "RO",
          [
             8,
-            "88822aa25a7c294a"
+            "88829104fda792ec"
          ]
       ],
       [
@@ -179,7 +179,7 @@
          true,
          0,
          true,
-         "2aa25a7c"
+         "9104fda7"
       ]
    ]
 }

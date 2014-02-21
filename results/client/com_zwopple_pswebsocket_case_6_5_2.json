@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=79&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: O+kt5gfG+jkFnRAvK0sfCQ==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: kfsDaE54f0Id9SmBKXZAzzvmwxI=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=79&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: Ur0BDqlughtnW2daFnRcHA==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: OLsbzbvoD8lHTTzUUPZq1Aofuwk=\r\n\r\n",
    "id": "6.5.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "12": 1,
       "299": 1
    },
-   "started": "2014-02-19T03:26:09Z",
+   "started": "2014-02-21T00:16:20Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,14 +118,14 @@
          "RO",
          [
             6,
-            "818ce835c827"
+            "818cac95d82f"
          ]
       ],
       [
          "RO",
          [
             12,
-            "8050a44b87f76a508747a443"
+            "c4f0b443c3577a58c3e7b44b"
          ]
       ],
       [
@@ -138,7 +138,7 @@
          true,
          0,
          true,
-         "e835c827"
+         "ac95d82f"
       ],
       [
          "TF",
@@ -166,7 +166,7 @@
          "RO",
          [
             8,
-            "8882f4e3eccbf70b"
+            "8882af4e18a8aca6"
          ]
       ],
       [
@@ -179,7 +179,7 @@
          true,
          0,
          true,
-         "f4e3eccb"
+         "af4e18a8"
       ]
    ]
 }

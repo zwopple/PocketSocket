@@ -26,8 +26,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=17&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: xBtANIJQ1XLv76jkRxlEWg==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: sNQ7nv83ZeOxh+diDtfVBZVpzak=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=17&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: du5j+QXux5ooljIIZtub/A==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: HOJat2RTC5SIiCY0nZX5CQhLuwc=\r\n\r\n",
    "id": "2.1",
    "isServer": true,
    "localCloseCode": 1000,
@@ -53,7 +53,7 @@
       "6": 2,
       "299": 1
    },
-   "started": "2014-02-19T03:26:03Z",
+   "started": "2014-02-21T00:16:13Z",
    "trafficStats": null,
    "txFrameStats": {
       "8": 1,
@@ -115,7 +115,7 @@
          "RO",
          [
             6,
-            "8a80bc31e4cb"
+            "8a80e3772036"
          ]
       ],
       [
@@ -128,7 +128,7 @@
          true,
          0,
          true,
-         "bc31e4cb"
+         "e3772036"
       ],
       [
          "TF",
@@ -156,14 +156,14 @@
          "RO",
          [
             6,
-            "8882eda0c931"
+            "8882419f5a52"
          ]
       ],
       [
          "RO",
          [
             2,
-            "ee48"
+            "4277"
          ]
       ],
       [
@@ -176,7 +176,7 @@
          true,
          0,
          true,
-         "eda0c931"
+         "419f5a52"
       ]
    ]
 }

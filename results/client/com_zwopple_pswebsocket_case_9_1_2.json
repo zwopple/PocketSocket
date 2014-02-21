@@ -8,7 +8,7 @@
    "createWirelog": true,
    "description": "Send text message message with payload of length 256 * 2**10 (256k).",
    "droppedByMe": true,
-   "duration": 321,
+   "duration": 268,
    "expectation": "Receive echo'ed text message (with payload as sent).",
    "expected": {},
    "expectedClose": {
@@ -19,8 +19,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=252&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: TlUkxG2UKHUEY3uT8Y0Whw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: exjYQN4PQT+orfJDxniWMldKg9U=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=252&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: ww+CYr3LWMgSWse0KVc7eg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: 11DzaQlhRNDKQhA8NOc5C49ZbIA=\r\n\r\n",
    "id": "9.1.2",
    "isServer": true,
    "localCloseCode": 1000,
@@ -37,13 +37,13 @@
       "8": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "6": 1,
-      "14": 1,
+      "8": 1,
+      "208": 1,
       "300": 1,
-      "65536": 4
+      "65342": 1,
+      "65536": 3
    },
-   "started": "2014-02-19T03:26:12Z",
+   "started": "2014-02-21T00:16:27Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -104,15 +104,8 @@
       [
          "RO",
          [
-            6,
-            "8882c1b35a7c"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "c25b"
+            8,
+            "888240ed29f14305"
          ]
       ],
       [
@@ -125,7 +118,7 @@
          true,
          0,
          true,
-         "c1b35a7c"
+         "40ed29f1"
       ]
    ]
 }

@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=198&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: vsJP5ofBwpuDW4ZrLEJ9Ow==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: i6lvQx5jp9kJRzD9YlRvSchx+Ts=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=198&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: VCIVKFDAT3D0hRVGwWTypw==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: ruiQNmU7NcfvoBGbK/YFti9R/nE=\r\n\r\n",
    "id": "6.22.30",
    "isServer": true,
    "localCloseCode": 1000,
@@ -51,12 +51,11 @@
       "8": 1
    },
    "rxOctetStats": {
-      "2": 1,
-      "4": 1,
-      "6": 2,
+      "8": 1,
+      "10": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:12Z",
+   "started": "2014-02-21T00:16:24Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -117,15 +116,8 @@
       [
          "RO",
          [
-            6,
-            "81849456a251"
-         ]
-      ],
-      [
-         "RO",
-         [
-            4,
-            "67f91dee"
+            10,
+            "8184abe034e9584f8b56"
          ]
       ],
       [
@@ -138,7 +130,7 @@
          true,
          0,
          true,
-         "9456a251"
+         "abe034e9"
       ],
       [
          "TF",
@@ -165,15 +157,8 @@
       [
          "RO",
          [
-            6,
-            "88829e115cba"
-         ]
-      ],
-      [
-         "RO",
-         [
-            2,
-            "9df9"
+            8,
+            "8882a8a514c9ab4d"
          ]
       ],
       [
@@ -186,7 +171,7 @@
          true,
          0,
          true,
-         "9e115cba"
+         "a8a514c9"
       ]
    ]
 }

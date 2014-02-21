@@ -27,8 +27,8 @@
       "requireClean": true
    },
    "failedByMe": false,
-   "httpRequest": "GET /runCase?case=176&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\nSec-WebSocket-Version: 13\r\nOrigin: http://localhost:9001\r\nUpgrade: websocket\r\nSec-WebSocket-Key: xHOTRioG2NFQI3dw1OiDlw==\r\n\r\n",
-   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: bSz6UjSNhgQ9EyPXTDscTT2jf2g=\r\n\r\n",
+   "httpRequest": "GET /runCase?case=176&agent=com.zwopple.PSWebSocket HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: yLSg+0OT6mODeme4reozZQ==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.6.0-0.8.1\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: pOQTYSR9z2ejyH15y13T/z7pJQI=\r\n\r\n",
    "id": "6.22.8",
    "isServer": true,
    "localCloseCode": 1000,
@@ -56,7 +56,7 @@
       "10": 1,
       "300": 1
    },
-   "started": "2014-02-19T03:26:10Z",
+   "started": "2014-02-21T00:16:23Z",
    "trafficStats": null,
    "txFrameStats": {
       "1": 1,
@@ -118,7 +118,7 @@
          "RO",
          [
             10,
-            "81848c34198e7c8ba631"
+            "81841e9eee56ee2151e9"
          ]
       ],
       [
@@ -131,7 +131,7 @@
          true,
          0,
          true,
-         "8c34198e"
+         "1e9eee56"
       ],
       [
          "TF",
@@ -159,14 +159,14 @@
          "RO",
          [
             6,
-            "8882600c7434"
+            "88828d8dfa91"
          ]
       ],
       [
          "RO",
          [
             2,
-            "63e4"
+            "8e65"
          ]
       ],
       [
@@ -179,7 +179,7 @@
          true,
          0,
          true,
-         "600c7434"
+         "8d8dfa91"
       ]
    ]
 }
