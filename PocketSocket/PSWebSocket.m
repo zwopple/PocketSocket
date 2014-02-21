@@ -272,38 +272,40 @@
     }
     _pumpingInput = YES;
     
-    uint8_t chunkBuffer[4096];
-    while(_inputStream.hasBytesAvailable) {
-        NSInteger readLength = [_inputStream read:chunkBuffer maxLength:sizeof(chunkBuffer)];
-        if(readLength > 0) {
-            if(!_inputBuffer.hasBytesAvailable) {
-                NSInteger consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
-                if(consumedLength < readLength) {
-                    NSInteger offset = MAX(0, consumedLength);
-                    NSInteger remaining = readLength - offset;
-                    [_inputBuffer appendBytes:chunkBuffer + offset length:remaining];
+    @autoreleasepool {
+        uint8_t chunkBuffer[4096];
+        while(_inputStream.hasBytesAvailable) {
+            NSInteger readLength = [_inputStream read:chunkBuffer maxLength:sizeof(chunkBuffer)];
+            if(readLength > 0) {
+                if(!_inputBuffer.hasBytesAvailable) {
+                    NSInteger consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
+                    if(consumedLength < readLength) {
+                        NSInteger offset = MAX(0, consumedLength);
+                        NSInteger remaining = readLength - offset;
+                        [_inputBuffer appendBytes:chunkBuffer + offset length:remaining];
+                    }
+                } else {
+                    [_inputBuffer appendBytes:chunkBuffer length:readLength];
                 }
-            } else {
-                [_inputBuffer appendBytes:chunkBuffer length:readLength];
+            } else if(readLength < 0) {
+                [self failWithError:_inputStream.streamError];
+                break;
             }
-        } else if(readLength < 0) {
-            [self failWithError:_inputStream.streamError];
-            break;
+            if(readLength < sizeof(chunkBuffer)) {
+                break;
+            }
         }
-        if(readLength < sizeof(chunkBuffer)) {
-            break;
-        }
-    }
-    
-    while(_inputBuffer.hasBytesAvailable) {
-        @autoreleasepool {
+        
+        while(_inputBuffer.hasBytesAvailable) {
             NSInteger readLength = [_driver execute:_inputBuffer.mutableBytes maxLength:_inputBuffer.bytesAvailable];
             if(readLength <= 0) {
                 break;
             }
             _inputBuffer.offset += readLength;
-            [_inputBuffer compact];
         }
+        
+        
+        [_inputBuffer compact];
     }
     
     _pumpingInput = NO;
