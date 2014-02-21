@@ -32,13 +32,13 @@
     BOOL rsv3;
     PSWebSocketOpCode opcode;
     BOOL masked;
-    NSUInteger payloadLength;
+    uint64_t payloadLength;
     BOOL control;
     uint32_t headerExtraLength;
     uint8_t maskKey[4];
     uint32_t maskOffset;
     NSMutableData *buffer;
-    NSUInteger payloadRemainingLength;
+    uint64_t payloadRemainingLength;
 }
 @end
 @implementation PSWebSocketFrame
