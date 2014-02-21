@@ -152,9 +152,7 @@ Beyond that have a look at the `PSWebSocketDriverDelegate` methods and the simpl
 ### Roadmap
 
 * Add support for pinned SSL certificates
-* Add `PSWebSocketServer` a strict websocket only server
-* Add autobahn tests for server mode
-* Improve performance
+* Add support for SSL in `PSWebSocketServer`
 * Examples, examples, examples!
 
 ### Running Tests
