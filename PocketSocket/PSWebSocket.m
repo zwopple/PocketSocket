@@ -522,4 +522,11 @@
     dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
 }
 
+#pragma mark - Dealloc
+
+- (void)dealloc {
+    _delegate = nil;
+    dispatch_barrier_sync(_workQueue, ^{});
+}
+
 @end
