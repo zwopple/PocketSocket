@@ -42,6 +42,7 @@
 #pragma mark - Initialization
 
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port;
++ (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates;
 
 #pragma mark - Actions
 

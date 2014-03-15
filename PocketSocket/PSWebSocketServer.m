@@ -25,6 +25,7 @@
 #import <ifaddrs.h>
 #import <netdb.h>
 #import <arpa/inet.h>
+#import <Security/SecureTransport.h>
 
 typedef NS_ENUM(NSInteger, PSWebSocketServerConnectionReadyState) {
     PSWebSocketServerConnectionReadyStateConnecting = 0,
@@ -66,6 +67,9 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     PSWebSocketNetworkThread *_networkThread;
     dispatch_queue_t _workQueue;
     
+    NSArray *_SSLCertificates;
+    BOOL _secure;
+    
     NSData *_addrData;
     CFSocketContext _socketContext;
     
@@ -93,13 +97,20 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 #pragma mark - Initialization
 
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port {
-    return [[self alloc] initWithHost:host port:port];
+    return [[self alloc] initWithHost:host port:port SSLCertificates:nil];
 }
-- (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port {
++ (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates {
+    return [[self alloc] initWithHost:host port:port SSLCertificates:SSLCertificates];
+}
+- (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates {
     NSParameterAssert(port);
     if((self = [super init])) {
         _networkThread = [[PSWebSocketNetworkThread alloc] init];
         _workQueue = dispatch_queue_create(nil, nil);
+        
+        // copy SSL certificates
+        _SSLCertificates = [SSLCertificates copy];
+        _secure = (_SSLCertificates != nil);
         
         // create addr data
         struct sockaddr_in addr;
@@ -245,6 +256,17 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         // configure streams
         CFReadStreamSetProperty(readStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
         CFWriteStreamSetProperty(writeStream, kCFStreamPropertyShouldCloseNativeSocket, kCFBooleanTrue);
+        
+        // enable SSL
+        if(_secure) {
+            NSMutableDictionary *opts = [NSMutableDictionary dictionary];
+            
+            opts[(__bridge id)kCFStreamSSLIsServer] = @YES;
+            opts[(__bridge id)kCFStreamSSLCertificates] = _SSLCertificates;
+            
+            CFReadStreamSetProperty(readStream, kCFStreamPropertySSLSettings, (__bridge CFDictionaryRef)opts);
+            CFWriteStreamSetProperty(writeStream, kCFStreamPropertySSLSettings, (__bridge CFDictionaryRef)opts);
+        }
         
         // create connection
         PSWebSocketServerConnection *connection = [[PSWebSocketServerConnection alloc] init];
@@ -438,6 +460,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             
             // detach connection
             [self detatchConnection:connection];
+        
             
             // create webSocket
             PSWebSocket *webSocket = [PSWebSocket serverSocketWithRequest:request inputStream:connection.inputStream outputStream:connection.outputStream];
@@ -587,6 +610,14 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 - (void)executeDelegateAndWait:(void (^)(void))work {
     NSParameterAssert(work);
     dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+}
+
+#pragma mark - Dealloc
+
+- (void)dealloc {
+    [self executeWorkAndWait:^{
+        [self disconnect:YES];
+    }];
 }
 
 @end

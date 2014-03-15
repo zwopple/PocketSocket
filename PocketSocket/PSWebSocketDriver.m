@@ -894,6 +894,14 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     unsigned char sha1[CC_SHA1_DIGEST_LENGTH];
     CC_SHA1(data.bytes, (CC_LONG)data.length, sha1);
     data = [NSData dataWithBytes:sha1 length:CC_SHA1_DIGEST_LENGTH];
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9 || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0
+    if(![data respondsToSelector:@selector(base64EncodedStringWithOptions:)]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        return [data base64Encoding];
+#pragma clang diagnostic pop
+    }
+#endif
     return [data base64EncodedStringWithOptions:0];
 }
 
