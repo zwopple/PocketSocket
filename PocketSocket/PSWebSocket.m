@@ -43,6 +43,7 @@
 	NSString *_httpProxyAddress;
 	NSString *_httpProxyPort;
 	NSDictionary *_securityOptions;
+	NSArray *_streamProperties;
 }
 @end
 @implementation PSWebSocket
@@ -98,9 +99,12 @@
 }
 
 + (instancetype)clientSocketWithRequest:(NSURLRequest *)request {
-    return [[self alloc] initClientSocketWithRequest:request];
+    return [self clientSocketWithRequest:request withStreamSecurityOptions:nil withStreamProperties:nil];
 }
-- (instancetype)initClientSocketWithRequest:(NSURLRequest *)request {
++ (instancetype)clientSocketWithRequest:(NSURLRequest *)request withStreamSecurityOptions:(NSDictionary *)securityOptions withStreamProperties:(NSArray *)streamProperties {
+    return [[self alloc] initClientSocketWithRequest:request withStreamSecurityOptions:securityOptions withStreamProperties:streamProperties];
+}
+- (instancetype)initClientSocketWithRequest:(NSURLRequest *)request withStreamSecurityOptions:(NSDictionary *)securityOptions withStreamProperties:(NSArray *)streamProperties {
 	if((self = [self initWithMode:PSWebSocketModeClient request:request])) {
         NSURL *URL = request.URL;
         NSString *host = URL.host;
@@ -108,6 +112,9 @@
         if(port == 0) {
             port = (_secure) ? 443 : 80;
         }
+		
+		_streamProperties = [streamProperties copy];
+		_securityOptions = [securityOptions copy];
 		
 		NSDictionary *proxyDic = (__bridge_transfer NSDictionary *)CFNetworkCopySystemProxySettings();
 		
@@ -140,6 +147,14 @@
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
         
+		if (_streamProperties) {
+			for (NSArray *pair in _streamProperties) {
+				NSString *key = [pair objectAtIndex:0];
+				id value = [pair objectAtIndex:1];
+				[_outputStream setProperty:value forKey:key];
+			}
+		}
+		
         if(_secure && !_hasProxy) {
 			[self setupSecurity];
         } else {
