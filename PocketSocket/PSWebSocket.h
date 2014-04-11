@@ -120,4 +120,24 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  */
 - (void)closeWithCode:(NSInteger)code reason:(NSString *)reason;
 
+#pragma mark - Stream Properties
+
+/**
+ *  Copy a property from the streams this websocket is backed by
+ *
+ *  @param key property key - see kCFStreamProperty constants
+ *
+ *  @return property value
+ */
+- (CFTypeRef)copyStreamPropertyForKey:(NSString *)key;
+
+/**
+ *  Set a property on the streams this websocket is backed by. Calling this
+ *  method once the websocket has been opened will raise an exception.
+ *
+ *  @param property property value
+ *  @param key      property key - see kCFStreamProperty constants
+ */
+- (void)setStreamProperty:(CFTypeRef)property forKey:(NSString *)key;
+
 @end

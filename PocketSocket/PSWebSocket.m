@@ -156,8 +156,8 @@
 
 - (void)open {
     [self executeWork:^{
-        NSAssert(!_opened, @"You cannot open a PSWebSocket more than once");
-        NSAssert(_readyState == PSWebSocketReadyStateConnecting, @"State should be connecting");
+        if(_opened || _readyState != PSWebSocketReadyStateConnecting) [NSException raise:@"Invalid State" format:@"You cannot open a PSWebSocket more than once."]; return;
+        
         _opened = YES;
         
         [self connect];
@@ -171,7 +171,7 @@
         } else if([message isKindOfClass:[NSData class]]) {
             [_driver sendBinary:message];
         } else {
-            NSAssert(NO, @"You can only send text or binary data");
+            [NSException raise:@"Invalid Message" format:@"Messages must be instances of NSString or NSData"];
         }
     }];
 }
@@ -204,6 +204,22 @@
         
         // send close code
         [_driver sendCloseCode:code reason:reason];
+    }];
+}
+
+#pragma mark - Stream Properties
+
+- (CFTypeRef)copyStreamPropertyForKey:(NSString *)key {
+    __block CFTypeRef result;
+    [self executeWorkAndWait:^{
+        result = CFWriteStreamCopyProperty((__bridge CFWriteStreamRef)_outputStream, (__bridge CFStringRef)key);
+    }];
+    return result;
+}
+- (void)setStreamProperty:(CFTypeRef)property forKey:(NSString *)key {
+    [self executeWorkAndWait:^{
+        if(_opened || _readyState != PSWebSocketReadyStateConnecting) [NSException raise:@"Invalid State" format:@"You cannot set stream properties on a PSWebSocket once it is opened."]; return;
+        CFWriteStreamSetProperty((__bridge CFWriteStreamRef)_outputStream, (__bridge CFStringRef)key, (CFTypeRef)property);
     }];
 }
 
@@ -392,7 +408,7 @@
 #pragma mark - PSWebSocketDriverDelegate
 
 - (void)driverDidOpen:(PSWebSocketDriver *)driver {
-    NSAssert(_readyState == PSWebSocketReadyStateConnecting, @"Ready state must be connecting to become open");
+    if(_readyState != PSWebSocketReadyStateConnecting) [NSException raise:@"Invalid State" format:@"Ready state must be connecting to become open"]; return;
     _readyState = PSWebSocketReadyStateOpen;
     [self notifyDelegateDidOpen];
     [self pumpInput];
@@ -445,7 +461,7 @@
     [self executeWork:^{
         switch(event) {
             case NSStreamEventOpenCompleted: {
-                NSAssert(_mode == PSWebSocketModeClient, @"Server mode should have already opened streams.");
+                if(_mode != PSWebSocketModeClient) [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."]; return;
                 if(_readyState >= PSWebSocketReadyStateClosing) {
                     return;
                 }
