@@ -120,4 +120,16 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  */
 - (void)closeWithCode:(NSInteger)code reason:(NSString *)reason;
 
+#pragma mark - Cheking state
+
+/**
+ *  Get the negotiated cipher suite for ongoing connection
+ *
+ *  @warning Returns correct value only when 'readyState' is PSWebSocketReadyStateOpen. Otherwise returns SSL_NULL_WITH_NULL_NULL. Can return SSL_NULL_WITH_NULL_NULL if connection is not secure.
+ *
+ *  @return SSLCipherSuite of current opened connection.
+ */
+- (SSLCipherSuite)negotiatedCipherSuite;
+
+
 @end
