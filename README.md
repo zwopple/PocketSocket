@@ -10,7 +10,7 @@ Objective-C websocket library for building things that work in realtime on iOS a
 * Passes all ~355 Autobahn [Client Tests](http://zwopple.github.io/PocketSocket/results/client/) & [Server Tests](http://zwopple.github.io/PocketSocket/results/server/) with 100% compliance
 * Client & Server modes (see notes below)
 * TLS/SSL support
-* Asynchronus IO
+* Asynchronous IO
 * Standalone `PSWebSocketDriver` for easy “Bring your own” networking IO
 
 ### Dependencies
