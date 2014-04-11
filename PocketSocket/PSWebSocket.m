@@ -58,6 +58,14 @@
 
 @dynamic readyState;
 
+- (PSWebSocketReadyState)readyState {
+    __block PSWebSocketReadyState value = 0;
+    [self executeWorkAndWait:^{
+        value = _readyState;
+    }];
+    return value;
+}
+
 #pragma mark - Initialization
 
 - (instancetype)initWithMode:(PSWebSocketMode)mode request:(NSURLRequest *)request {
