@@ -18,6 +18,8 @@
 #import "PSWebSocketDriver.h"
 #import "PSWebSocketBuffer.h"
 
+static inline SSLCipherSuite WebSocketNegotiatedCipherSuite(CFReadStreamRef readStream);
+
 @interface PSWebSocket() <NSStreamDelegate, PSWebSocketDriverDelegate> {
     PSWebSocketMode _mode;
     NSMutableURLRequest *_request;
@@ -527,6 +529,34 @@
 - (void)dealloc {
     _delegate = nil;
     dispatch_barrier_sync(_workQueue, ^{});
+}
+
+#pragma mark - Utility functions
+
+- (SSLCipherSuite)negotiatedCipherSuite {
+	SSLCipherSuite cipherSuite = SSL_NULL_WITH_NULL_NULL;
+	if (_readyState == PSWebSocketReadyStateOpen) {
+		cipherSuite = WebSocketNegotiatedCipherSuite((__bridge CFReadStreamRef)_inputStream);
+	}
+	return cipherSuite;
+}
+
+static inline SSLCipherSuite WebSocketNegotiatedCipherSuite(CFReadStreamRef readStream) {
+	// Small hack to get SSL context of NSStream from http://lists.apple.com/archives/Apple-cdsa/2008/Oct/msg00007.html
+	const extern CFStringRef kCFStreamPropertySocketSSLContext;
+	CFDataRef data = CFReadStreamCopyProperty(readStream, kCFStreamPropertySocketSSLContext);
+	SSLCipherSuite currentCipher = SSL_NULL_WITH_NULL_NULL;
+	
+	if (data) {
+		// Extract the SSLContextRef from the CFData
+		SSLContextRef sslContext;
+		CFDataGetBytes(data, CFRangeMake(0, sizeof(SSLContextRef)), (UInt8 *)&sslContext);
+		
+		SSLGetNegotiatedCipher(sslContext, &currentCipher);
+		CFRelease(data);
+	}
+	
+	return currentCipher;
 }
 
 @end
