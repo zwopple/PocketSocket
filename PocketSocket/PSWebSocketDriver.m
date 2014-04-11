@@ -203,7 +203,16 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     // set handshake sec key
     NSMutableData *secKeyData = [NSMutableData dataWithLength:16];
     SecRandomCopyBytes(kSecRandomDefault, secKeyData.length, secKeyData.mutableBytes);
+    
+#if __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_9 || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0
+    if(![secKeyData respondsToSelector:@selector(base64EncodedStringWithOptions:)]) {
+        _handshakeSecKey = [secKeyData base64Encoding];
+    } else {
+        _handshakeSecKey = [secKeyData base64EncodedStringWithOptions:0];
+    }
+#else
     _handshakeSecKey = [secKeyData base64EncodedStringWithOptions:0];
+#endif
     
     NSURL *URL = _request.URL;
     BOOL secure = ([URL.scheme isEqualToString:@"https"] || [URL.scheme isEqualToString:@"wss"]);
