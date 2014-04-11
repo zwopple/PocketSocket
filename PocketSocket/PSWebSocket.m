@@ -54,10 +54,6 @@
     return [[PSWebSocketNetworkThread sharedNetworkThread] runLoop];
 }
 
-#pragma mark - Properties
-
-@dynamic readyState;
-
 #pragma mark - Initialization
 
 - (instancetype)initWithMode:(PSWebSocketMode)mode request:(NSURLRequest *)request {
