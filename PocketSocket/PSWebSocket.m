@@ -156,7 +156,10 @@
 
 - (void)open {
     [self executeWork:^{
-        if(_opened || _readyState != PSWebSocketReadyStateConnecting) [NSException raise:@"Invalid State" format:@"You cannot open a PSWebSocket more than once."]; return;
+        if(_opened || _readyState != PSWebSocketReadyStateConnecting) {
+            [NSException raise:@"Invalid State" format:@"You cannot open a PSWebSocket more than once."];
+            return;
+        }
         
         _opened = YES;
         
@@ -218,7 +221,10 @@
 }
 - (void)setStreamProperty:(CFTypeRef)property forKey:(NSString *)key {
     [self executeWorkAndWait:^{
-        if(_opened || _readyState != PSWebSocketReadyStateConnecting) [NSException raise:@"Invalid State" format:@"You cannot set stream properties on a PSWebSocket once it is opened."]; return;
+        if(_opened || _readyState != PSWebSocketReadyStateConnecting) {
+            [NSException raise:@"Invalid State" format:@"You cannot set stream properties on a PSWebSocket once it is opened."];
+            return;
+        }
         CFWriteStreamSetProperty((__bridge CFWriteStreamRef)_outputStream, (__bridge CFStringRef)key, (CFTypeRef)property);
     }];
 }
@@ -408,7 +414,10 @@
 #pragma mark - PSWebSocketDriverDelegate
 
 - (void)driverDidOpen:(PSWebSocketDriver *)driver {
-    if(_readyState != PSWebSocketReadyStateConnecting) [NSException raise:@"Invalid State" format:@"Ready state must be connecting to become open"]; return;
+    if(_readyState != PSWebSocketReadyStateConnecting) {
+        [NSException raise:@"Invalid State" format:@"Ready state must be connecting to become open"];
+        return;
+    }
     _readyState = PSWebSocketReadyStateOpen;
     [self notifyDelegateDidOpen];
     [self pumpInput];
@@ -461,7 +470,10 @@
     [self executeWork:^{
         switch(event) {
             case NSStreamEventOpenCompleted: {
-                if(_mode != PSWebSocketModeClient) [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."]; return;
+                if(_mode != PSWebSocketModeClient) {
+                    [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."];
+                    return;
+                }
                 if(_readyState >= PSWebSocketReadyStateClosing) {
                     return;
                 }
