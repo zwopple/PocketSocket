@@ -158,7 +158,7 @@ Beyond that have a look at the `PSWebSocketDriverDelegate` methods and the simpl
 ### Running Tests
 
 1. Install autobahntestsuite `sudo pip install autobahntestsuite`
-2. Start autobahn test server `wtest -m fuzzingserver`
+2. Start autobahn test server `wstest -m fuzzingserver`
 3. Run tests in Xcode
 
 ### Why a new library?
