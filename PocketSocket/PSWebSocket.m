@@ -163,6 +163,7 @@
         
         _opened = YES;
         
+        // connect
         [self connect];
     }];
 }
@@ -199,14 +200,27 @@
         BOOL connecting = (_readyState == PSWebSocketReadyStateConnecting);
         _readyState = PSWebSocketReadyStateClosing;
         
-        // if we were connecting lets disconnect quickly
-        if(connecting) {
-            [self disconnectGracefully];
-            return;
+        // send close code if we're not connecting
+        if(!connecting) {
+            [_driver sendCloseCode:code reason:reason];
         }
         
-        // send close code
-        [_driver sendCloseCode:code reason:reason];
+        // disconnect gracefully
+        [self disconnectGracefully];
+        
+        // disconnect hard in 30 seconds
+        __weak typeof(self)weakSelf = self;
+        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 30.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            __strong typeof(weakSelf)strongSelf = weakSelf;
+            if(!strongSelf) return;
+            
+            [strongSelf executeWork:^{
+                if(strongSelf->_readyState >= PSWebSocketReadyStateClosed) {
+                    return;
+                }
+                [strongSelf disconnect];
+            }];
+        });
     }];
 }
 
@@ -263,10 +277,7 @@
             if(strongSelf) {
                 [strongSelf executeWork:^{
                     if(strongSelf->_readyState == PSWebSocketReadyStateConnecting) {
-                        strongSelf->_readyState = PSWebSocketReadyStateClosing;
-                        strongSelf->_closeCode = -1;
-                        strongSelf->_closeReason = @"Timed out";
-                        [strongSelf disconnectGracefully];
+                        [strongSelf failWithCode:PSWebSocketErrorCodeTimedOut reason:@"Timed out."];
                     }
                 }];
             }
