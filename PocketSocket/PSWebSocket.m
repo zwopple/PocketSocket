@@ -572,6 +572,8 @@
 #pragma mark - Dealloc
 
 - (void)dealloc {
+	[_inputStream removeFromRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
+    [_outputStream removeFromRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
     _delegate = nil;
     dispatch_barrier_sync(_workQueue, ^{});
 }
