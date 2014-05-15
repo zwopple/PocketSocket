@@ -60,8 +60,7 @@
         NSTimer *timer = [[NSTimer alloc] initWithFireDate:[NSDate distantFuture] interval:0.0 target:nil selector:nil userInfo:nil repeats:NO];
         [_runLoop addTimer:timer forMode:NSDefaultRunLoopMode];
         
-        NSRunLoop *runLoop = _runLoop;
-        while([runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]) {
+        while([_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]]) {
             // no-op
         }
         
