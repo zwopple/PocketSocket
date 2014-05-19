@@ -572,8 +572,9 @@
 #pragma mark - Dealloc
 
 - (void)dealloc {
-    _delegate = nil;
-    dispatch_barrier_sync(_workQueue, ^{});
+    dispatch_barrier_sync(_workQueue, ^{
+        [self disconnect];
+    });
 }
 
 @end
