@@ -25,6 +25,10 @@
 - (void)serverDidStop:(PSWebSocketServer *)server;
 
 - (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;
+- (BOOL)server:(PSWebSocketServer *)server shouldCloseRequestGracefully:(NSURLRequest *)request;
+- (NSInteger)statusCodeToGracefullyCloseRequest:(NSURLRequest *)request;
+- (NSString *)descriptionToGracefullyCloseRequest:(NSURLRequest *)request;
+
 - (void)server:(PSWebSocketServer *)server webSocketDidOpen:(PSWebSocket *)webSocket;
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
@@ -42,6 +46,7 @@
 #pragma mark - Initialization
 
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port;
++ (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port protocols:(NSArray *)protocol;
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates;
 
 #pragma mark - Actions

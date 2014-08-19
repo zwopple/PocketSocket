@@ -67,6 +67,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     PSWebSocketNetworkThread *_networkThread;
     dispatch_queue_t _workQueue;
     
+    NSArray *_protocols;
     NSArray *_SSLCertificates;
     BOOL _secure;
     
@@ -97,16 +98,22 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 #pragma mark - Initialization
 
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port {
-    return [[self alloc] initWithHost:host port:port SSLCertificates:nil];
+    return [[self alloc] initWithHost:host port:port SSLCertificates:nil protocols:nil];
+}
++ (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port protocols:(NSArray *)protocol {
+    return [[self alloc] initWithHost:host port:port SSLCertificates:nil protocols:protocol];
 }
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates {
-    return [[self alloc] initWithHost:host port:port SSLCertificates:SSLCertificates];
+    return [[self alloc] initWithHost:host port:port SSLCertificates:SSLCertificates protocols:nil];
 }
-- (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates {
+- (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates protocols:(NSArray *)protocols {
     NSParameterAssert(port);
     if((self = [super init])) {
         _networkThread = [[PSWebSocketNetworkThread alloc] init];
         _workQueue = dispatch_queue_create(nil, nil);
+        
+        // get the protocols
+        _protocols = protocols;
         
         // copy SSL certificates
         _SSLCertificates = [SSLCertificates copy];
@@ -452,10 +459,23 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
                     accept = [_delegate server:self acceptWebSocketWithRequest:request];
                 }];
                 if(!accept) {
-                    [self disconnectConnection:connection];
+                    // ask delegate to close gracefully or not
+                    if ([_delegate server:self shouldCloseRequestGracefully:request]) {
+                        // if yes get informations from the delegate and close
+                        NSString *description = [_delegate descriptionToGracefullyCloseRequest:request];
+                        NSInteger statusCode = [_delegate statusCodeToGracefullyCloseRequest:request];
+                        [self disconnectConnectionGracefully:connection statusCode:statusCode description:description];
+                    } else {
+                        [self disconnectConnection:connection];
+                    }
                     CFRelease(msg);
                     continue;
                 }
+            }
+            
+            // add protocols
+            if (_protocols && _protocols.count) {
+                [request setValue:[_protocols componentsJoinedByString:@","] forHTTPHeaderField:@"Sec-WebSocket-Protocol"];
             }
             
             // detach connection

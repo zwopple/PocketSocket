@@ -444,7 +444,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             
             // validate status
             if(statusCode != 101) {
-                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Handshake failed");
+                // if handshake failed, we keep the underlying error so we can retrieve its error code if necessary
+                NSError *underlyingError = [NSError errorWithDomain:PSWebSocketErrorDomain code:statusCode userInfo:nil];
+                PSWebSocketSetOutErrorWithUnderlyingError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Handshake failed", underlyingError);
                 return - 1;
             }
             

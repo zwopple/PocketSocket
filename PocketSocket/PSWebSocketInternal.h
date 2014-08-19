@@ -36,6 +36,7 @@ static const uint8_t PSWebSocketMaskMask = 0x80;
 static const uint8_t PSWebSocketPayloadLenMask = 0x7F;
 
 #define PSWebSocketSetOutError(e, c, d) if(e){ *e = [NSError errorWithDomain:PSWebSocketErrorDomain code:c userInfo:@{NSLocalizedDescriptionKey: d}]; }
+#define PSWebSocketSetOutErrorWithUnderlyingError(e, c, d, u) if(e){ *e = [NSError errorWithDomain:PSWebSocketErrorDomain code:c userInfo:@{NSLocalizedDescriptionKey: d, NSUnderlyingErrorKey: u}]; }
 
 static inline void _PSWebSocketLog(id self, NSString *format, ...) {
     __block va_list arg_list;
