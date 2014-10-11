@@ -181,7 +181,6 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     
     CFRunLoopRef runLoop = [[self runLoop] getCFRunLoop];
     CFRunLoopAddSource(runLoop, _socketRunLoopSource, kCFRunLoopDefaultMode);
-    CFRelease(runLoop);
     
     _running = YES;
     
