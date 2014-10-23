@@ -65,9 +65,24 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  *  Initialize a PSWebSocket instance in client mode.
  *
  *  @param request that is to be used to initiate the handshake
+ *  @param securityOptions these are TLS security options for NSInputStream
+ *  @param streamProperties these are properties for NSInputStream/NSOutputStream which can be passed with -(void)setProperty:forKey: method of stream. These options should be passed as array of arrays with 2 values @[key, value].
+ *
+ *  @return an initialized instance of PSWebSocket in client mode
+ *
+ *  @warning If you pass 'kCFStreamPropertySSLSettings' dictionary in this method it will be overriden by @securityOptions param or default security options
+ */
++ (instancetype)clientSocketWithRequest:(NSURLRequest *)request withStreamSecurityOptions:(NSDictionary *)securityOptions withStreamProperties:(NSArray *)streamProperties;
+
+/**
+ *  Initialize a PSWebSocket instance in client mode.
+ *  Calls internally clientSocketWithRequest:withStreamSecurityOptions:withStreamProperties:
+ *
+ *  @param request that is to be used to initiate the handshake
  *
  *  @return an initialized instance of PSWebSocket in client mode
  */
+
 + (instancetype)clientSocketWithRequest:(NSURLRequest *)request;
 
 /**

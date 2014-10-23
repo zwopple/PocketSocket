@@ -38,6 +38,12 @@
     NSInteger _closeCode;
     NSString *_closeReason;
     NSMutableArray *_pingHandlers;
+	BOOL _hasProxy;
+	BOOL _connectedToProxy;
+	NSString *_httpProxyAddress;
+	NSString *_httpProxyPort;
+	NSDictionary *_securityOptions;
+	NSArray *_streamProperties;
 }
 @end
 @implementation PSWebSocket
@@ -101,9 +107,12 @@
 }
 
 + (instancetype)clientSocketWithRequest:(NSURLRequest *)request {
-    return [[self alloc] initClientSocketWithRequest:request];
+    return [self clientSocketWithRequest:request withStreamSecurityOptions:nil withStreamProperties:nil];
 }
-- (instancetype)initClientSocketWithRequest:(NSURLRequest *)request {
++ (instancetype)clientSocketWithRequest:(NSURLRequest *)request withStreamSecurityOptions:(NSDictionary *)securityOptions withStreamProperties:(NSArray *)streamProperties {
+    return [[self alloc] initClientSocketWithRequest:request withStreamSecurityOptions:securityOptions withStreamProperties:streamProperties];
+}
+- (instancetype)initClientSocketWithRequest:(NSURLRequest *)request withStreamSecurityOptions:(NSDictionary *)securityOptions withStreamProperties:(NSArray *)streamProperties {
 	if((self = [self initWithMode:PSWebSocketModeClient request:request])) {
         NSURL *URL = request.URL;
         NSString *host = URL.host;
@@ -111,7 +120,29 @@
         if(port == 0) {
             port = (_secure) ? 443 : 80;
         }
+		
+		_streamProperties = [streamProperties copy];
+		_securityOptions = [securityOptions copy];
+		
+		NSDictionary *proxyDic = (__bridge_transfer NSDictionary *)CFNetworkCopySystemProxySettings();
+		
+		if (proxyDic) {
+			NSNumber *proxiesHTTPEnable = [proxyDic objectForKey:(__bridge NSString *)kCFNetworkProxiesHTTPEnable];
+			if ([proxiesHTTPEnable boolValue]) {
+				NSLog(@"Found http proxy");
+				_hasProxy = YES;
+				_httpProxyAddress = [proxyDic objectForKey:(__bridge NSString *)kCFNetworkProxiesHTTPProxy];
+				_httpProxyPort = [[proxyDic objectForKey:(__bridge NSString *)kCFNetworkProxiesHTTPPort] stringValue];
+			} else {
+				NSLog(@"No http proxy");
+			}
+		}
         
+		if (_hasProxy) {
+			host = _httpProxyAddress;
+			port = (UInt32)[_httpProxyPort intValue];
+		}
+		
         CFReadStreamRef readStream = nil;
         CFWriteStreamRef writeStream = nil;
         CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault,
@@ -124,19 +155,19 @@
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
         
-        if(_secure) {
-            NSMutableDictionary *opts = [NSMutableDictionary dictionary];
-            
-            opts[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
-            
-            // @TODO PINNED SSL
-            
-#if DEBUG
-            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
-            NSLog(@"PSWebSocket: debug mode allowing all SSL certificates");
-#endif
-            [_outputStream setProperty:opts forKey:(__bridge id)kCFStreamPropertySSLSettings];
-        }
+		if (_streamProperties) {
+			for (NSArray *pair in _streamProperties) {
+				NSString *key = [pair objectAtIndex:0];
+				id value = [pair objectAtIndex:1];
+				[_outputStream setProperty:value forKey:key];
+			}
+		}
+		
+        if(_secure && !_hasProxy) {
+			[self setupSecurity];
+        } else {
+			//maybe setup security for other proxy types
+		}
 	}
 	return self;
 }
@@ -250,9 +281,6 @@
     _inputStream.delegate = self;
     _outputStream.delegate = self;
     
-    // driver
-    [_driver start];
-    
     // schedule streams
     [_inputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
     [_outputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
@@ -283,6 +311,13 @@
             }
         });
     }
+	
+	if (!_hasProxy) {
+		// driver
+		[_driver start];
+	} else {
+		[self connectToProxy];
+	}
 }
 - (void)disconnectGracefully {
     _closeWhenFinishedOutput = YES;
@@ -302,6 +337,137 @@
     _outputStream = nil;
 }
 
+#pragma mark - Security
+
+- (void)setupSecurity {
+	
+	// @TODO PINNED SSL
+	
+	if ([_securityOptions count] > 0) {
+		[_outputStream setProperty:_securityOptions forKey:(__bridge id)kCFStreamPropertySSLSettings];
+	} else {
+		NSMutableDictionary *SSLOptions = [NSMutableDictionary dictionary];
+		
+		NSString *host = [_request.URL host];
+		[SSLOptions setValue:host forKey:(__bridge id)kCFStreamSSLPeerName];
+#if DEBUG
+		[SSLOptions setValue:[NSNumber numberWithBool:NO] forKey:(__bridge id)kCFStreamSSLValidatesCertificateChain];
+		[SSLOptions setValue:[NSNumber numberWithBool:YES] forKey:(__bridge id)kCFStreamSSLAllowsAnyRoot];
+		[SSLOptions setValue:[NSNumber numberWithBool:YES] forKey:(__bridge id)kCFStreamSSLAllowsExpiredCertificates];
+		[SSLOptions setValue:[NSNumber numberWithBool:YES] forKey:(__bridge id)kCFStreamSSLAllowsExpiredRoots];
+		[SSLOptions setValue:(__bridge id)kCFNull forKey:(__bridge id)kCFStreamSSLPeerName];
+		NSLog(@"PSWebSocket: debug mode allowing all SSL certificates");
+#endif
+		[SSLOptions setValue:(__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL forKey:(__bridge id)kCFStreamSSLLevel];
+		
+		[_outputStream setProperty:SSLOptions forKey:(__bridge id)kCFStreamPropertySSLSettings];
+	}
+}
+
+#pragma mark - Proxy
+
+- (void)connectToProxy {
+	int port = 80;
+	
+	if (!_request.URL.port) {
+		
+		NSString *scheme = [_request.URL.scheme lowercaseString];
+		
+		if ([scheme isEqualToString:@"wss"] || [scheme isEqualToString:@"https"]) {
+			port = 443;
+		} else if ([scheme isEqualToString:@"ws"] || [scheme isEqualToString:@"http"]) {
+			port = 80;
+		}
+	} else {
+		port = [_request.URL.port intValue];
+	}
+	
+	NSURL *proxyURL = [NSURL URLWithString:[NSString stringWithFormat:@"%@:%d", _request.URL.host, port]];
+	CFHTTPMessageRef request = CFHTTPMessageCreateRequest(NULL, CFSTR("CONNECT"), (__bridge CFURLRef)proxyURL, kCFHTTPVersion1_1);
+	
+	
+	NSString *host = [NSString stringWithFormat:@"%@:%d", _request.URL.host, port];
+	
+	CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Host"), (__bridge CFStringRef)host);
+	CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Proxy-Connection"), CFSTR("keep-alive"));
+	CFHTTPMessageSetHeaderFieldValue(request, CFSTR("Connection"), CFSTR("keep-alive"));
+	
+	NSData *message = CFBridgingRelease(CFHTTPMessageCopySerializedMessage(request));
+	
+	CFRelease(request);
+	
+	[_outputBuffer appendData:message];
+	[self pumpOutput];
+}
+- (NSUInteger)proxyCheckBytes:(void *)bytes maxLength:(NSUInteger)maxLength {
+	NSAssert(maxLength > 0, @"Must have 1 or more bytes");
+	
+	NSError *error = nil;
+	
+	uint8_t boundary[] = {'\r', '\n','\r', '\n'};
+	NSUInteger preBoundaryLength = 0;
+	NSUInteger matched = 0;
+	for(NSUInteger i = 0; i < maxLength; ++i) {
+		const uint8_t byte = ((const uint8_t *)bytes)[i];
+		const uint8_t boundaryByte = boundary[matched];
+		if(byte == boundaryByte) {
+			if(++matched == sizeof(boundary)) {
+				preBoundaryLength = i + 1;
+				break;
+			}
+		} else {
+			matched = 0;
+		}
+	}
+	if(preBoundaryLength == 0) {
+		// do not allow too much data for headers
+		if(maxLength >= 16384) {
+			error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeHandshakeFailed userInfo:@{NSLocalizedDescriptionKey: @"HTTP headers did not finish after reading 16384 bytes"}];
+			[self failWithError:error];
+			return -1;
+		}
+		return 0;
+	}
+	
+	// create handshake
+	CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(NULL, NO);
+	CFHTTPMessageAppendBytes(msg, (const UInt8 *)bytes, preBoundaryLength);
+	
+	
+	// validate complete
+	if(!CFHTTPMessageIsHeaderComplete(msg)) {
+		CFRelease(msg);
+		error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeHandshakeFailed userInfo:@{NSLocalizedDescriptionKey: @"HTTP headers found CRLFCRLF but not complete"}];
+		[self failWithError:error];
+		return -1;
+	}
+	
+	// get values
+	NSInteger statusCode = CFHTTPMessageGetResponseStatusCode(msg);
+	NSDictionary *headers = [CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(msg)) copy];
+	CFRelease(msg);
+	
+	if (statusCode == 200) {
+		NSLog(@"proxy \n %@", headers);
+		
+		_connectedToProxy = YES;
+		
+		if (_secure) {
+			[self setupSecurity];
+			[_driver start];
+		}
+		
+		return preBoundaryLength;
+	} else {
+        NSLog(@"Request failed with response code %ld", (long)statusCode);
+		error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeHandshakeFailed userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Received bad response code from proxy %ld", (long)statusCode]}];
+		[self failWithError:error];
+        return -1;
+    }
+	
+	return preBoundaryLength;
+}
+
 #pragma mark - Pumping
 
 - (void)pumpInput {
@@ -319,7 +485,12 @@
             NSInteger readLength = [_inputStream read:chunkBuffer maxLength:sizeof(chunkBuffer)];
             if(readLength > 0) {
                 if(!_inputBuffer.hasBytesAvailable) {
-                    NSInteger consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
+                    NSInteger consumedLength = -1;
+					if (_hasProxy && !_connectedToProxy) {
+						consumedLength = [self proxyCheckBytes:chunkBuffer maxLength:readLength];
+					} else {
+						consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
+					}
                     if(consumedLength < readLength) {
                         NSInteger offset = MAX(0, consumedLength);
                         NSInteger remaining = readLength - offset;
@@ -338,7 +509,12 @@
         }
         
         while(_inputBuffer.hasBytesAvailable) {
-            NSInteger readLength = [_driver execute:_inputBuffer.mutableBytes maxLength:_inputBuffer.bytesAvailable];
+            NSInteger readLength = -1;
+			if (_hasProxy && !_connectedToProxy) {
+				readLength = [self proxyCheckBytes:_inputBuffer.mutableBytes maxLength:_inputBuffer.bytesAvailable];
+			} else {
+				readLength = [_driver execute:_inputBuffer.mutableBytes maxLength:_inputBuffer.bytesAvailable];
+			}
             if(readLength <= 0) {
                 break;
             }
