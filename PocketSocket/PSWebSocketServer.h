@@ -48,5 +48,6 @@
 
 - (void)start;
 - (void)stop;
+- (void)sendToAll:(id)message;
 
 @end
