@@ -290,6 +290,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     }
     [_webSockets addObject:webSocket];
     webSocket.delegate = self;
+    webSocket.delegateQueue = _workQueue;
 }
 - (void)detachWebSocket:(PSWebSocket *)webSocket {
     if(![_webSockets containsObject:webSocket]) {
