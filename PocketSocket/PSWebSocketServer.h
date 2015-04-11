@@ -22,6 +22,7 @@
 @required
 
 - (void)serverDidStart:(PSWebSocketServer *)server;
+- (void)server:(PSWebSocketServer *)server didFailWithError:(NSError *)error;
 - (void)serverDidStop:(PSWebSocketServer *)server;
 
 - (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;

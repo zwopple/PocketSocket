@@ -171,8 +171,14 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     // bind
     CFSocketError err = CFSocketSetAddress(_socket, (__bridge CFDataRef)_addrData);
     if(err == kCFSocketError) {
+        if(!silent) {
+            [self notifyDelegateFailedToStart: errno];
+        }
         return;
     } else if(err == kCFSocketTimeout) {
+        if(!silent) {
+            [self notifyDelegateFailedToStart: ETIME];
+        }
         return;
     }
     
@@ -556,6 +562,12 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 - (void)notifyDelegateDidStart {
     [self executeDelegate:^{
         [_delegate serverDidStart:self];
+    }];
+}
+- (void)notifyDelegateFailedToStart: (int)err {
+    NSError* error = [NSError errorWithDomain: NSPOSIXErrorDomain code: err userInfo: nil];
+    [self executeDelegate:^{
+        [_delegate server:self didFailWithError:error];
     }];
 }
 - (void)notifyDelegateDidStop {
