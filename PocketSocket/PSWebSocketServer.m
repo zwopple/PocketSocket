@@ -316,6 +316,9 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     [self detachWebSocket:webSocket];
     [self notifyDelegateWebSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
 }
+- (void)webSocketIsHungry:(PSWebSocket *)webSocket {
+    [self notifyDelegateWebSocketIsHungry:webSocket];
+}
 
 #pragma mark - Connections
 
@@ -597,6 +600,14 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     [self executeDelegate:^{
         [_delegate server:self webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
     }];
+}
+
+- (void)notifyDelegateWebSocketIsHungry:(PSWebSocket *)webSocket {
+    if ([_delegate respondsToSelector: @selector(server:webSocketIsHungry:)]) {
+        [self executeDelegate:^{
+            [_delegate server:self webSocketIsHungry:webSocket];
+        }];
+    }
 }
 
 #pragma mark - Queueing

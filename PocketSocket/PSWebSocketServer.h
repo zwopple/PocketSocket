@@ -31,6 +31,8 @@
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
 
+@optional
+- (void)server:(PSWebSocketServer *)server webSocketIsHungry:(PSWebSocket *)webSocket;
 @end
 
 @interface PSWebSocketServer : NSObject

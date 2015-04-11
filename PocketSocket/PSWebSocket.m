@@ -359,39 +359,44 @@
         return;
     }
     _pumpingOutput = YES;
-    
-    while(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
-        NSInteger writeLength = [_outputStream write:_outputBuffer.bytes maxLength:_outputBuffer.bytesAvailable];
-        if(writeLength <= -1) {
-            _failed = YES;
+    do {
+        while(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
+            NSInteger writeLength = [_outputStream write:_outputBuffer.bytes maxLength:_outputBuffer.bytesAvailable];
+            if(writeLength <= -1) {
+                _failed = YES;
+                [self disconnect];
+                NSString *reason = @"Failed to write to output stream";
+                NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
+                [self notifyDelegateDidFailWithError:error];
+                return;
+            }
+            _outputBuffer.offset += writeLength;
+        }
+        if(_closeWhenFinishedOutput &&
+           !_outputBuffer.hasBytesAvailable &&
+           (_inputStream.streamStatus != NSStreamStatusNotOpen &&
+            _inputStream.streamStatus != NSStreamStatusClosed) &&
+           !_sentClose) {
+            _sentClose = YES;
+            
             [self disconnect];
-            NSString *reason = @"Failed to write to output stream";
-            NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
-            [self notifyDelegateDidFailWithError:error];
-            return;
+            
+            if(!_failed) {
+                [self notifyDelegateDidCloseWithCode:_closeCode reason:_closeReason wasClean:YES];
+            }
         }
-        _outputBuffer.offset += writeLength;
-    }
-    if(_closeWhenFinishedOutput &&
-       !_outputBuffer.hasBytesAvailable &&
-       (_inputStream.streamStatus != NSStreamStatusNotOpen &&
-        _inputStream.streamStatus != NSStreamStatusClosed) &&
-       !_sentClose) {
-        _sentClose = YES;
         
-        [self disconnect];
-        
-        if(!_failed) {
-            [self notifyDelegateDidCloseWithCode:_closeCode reason:_closeReason wasClean:YES];
+        [_outputBuffer compact];
+
+        if(_readyState == PSWebSocketReadyStateOpen &&
+           _outputStream.hasSpaceAvailable &&
+           [_delegate respondsToSelector: @selector(webSocketIsHungry:)]) {
+            [self executeDelegateAndWait:^{
+                [_delegate webSocketIsHungry: self];
+            }];
         }
-    }
-    
-    [_outputBuffer compact];
-    
+    } while (_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable);
     _pumpingOutput = NO;
-    if(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
-        [self pumpOutput];
-    }
 }
 
 #pragma mark - Failing

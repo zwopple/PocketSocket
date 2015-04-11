@@ -34,7 +34,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 - (void)webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
 - (void)webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
 - (void)webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
-
+@optional
+- (void)webSocketIsHungry:(PSWebSocket *)webSocket;
 @end
 
 /**
