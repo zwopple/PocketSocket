@@ -182,7 +182,6 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         NSAssert(success, @"Failed to write reason when sending close frame");
         NSAssert(remainingRange.length == 0, @"Failed to write reason when sending close frame");
         
-        success = YES;
         data.length = usedLength + sizeof(uint16_t);
     }
     [self writeMessageWithOpCode:PSWebSocketOpCodeClose data:data];
@@ -401,22 +400,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             NSAssert(maxLength > 0, @"Must have 1 or more bytes");
             NSAssert(_state == PSWebSocketDriverStateHandshakeResponse, @"Invalid state for reading handshake response");
             
-            uint8_t boundary[] = {'\r', '\n','\r', '\n'};
-            NSUInteger preBoundaryLength = 0;
-            NSUInteger matched = 0;
-            for(NSUInteger i = 0; i < maxLength; ++i) {
-                const uint8_t byte = ((const uint8_t *)bytes)[i];
-                const uint8_t boundaryByte = boundary[matched];
-                if(byte == boundaryByte) {
-                    if(++matched == sizeof(boundary)) {
-                        preBoundaryLength = i + 1;
-                        break;
-                    }
-                } else {
-                    matched = 0;
-                }
-            }
-            if(preBoundaryLength == 0) {
+            void* boundary = memmem(bytes, maxLength, "\r\n\r\n", 4);
+            if (boundary == NULL) {
                 // do not allow too much data for headers
                 if(maxLength >= 16384) {
                     PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"HTTP headers did not finish after reading 16384 bytes");
@@ -424,6 +409,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
                 }
                 return 0;
             }
+            NSUInteger preBoundaryLength = boundary + 4 - bytes;
             
             // create handshake
             CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(NULL, NO);
@@ -444,7 +430,21 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             
             // validate status
             if(statusCode != 101) {
-                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Handshake failed");
+                if(outError) {
+                    NSString* message = CFBridgingRelease(CFHTTPMessageCopyResponseStatusLine(msg));
+                    if (!message)
+                        message = [NSHTTPURLResponse localizedStringForStatusCode:statusCode];
+                    else if ([message hasPrefix:@"HTTP/1.1 "])
+                        message = [message substringFromIndex:9];
+                    NSString* desc = [@"Handshake failed: " stringByAppendingString:message];
+                    NSDictionary* userInfo = @{NSLocalizedDescriptionKey: desc,
+                                               NSLocalizedFailureReasonErrorKey: message,
+                                               PSHTTPStatusErrorKey: @(statusCode),
+                                               PSHTTPHeadersErrorKey: headers};
+                    *outError = [NSError errorWithDomain:PSWebSocketErrorDomain
+                                                    code:PSWebSocketErrorCodeHandshakeFailed
+                                                userInfo:userInfo];
+                }
                 return - 1;
             }
             

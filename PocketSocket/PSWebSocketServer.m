@@ -200,7 +200,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     }
     
     for(PSWebSocketServerConnection *connection in _connections.allObjects) {
-        [self disconnectConnectionGracefully:connection statusCode:500 description:@"Service Going Away"];
+        [self disconnectConnectionGracefully:connection statusCode:500 description:@"Service Going Away" headers: nil];
     }
     for(PSWebSocket *webSocket in _webSockets.allObjects) {
         [webSocket close];
@@ -346,12 +346,22 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     connection.inputStream.delegate = nil;
     connection.outputStream.delegate = nil;
 }
-- (void)disconnectConnectionGracefully:(PSWebSocketServerConnection *)connection statusCode:(NSInteger)statusCode description:(NSString *)description {
+- (void)disconnectConnectionGracefully:(PSWebSocketServerConnection *)connection
+                            statusCode:(NSInteger)statusCode
+                           description:(NSString *)description
+                               headers:(NSDictionary*)headers
+{
     if(connection.readyState >= PSWebSocketServerConnectionReadyStateClosing) {
         return;
     }
     connection.readyState = PSWebSocketServerConnectionReadyStateClosing;
+    if (!description)
+        description = [NSHTTPURLResponse localizedStringForStatusCode:statusCode];
     CFHTTPMessageRef msg = CFHTTPMessageCreateResponse(kCFAllocatorDefault, statusCode, (__bridge CFStringRef)description, kCFHTTPVersion1_1);
+    for (NSString* name in headers) {
+        CFHTTPMessageSetHeaderFieldValue(msg, (__bridge CFStringRef)name,
+                                         (__bridge CFStringRef)headers[name]);
+    }
     NSData *data = CFBridgingRelease(CFHTTPMessageCopySerializedMessage(msg));
     CFRelease(msg);
     [connection.outputBuffer appendData:data];
@@ -397,27 +407,17 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         }
         
         if(connection.inputBuffer.bytesAvailable > 4) {
-            uint8_t boundary[] = {'\r', '\n','\r', '\n'};
-            NSUInteger boundaryOffset = 0;
-            NSUInteger matched = 0;
-            for(NSUInteger i = 0; i < connection.inputBuffer.bytesAvailable; ++i) {
-                const uint8_t byte = ((const uint8_t *)connection.inputBuffer.bytes)[i];
-                const uint8_t boundaryByte = boundary[matched];
-                if(byte == boundaryByte) {
-                    if(++matched == sizeof(boundary)) {
-                        boundaryOffset = i + 1;
-                        break;
-                    }
-                } else {
-                    matched = 0;
-                }
-            }
-            if(boundaryOffset == 0) {
+            void* boundary = memmem(connection.inputBuffer.bytes,
+                                    connection.inputBuffer.bytesAvailable,
+                                    "\r\n\r\n", 4);
+            if (boundary == NULL) {
+                // Haven't reached end of HTTP headers yet
                 if(connection.inputBuffer.bytesAvailable >= 16384) {
                     [self disconnectConnection:connection];
                 }
                 continue;
             }
+            NSUInteger boundaryOffset = boundary + 4 - connection.inputBuffer.bytes;
             
             CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(kCFAllocatorDefault, YES);
             CFHTTPMessageAppendBytes(msg, connection.inputBuffer.bytes, connection.inputBuffer.bytesAvailable);
@@ -444,18 +444,30 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             }];
             
             if(![PSWebSocket isWebSocketRequest:request]) {
-                [self disconnectConnection:connection];
+                [self disconnectConnectionGracefully:connection
+                                          statusCode:501 description:@"WebSockets only, please"
+                                             headers:nil];
                 CFRelease(msg);
                 continue;
             }
             
             if(_delegate) {
-                __block BOOL accept = NO;
+                __block BOOL accept;
+                __block NSHTTPURLResponse* response = nil;
                 [self executeDelegateAndWait:^{
-                    accept = [_delegate server:self acceptWebSocketWithRequest:request];
+                    if ([_delegate respondsToSelector: @selector(server:acceptWebSocketWithRequest:response:)]) {
+                        accept = [_delegate server:self acceptWebSocketWithRequest:request response:&response];
+                    } else if ([_delegate respondsToSelector: @selector(server:acceptWebSocketWithRequest:)]) {
+                        accept = [_delegate server:self acceptWebSocketWithRequest:request];
+                    } else {
+                        accept = YES;
+                    }
                 }];
                 if(!accept) {
-                    [self disconnectConnection:connection];
+                    [self disconnectConnectionGracefully:connection
+                                              statusCode:(response.statusCode ?: 403)
+                                             description:nil
+                                                 headers:response.allHeaderFields];
                     CFRelease(msg);
                     continue;
                 }

@@ -25,13 +25,16 @@
 - (void)server:(PSWebSocketServer *)server didFailWithError:(NSError *)error;
 - (void)serverDidStop:(PSWebSocketServer *)server;
 
-- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;
 - (void)server:(PSWebSocketServer *)server webSocketDidOpen:(PSWebSocket *)webSocket;
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
 - (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
 
 @optional
+// Delegate may implement either one of these; variant with response is preferred:
+- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;
+- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request response:(NSHTTPURLResponse **)response;
+
 - (void)server:(PSWebSocketServer *)server webSocketIsHungry:(PSWebSocket *)webSocket;
 @end
 
