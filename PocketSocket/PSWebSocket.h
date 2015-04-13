@@ -60,6 +60,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 @property (nonatomic, weak) id <PSWebSocketDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
+@property (nonatomic, strong, readonly) NSURLRequest* URLRequest;
+@property (nonatomic, strong, readonly) NSString* remoteHost;
+
 #pragma mark - Initialization
 
 /**
