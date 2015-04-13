@@ -13,7 +13,6 @@
 //  limitations under the License.
 
 #import "PSWebSocket.h"
-#import "PSWebSocketNetworkThread.h"
 #import "PSWebSocketInternal.h"
 #import "PSWebSocketDriver.h"
 #import "PSWebSocketBuffer.h"
@@ -49,12 +48,6 @@
 
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request {
     return [PSWebSocketDriver isWebSocketRequest:request];
-}
-
-#pragma mark - Class Properties
-
-+ (NSRunLoop *)runLoop {
-    return [[PSWebSocketNetworkThread sharedNetworkThread] runLoop];
 }
 
 #pragma mark - Properties
@@ -96,7 +89,8 @@
         _mode = mode;
         _request = [request mutableCopy];
 		_readyState = PSWebSocketReadyStateConnecting;
-        _workQueue = dispatch_queue_create(nil, nil);
+        NSString* name = [NSString stringWithFormat: @"PSWebSocket <%@>", request.URL];
+        _workQueue = dispatch_queue_create(name.UTF8String, nil);
         if(_mode == PSWebSocketModeClient) {
             _driver = [PSWebSocketDriver clientDriverWithRequest:_request];
         } else {
@@ -277,9 +271,9 @@
     [_driver start];
     
     // schedule streams
-    [_inputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    
+    CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)_inputStream, _workQueue);
+    CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)_outputStream, _workQueue);
+
     // open streams
     if(_inputStream.streamStatus == NSStreamStatusNotOpen) {
         [_inputStream open];
@@ -317,9 +311,6 @@
     
     [_inputStream close];
     [_outputStream close];
-    
-    [_inputStream removeFromRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream removeFromRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
     
     _inputStream = nil;
     _outputStream = nil;
@@ -505,54 +496,53 @@
 #pragma mark - NSStreamDelegate
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)event {
+    // This is invoked on the work queue.
     // @TODO HANDLE PINNED SSL CERTIFICATES
-    [self executeWork:^{
-        switch(event) {
-            case NSStreamEventOpenCompleted: {
-                if(_mode != PSWebSocketModeClient) {
-                    [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."];
-                    return;
-                }
-                if(_readyState >= PSWebSocketReadyStateClosing) {
-                    return;
-                }
-                [self pumpOutput];
-                [self pumpInput];
-                break;
+    switch(event) {
+        case NSStreamEventOpenCompleted: {
+            if(_mode != PSWebSocketModeClient) {
+                [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."];
+                return;
             }
-            case NSStreamEventErrorOccurred: {
-                [self failWithError:stream.streamError];
-                [_inputBuffer reset];
-                break;
+            if(_readyState >= PSWebSocketReadyStateClosing) {
+                return;
             }
-            case NSStreamEventEndEncountered: {
-                [self pumpInput];
-                if(stream.streamError) {
-                    [self failWithError:stream.streamError];
-                } else {
-                    _readyState = PSWebSocketReadyStateClosed;
-                    if(!_sentClose && !_failed) {
-                        _failed = YES;
-                        [self disconnect];
-                        NSString *reason = [NSString stringWithFormat:@"%@ stream end encountered", (stream == _inputStream) ? @"Input" : @"Output"];
-                        NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
-                        [self notifyDelegateDidFailWithError:error];
-                    }
-                }
-                break;
-            }
-            case NSStreamEventHasBytesAvailable: {
-                [self pumpInput];
-                break;
-            }
-            case NSStreamEventHasSpaceAvailable: {
-                [self pumpOutput];
-                break;
-            }
-            default:
-                break;
+            [self pumpOutput];
+            [self pumpInput];
+            break;
         }
-    }];
+        case NSStreamEventErrorOccurred: {
+            [self failWithError:stream.streamError];
+            [_inputBuffer reset];
+            break;
+        }
+        case NSStreamEventEndEncountered: {
+            [self pumpInput];
+            if(stream.streamError) {
+                [self failWithError:stream.streamError];
+            } else {
+                _readyState = PSWebSocketReadyStateClosed;
+                if(!_sentClose && !_failed) {
+                    _failed = YES;
+                    [self disconnect];
+                    NSString *reason = [NSString stringWithFormat:@"%@ stream end encountered", (stream == _inputStream) ? @"Input" : @"Output"];
+                    NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
+                    [self notifyDelegateDidFailWithError:error];
+                }
+            }
+            break;
+        }
+        case NSStreamEventHasBytesAvailable: {
+            [self pumpInput];
+            break;
+        }
+        case NSStreamEventHasSpaceAvailable: {
+            [self pumpOutput];
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 #pragma mark - Delegation
