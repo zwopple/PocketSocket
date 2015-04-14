@@ -810,10 +810,29 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
 
 #pragma mark - Erroring
 
++ (NSError*)PSErrorWithCode:(NSInteger)code reason:(NSString *)reason {
+    if (reason == nil) {
+        static NSString* const kStatusNames[] = {
+            @"Normal",
+            @"Going Away",
+            @"Protocol Error",
+            @"Unhandled Type",
+            nil,// 1004 reserved
+            @"No Status Received",
+            nil,// 1006 reserved
+            @"Invalid UTF-8",
+            @"Policy Violated",
+            @"Message Too Big"
+        };
+        if (code >= PSWebSocketStatusCodeNormal && code <= PSWebSocketStatusCodeMessageTooBig) {
+            reason = kStatusNames[code - PSWebSocketStatusCodeNormal];
+        }
+    }
+    NSDictionary *userInfo = reason ? @{NSLocalizedDescriptionKey: reason} : nil;
+    return [NSError errorWithDomain:PSWebSocketErrorDomain code:code userInfo:userInfo];
+}
 - (void)failWithErrorCode:(NSInteger)code reason:(NSString *)reason {
-    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: reason};
-    NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:code userInfo:userInfo];
-    [self failWithError:error];
+    [self failWithError: [[self class] PSErrorWithCode:code reason:reason]];
 }
 - (void)failWithError:(NSError *)error {
     NSParameterAssert(error);

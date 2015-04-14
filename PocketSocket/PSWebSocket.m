@@ -219,6 +219,7 @@
         
         // send close code if we're not connecting
         if(!connecting) {
+            _closeCode = code;
             [_driver sendCloseCode:code reason:reason];
         }
         
@@ -380,7 +381,7 @@
                 _failed = YES;
                 [self disconnect];
                 NSString *reason = @"Failed to write to output stream";
-                NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
+                NSError* error = [PSWebSocketDriver PSErrorWithCode:PSWebSocketErrorCodeConnectionFailed reason:reason];
                 [self notifyDelegateDidFailWithError:error];
                 return;
             }
@@ -416,11 +417,10 @@
 #pragma mark - Failing
 
 - (void)failWithCode:(NSInteger)code reason:(NSString *)reason {
-    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: reason};
-    [self failWithError:[NSError errorWithDomain:PSWebSocketErrorDomain code:code userInfo:userInfo]];
+    [self failWithError:[PSWebSocketDriver PSErrorWithCode:code reason:reason]];
 }
 - (void)failWithError:(NSError *)error {
-    if(error.code == PSWebSocketStatusCodeProtocolError) {
+    if(error.code == PSWebSocketStatusCodeProtocolError && [error.domain isEqualToString:PSWebSocketErrorDomain]) {
         [self executeDelegate:^{
             _closeCode = error.code;
             _closeReason = error.localizedDescription;
@@ -526,7 +526,7 @@
                     _failed = YES;
                     [self disconnect];
                     NSString *reason = [NSString stringWithFormat:@"%@ stream end encountered", (stream == _inputStream) ? @"Input" : @"Output"];
-                    NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
+                    NSError *error = [PSWebSocketDriver PSErrorWithCode:PSWebSocketErrorCodeConnectionFailed reason:reason];
                     [self notifyDelegateDidFailWithError:error];
                 }
             }

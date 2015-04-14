@@ -35,6 +35,7 @@
 #pragma mark - Class Methods
 
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request;
++ (NSError*)PSErrorWithCode:(NSInteger)code reason:(NSString *)reason;
 
 #pragma mark - Properties
 
