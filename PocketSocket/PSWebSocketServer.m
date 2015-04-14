@@ -367,7 +367,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     [connection.outputBuffer appendData:data];
     [self pumpOutput];
     __weak typeof(self)weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC), _workQueue, ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), _workQueue, ^{
         __strong typeof(weakSelf)strongSelf = weakSelf;
         if(strongSelf) {
             [strongSelf disconnectConnection:connection];

@@ -227,7 +227,7 @@
         
         // disconnect hard in 30 seconds
         __weak typeof(self)weakSelf = self;
-        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 30.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf)strongSelf = weakSelf;
             if(!strongSelf) return;
             
@@ -289,7 +289,7 @@
     // prepare timeout
     if(_request.timeoutInterval > 0.0) {
         __weak typeof(self)weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _request.timeoutInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_request.timeoutInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf)strongSelf = weakSelf;
             if(strongSelf) {
                 [strongSelf executeWork:^{

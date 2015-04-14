@@ -314,7 +314,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         }
         
         // create deflate buffer
-        NSMutableData *deflated = [NSMutableData dataWithCapacity:ceil([payload length]/4.0)];
+        NSMutableData *deflated = [NSMutableData dataWithCapacity:[payload length]/4];
         
         // error
         NSError *error = nil;
