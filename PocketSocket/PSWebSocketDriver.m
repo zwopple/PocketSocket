@@ -172,13 +172,13 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     if(reason) {
         NSRange remainingRange = NSMakeRange(0, 0);
         NSUInteger usedLength = 0;
-        BOOL success = [reason getBytes:dataBytes + sizeof(uint16_t)
-                              maxLength:data.length - sizeof(uint16_t)
-                             usedLength:&usedLength
-                               encoding:NSUTF8StringEncoding
-                                options:NSStringEncodingConversionExternalRepresentation
-                                  range:NSMakeRange(0, reason.length)
-                         remainingRange:&remainingRange];
+        __unused BOOL success = [reason getBytes:dataBytes + sizeof(uint16_t)
+                                       maxLength:data.length - sizeof(uint16_t)
+                                      usedLength:&usedLength
+                                        encoding:NSUTF8StringEncoding
+                                         options:NSStringEncodingConversionExternalRepresentation
+                                           range:NSMakeRange(0, reason.length)
+                                  remainingRange:&remainingRange];
         NSAssert(success, @"Failed to write reason when sending close frame");
         NSAssert(remainingRange.length == 0, @"Failed to write reason when sending close frame");
         
@@ -269,6 +269,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Connection"), CFSTR("Upgrade"));
     CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Upgrade"), CFSTR("websocket"));
     CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Sec-WebSocket-Accept"), (__bridge CFStringRef)[self acceptHeaderForKey:_handshakeSecKey]);
+    if (_protocol) {
+        CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Sec-WebSocket-Protocol"), (__bridge CFStringRef)_protocol);
+    }
     
     NSMutableArray *negotiatedExtensionComponents = [NSMutableArray array];
     [negotiatedExtensionComponents addObjectsFromArray:[self pmdExtensionsHeaderComponents]];
@@ -448,14 +451,6 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
                 return - 1;
             }
             
-            // validate protocol
-            NSArray *protocolComponents = [_request.allHTTPHeaderFields[@"Sec-WebSocket-Protocol"] componentsSeparatedByString:@" "];
-            if(headers[@"Sec-WebSocket-Protocol"] && ![protocolComponents containsObject:headers[@"Sec-WebSocket-Protocol"]]) {
-                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Protocol");
-                return -1;
-            }
-            _protocol = headers[@"Sec-WebSocket-Protocol"];
-            
             // validate accept
             if(![headers[@"Sec-WebSocket-Accept"] isEqualToString:[self acceptHeaderForKey:_handshakeSecKey]]) {
                 PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Invalid Sec-WebSocket-Accept");
@@ -468,6 +463,18 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
                 return -1;
             }
             
+            // validate protocol
+            _protocol = headers[@"Sec-WebSocket-Protocol"];
+            NSString* protocolRequest = _request.allHTTPHeaderFields[@"Sec-WebSocket-Protocol"];
+            if (protocolRequest) {
+                NSArray *protocolComponents = [protocolRequest componentsSeparatedByString:@" "];
+                if(!_protocol || ![protocolComponents containsObject:_protocol]) {
+                    PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed,
+                                           @"Invalid Sec-WebSocket-Protocol");
+                    return -1;
+                }
+            }
+
             // extensions
             NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
             

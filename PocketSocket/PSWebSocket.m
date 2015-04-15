@@ -169,6 +169,14 @@
     return self;
 }
 
+- (NSString*)protocol {
+    return _driver.protocol;
+}
+
+- (void) setProtocol:(NSString *)protocol {
+    _driver.protocol = protocol;
+}
+
 #pragma mark - Actions
 
 - (void)open {
