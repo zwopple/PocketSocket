@@ -413,8 +413,9 @@
 
         if(_readyState == PSWebSocketReadyStateOpen &&
            _outputStream.hasSpaceAvailable &&
+           !_outputBuffer.hasBytesAvailable &&
            [_delegate respondsToSelector: @selector(webSocketIsHungry:)]) {
-            [self executeDelegateAndWait:^{
+            [self executeDelegate:^{
                 [_delegate webSocketIsHungry: self];
             }];
         }
