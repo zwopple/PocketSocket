@@ -429,7 +429,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             // get values
             NSInteger statusCode = CFHTTPMessageGetResponseStatusCode(msg);
             NSDictionary *headers = [CFBridgingRelease(CFHTTPMessageCopyAllHeaderFields(msg)) copy];
-            CFRelease(msg);
+            CFAutorelease(msg);
             
             // validate status
             if(statusCode != 101) {
