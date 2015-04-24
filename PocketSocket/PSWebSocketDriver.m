@@ -443,7 +443,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
                     NSDictionary* userInfo = @{NSLocalizedDescriptionKey: desc,
                                                NSLocalizedFailureReasonErrorKey: message,
                                                PSHTTPStatusErrorKey: @(statusCode),
-                                               PSHTTPHeadersErrorKey: headers};
+                                               PSHTTPResponseErrorKey: (__bridge id)msg};
                     *outError = [NSError errorWithDomain:PSWebSocketErrorDomain
                                                     code:PSWebSocketErrorCodeHandshakeFailed
                                                 userInfo:userInfo];
