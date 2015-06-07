@@ -44,6 +44,7 @@
 
 @property (nonatomic, weak) id <PSWebSocketServerDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
+@property (readonly) uint16_t realPort;
 
 #pragma mark - Initialization
 

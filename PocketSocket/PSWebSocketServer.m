@@ -90,6 +90,8 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     return [[PSWebSocketNetworkThread sharedNetworkThread] runLoop];
 }
 
+@synthesize realPort=_realPort;
+
 #pragma mark - Initialization
 
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port {
@@ -181,6 +183,12 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         }
         return;
     }
+
+    // get port
+    CFDataRef realAddrData = CFSocketCopyAddress(_socket);
+    const struct sockaddr_in *addr = (void*)CFDataGetBytePtr(realAddrData);
+    _realPort = addr->sin_port;
+    CFRelease(realAddrData);
     
     // schedule
     _socketRunLoopSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _socket, 0);
