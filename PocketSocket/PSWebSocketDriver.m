@@ -368,6 +368,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     // set masking data
     if(_mode == PSWebSocketModeClient) {
+        headerBytes = header.mutableBytes; // because -appendBytes may have realloced header
         headerBytes[1] |= PSWebSocketMaskMask;
         
         uint8_t maskKey[4];
