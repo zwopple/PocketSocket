@@ -37,6 +37,7 @@
     BOOL _failed;
     BOOL _pumpingInput;
     BOOL _pumpingOutput;
+    BOOL _serverUnvalidated;
     NSInteger _closeCode;
     NSString *_closeReason;
     NSMutableArray *_pingHandlers;
@@ -143,15 +144,7 @@
         
         if(_secure) {
             NSMutableDictionary *opts = [NSMutableDictionary dictionary];
-            
             opts[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
-            
-            // @TODO PINNED SSL
-            
-#if DEBUG
-            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
-            NSLog(@"PSWebSocket: debug mode allowing all SSL certificates");
-#endif
             [_outputStream setProperty:opts forKey:(__bridge id)kCFStreamPropertySSLSettings];
         }
 	}
@@ -272,6 +265,15 @@
 #pragma mark - Connection
 
 - (void)connect {
+    // disable automatic SSL cert validation if my delegate wants to do it
+    if (_secure && [_delegate respondsToSelector: @selector(webSocket:validateServerTrust:)]) {
+        _serverUnvalidated = YES;
+        NSMutableDictionary* ssl = [[_outputStream propertyForKey:
+                                          (__bridge id)kCFStreamPropertySSLSettings] mutableCopy];
+        ssl[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
+        [_outputStream setProperty: ssl forKey: (__bridge id)kCFStreamPropertySSLSettings];
+    }
+
     // delegate
     _inputStream.delegate = self;
     _outputStream.delegate = self;
@@ -501,7 +503,6 @@
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)event {
     // This is invoked on the work queue.
-    // @TODO HANDLE PINNED SSL CERTIFICATES
     switch(event) {
         case NSStreamEventOpenCompleted: {
             if(_mode != PSWebSocketModeClient) {
@@ -537,11 +538,17 @@
             break;
         }
         case NSStreamEventHasBytesAvailable: {
-            [self readInput];
+            if (_serverUnvalidated)
+                [self askDelegateToValidateServerTrust: stream];
+            else
+                [self readInput];
             break;
         }
         case NSStreamEventHasSpaceAvailable: {
-            [self pumpOutput];
+            if (_serverUnvalidated)
+                [self askDelegateToValidateServerTrust: stream];
+            else
+                [self pumpOutput];
             break;
         }
         default:
@@ -569,6 +576,29 @@
 - (void)notifyDelegateDidCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     [self executeDelegate:^{
         [_delegate webSocket:self didCloseWithCode:code reason:reason wasClean:wasClean];
+    }];
+}
+
+- (void) askDelegateToValidateServerTrust: (NSStream*)stream {
+    if (!_serverUnvalidated)
+        return;
+    SecTrustRef trust = (__bridge SecTrustRef)[stream propertyForKey: (__bridge id)kCFStreamPropertySSLPeerTrust];
+    NSAssert(trust != nil, @"Couldn't get SSL trust");
+    [self executeDelegate:^{
+        BOOL ok = [_delegate webSocket: self validateServerTrust: trust];
+        [self executeWork:^{
+            if (ok) {
+                _serverUnvalidated = NO;
+                [self pumpOutput];
+                [self pumpInput];
+            } else {
+                NSDictionary* userInfo = @{NSURLErrorFailingURLStringErrorKey: _request.URL.absoluteString};
+                NSError* error = [NSError errorWithDomain: NSURLErrorDomain
+                                                     code: NSURLErrorServerCertificateUntrusted
+                                                 userInfo: userInfo];
+                [self failWithError: error];
+            }
+        }];
     }];
 }
 
