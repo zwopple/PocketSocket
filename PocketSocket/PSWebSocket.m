@@ -53,7 +53,7 @@
 
 #pragma mark - Properties
 
-@synthesize URLRequest=_request;
+@synthesize URLRequest=_request, SSLClientCertificates=_SSLClientCertificates;
 
 - (PSWebSocketReadyState)readyState {
     __block PSWebSocketReadyState value = 0;
@@ -141,13 +141,7 @@
         
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
-        
-        if(_secure) {
-            NSMutableDictionary *opts = [NSMutableDictionary dictionary];
-            opts[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
-            [_outputStream setProperty:opts forKey:(__bridge id)kCFStreamPropertySSLSettings];
-        }
-	}
+    }
 	return self;
 }
 
@@ -158,6 +152,12 @@
     if((self = [self initWithMode:PSWebSocketModeServer request:request])) {
         _inputStream = inputStream;
         _outputStream = outputStream;
+
+        // Get the client's SSL cert, if any:
+        NSDictionary* ssl = [inputStream propertyForKey: (__bridge id)kCFStreamPropertySSLSettings];
+        if (ssl) {
+            _SSLClientCertificates = ssl[(__bridge id)kCFStreamSSLCertificates];
+        }
     }
     return self;
 }
@@ -265,13 +265,17 @@
 #pragma mark - Connection
 
 - (void)connect {
-    // disable automatic SSL cert validation if my delegate wants to do it
-    if (_secure && [_delegate respondsToSelector: @selector(webSocket:validateServerTrust:)]) {
-        _serverUnvalidated = YES;
-        NSMutableDictionary* ssl = [[_outputStream propertyForKey:
-                                          (__bridge id)kCFStreamPropertySSLSettings] mutableCopy];
-        ssl[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
-        [_outputStream setProperty: ssl forKey: (__bridge id)kCFStreamPropertySSLSettings];
+    if(_secure && _mode==PSWebSocketModeClient) {
+        NSMutableDictionary *opts = [NSMutableDictionary dictionary];
+        opts[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
+        // disable automatic SSL cert validation if my delegate wants to do it
+        if ([_delegate respondsToSelector: @selector(webSocket:validateServerTrust:)]) {
+            _serverUnvalidated = YES;
+            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
+        }
+        if (_SSLClientCertificates)
+            opts[(__bridge id)kCFStreamSSLCertificates] = _SSLClientCertificates;
+        [_outputStream setProperty:opts forKey:(__bridge id)kCFStreamPropertySSLSettings];
     }
 
     // delegate

@@ -63,6 +63,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 
 @property (nonatomic, strong, readonly) NSURLRequest* URLRequest;
 @property (nonatomic, strong, readonly) NSString* remoteHost;
+@property (nonatomic, strong) NSArray* SSLClientCertificates;
 
 @property (nonatomic, strong) NSString* protocol;
 
