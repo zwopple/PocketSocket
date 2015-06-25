@@ -100,6 +100,13 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 - (void)open;
 
 /**
+  * Setting this property to YES stops the WebSocket from reading data from the TCP stream.
+  * This can be useful for flow control, if messages are arriving faster than the application
+  * can process them, so the messages don't pile up in memory.
+  */
+@property BOOL readPaused;
+
+/**
  *  Send a message over the websocket
  *
  *  @param message an instance of NSData or NSString to send

@@ -37,6 +37,7 @@
     BOOL _failed;
     BOOL _pumpingInput;
     BOOL _pumpingOutput;
+    BOOL _readPaused;
     BOOL _serverUnvalidated;
     NSInteger _closeCode;
     NSString *_closeReason;
@@ -343,7 +344,7 @@
     if(_readyState >= PSWebSocketReadyStateClosing) {
         return;
     }
-    if(_pumpingInput) {
+    if(_pumpingInput || _readPaused) {
         return;
     }
     _pumpingInput = YES;
@@ -422,6 +423,24 @@
         }
     } while (_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable);
     _pumpingOutput = NO;
+}
+
+- (BOOL) readPaused {
+    __block BOOL result;
+    [self executeWorkAndWait: ^{
+        result = _readPaused;
+    }];
+    return result;
+}
+
+- (void) setReadPaused: (BOOL)paused {
+    [self executeWork: ^{
+        if (paused != _readPaused) {
+            _readPaused = paused;
+            if (!paused)
+                [self pumpInput];
+        }
+    }];
 }
 
 #pragma mark - Failing
