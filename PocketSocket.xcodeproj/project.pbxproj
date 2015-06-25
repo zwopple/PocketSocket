@@ -303,7 +303,7 @@
 		EEE5E30218B37DD500BAE47A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Zwopple Limited";
 				TargetAttributes = {
 					EEE5E35F18B37F8700BAE47A = {
@@ -413,6 +413,7 @@
 		275D3AE71B02811E0013B9A9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DSTROOT = /tmp/PocketSocket.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PocketSocket/PocketSocket-Prefix.pch";
@@ -427,6 +428,7 @@
 		275D3AE81B02811E0013B9A9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DSTROOT = /tmp/PocketSocket.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PocketSocket/PocketSocket-Prefix.pch";
