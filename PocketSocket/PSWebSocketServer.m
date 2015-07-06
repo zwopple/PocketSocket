@@ -187,7 +187,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     // get port
     CFDataRef realAddrData = CFSocketCopyAddress(_socket);
     const struct sockaddr_in *addr = (void*)CFDataGetBytePtr(realAddrData);
-    _realPort = addr->sin_port;
+    _realPort = ntohs(addr->sin_port);
     CFRelease(realAddrData);
     
     // schedule
