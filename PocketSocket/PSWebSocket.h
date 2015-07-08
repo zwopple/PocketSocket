@@ -55,6 +55,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  */
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request;
 
++ (NSData*) peerAddressOfStream: (NSInputStream*)inputStream;
+
 #pragma mark - Properties
 
 @property (nonatomic, assign, readonly) PSWebSocketReadyState readyState;
@@ -62,6 +64,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
 
 @property (nonatomic, strong, readonly) NSURLRequest* URLRequest;
+@property (nonatomic, strong, readonly) NSData* remoteAddress;
 @property (nonatomic, strong, readonly) NSString* remoteHost;
 @property (nonatomic, strong) NSArray* SSLClientCertificates;
 

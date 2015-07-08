@@ -32,8 +32,13 @@
 
 @optional
 // Delegate may implement either one of these; variant with response is preferred:
-- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;
-- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request response:(NSHTTPURLResponse **)response;
+- (BOOL)server:(PSWebSocketServer *)server
+        acceptWebSocketWithRequest:(NSURLRequest *)request;
+- (BOOL)server:(PSWebSocketServer *)server
+        acceptWebSocketFrom:(NSData*)address
+        withRequest:(NSURLRequest *)request
+        trust:(SecTrustRef)trust
+        response:(NSHTTPURLResponse **)response;
 
 - (void)server:(PSWebSocketServer *)server webSocketIsHungry:(PSWebSocket *)webSocket;
 @end

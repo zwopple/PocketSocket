@@ -467,18 +467,10 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 
             NSString* protocol = nil;
             if(_delegate) {
-                __block BOOL accept;
-                __block NSHTTPURLResponse* response = nil;
-                [self executeDelegateAndWait:^{
-                    if ([_delegate respondsToSelector: @selector(server:acceptWebSocketWithRequest:response:)]) {
-                        accept = [_delegate server:self acceptWebSocketWithRequest:request response:&response];
-                    } else if ([_delegate respondsToSelector: @selector(server:acceptWebSocketWithRequest:)]) {
-                        accept = [_delegate server:self acceptWebSocketWithRequest:request];
-                    } else {
-                        accept = YES;
-                    }
-                }];
-                if(!accept) {
+                NSHTTPURLResponse* response = nil;
+                if (![self askDelegateShouldAcceptConnection:connection
+                                                     request:request
+                                                    response:&response]) {
                     [self disconnectConnectionGracefully:connection
                                               statusCode:(response.statusCode ?: 403)
                                              description:nil
@@ -491,8 +483,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             
             // detach connection
             [self detatchConnection:connection];
-        
-            
+
             // create webSocket
             PSWebSocket *webSocket = [PSWebSocket serverSocketWithRequest:request inputStream:connection.inputStream outputStream:connection.outputStream];
             
@@ -637,6 +628,36 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             [_delegate server:self webSocketIsHungry:webSocket];
         }];
     }
+}
+
+- (BOOL) askDelegateShouldAcceptConnection: (PSWebSocketServerConnection*)connection
+                                   request: (NSURLRequest*)request
+                                  response: (NSHTTPURLResponse**)outResponse
+{
+    __block BOOL accept;
+    __block NSHTTPURLResponse* response = nil;
+    [self executeDelegateAndWait:^{
+        if ([_delegate respondsToSelector: @selector(server:acceptWebSocketFrom:withRequest:trust:response:)]) {
+            NSData* address = [PSWebSocket peerAddressOfStream: connection.inputStream];
+            SecTrustRef trust = (SecTrustRef)CFReadStreamCopyProperty(
+                                                  (__bridge CFReadStreamRef)connection.inputStream,
+                                                  kCFStreamPropertySSLPeerTrust);
+            NSLog(@"### SecTrustRef = %@, certs[0] = %@", trust, SecTrustGetCertificateAtIndex(trust, 0));
+            accept = [_delegate server:self
+                   acceptWebSocketFrom:address
+                           withRequest:request
+                                 trust:trust
+                              response:&response];
+            if (trust)
+                CFRelease(trust);
+        } else if ([_delegate respondsToSelector: @selector(server:acceptWebSocketWithRequest:)]) {
+            accept = [_delegate server:self acceptWebSocketWithRequest:request];
+        } else {
+            accept = YES;
+        }
+    }];
+    *outResponse = response;
+    return accept;
 }
 
 #pragma mark - Queueing

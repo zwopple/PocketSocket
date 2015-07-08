@@ -52,6 +52,22 @@
     return [PSWebSocketDriver isWebSocketRequest:request];
 }
 
++ (NSData*) peerAddressOfStream: (NSInputStream*)inputStream {
+    // First recover the socket handle from the stream:
+    NSData* handleData = CFBridgingRelease(CFReadStreamCopyProperty(
+                                                                    (__bridge CFReadStreamRef)inputStream,
+                                                                    kCFStreamPropertySocketNativeHandle));
+    if (!handleData || handleData.length != sizeof(CFSocketNativeHandle))
+        return nil;
+    CFSocketNativeHandle socketHandle = *(const CFSocketNativeHandle*)handleData.bytes;
+    // Get the remote/peer address in binary form:
+    struct sockaddr_in addr;
+    unsigned addrLen = sizeof(addr);
+    if (getpeername(socketHandle, (struct sockaddr*)&addr,&addrLen) < 0)
+        return nil;
+    return [NSData dataWithBytes: &addr length: addr.sin_len];
+}
+
 #pragma mark - Properties
 
 @synthesize URLRequest=_request, SSLClientCertificates=_SSLClientCertificates;
@@ -64,24 +80,20 @@
     return value;
 }
 
+- (NSData*) remoteAddress {
+    return [[self class] peerAddressOfStream: _inputStream];
+}
+
 - (NSString*) remoteHost {
-    // First recover the socket handle from the stream:
-    NSData* handleData = CFBridgingRelease(CFReadStreamCopyProperty(
-                                                  (__bridge CFReadStreamRef)_inputStream,
-                                                  kCFStreamPropertySocketNativeHandle));
-    if (!handleData || handleData.length != sizeof(CFSocketNativeHandle))
+    NSData* addrData = self.remoteAddress;
+    if (!addrData)
         return nil;
-    CFSocketNativeHandle socketHandle = *(const CFSocketNativeHandle*)handleData.bytes;
-    // Get the remote/peer address in binary form:
-    struct sockaddr_in addr;
-    unsigned addrLen = sizeof(addr);
-    if (getpeername(socketHandle, (struct sockaddr*)&addr,&addrLen) < 0)
-        return nil;
+    const struct sockaddr_in *addr = addrData.bytes;
     // Format it in readable (e.g. dotted-quad) form, with the port number:
     char nameBuf[INET6_ADDRSTRLEN];
-    if (inet_ntop(addr.sin_family, &addr.sin_addr, nameBuf, (socklen_t)sizeof(nameBuf)) == NULL)
+    if (inet_ntop(addr->sin_family, &addr->sin_addr, nameBuf, (socklen_t)sizeof(nameBuf)) == NULL)
         return nil;
-    return [NSString stringWithFormat: @"%s:%hu", nameBuf, ntohs(addr.sin_port)];
+    return [NSString stringWithFormat: @"%s:%hu", nameBuf, ntohs(addr->sin_port)];
 }
 
 #pragma mark - Initialization
