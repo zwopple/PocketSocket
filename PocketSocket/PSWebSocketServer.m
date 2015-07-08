@@ -270,6 +270,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             
             opts[(__bridge id)kCFStreamSSLIsServer] = @YES;
             opts[(__bridge id)kCFStreamSSLCertificates] = _SSLCertificates;
+            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO; // i.e. client certs
             
             CFReadStreamSetProperty(readStream, kCFStreamPropertySSLSettings, (__bridge CFDictionaryRef)opts);
             CFWriteStreamSetProperty(writeStream, kCFStreamPropertySSLSettings, (__bridge CFDictionaryRef)opts);
@@ -374,6 +375,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         CFHTTPMessageSetHeaderFieldValue(msg, (__bridge CFStringRef)name,
                                          (__bridge CFStringRef)headers[name]);
     }
+    CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Connection"), CFSTR("Close"));
     NSData *data = CFBridgingRelease(CFHTTPMessageCopySerializedMessage(msg));
     CFRelease(msg);
     [connection.outputBuffer appendData:data];
