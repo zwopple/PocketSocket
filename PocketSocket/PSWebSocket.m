@@ -347,18 +347,11 @@
 #pragma mark - Pumping
 
 - (void)pumpInput {
-    if(_readyState < PSWebSocketReadyStateClosing && !_pumpingInput)
-        if (_inputStream.hasBytesAvailable)
-            [self readInput];
-}
+    if(_readyState >= PSWebSocketReadyStateClosing
+            || _pumpingInput || _readPaused
+            || !_inputStream.hasBytesAvailable)
+        return;
 
-- (void)readInput {
-    if(_readyState >= PSWebSocketReadyStateClosing) {
-        return;
-    }
-    if(_pumpingInput || _readPaused) {
-        return;
-    }
     _pumpingInput = YES;
     @autoreleasepool {
         uint8_t chunkBuffer[4096];
@@ -576,7 +569,7 @@
             if (_serverUnvalidated)
                 [self askDelegateToValidateServerTrust: stream];
             else
-                [self readInput];
+                [self pumpInput];
             break;
         }
         case NSStreamEventHasSpaceAvailable: {
