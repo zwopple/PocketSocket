@@ -642,7 +642,6 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             SecTrustRef trust = (SecTrustRef)CFReadStreamCopyProperty(
                                                   (__bridge CFReadStreamRef)connection.inputStream,
                                                   kCFStreamPropertySSLPeerTrust);
-            NSLog(@"### SecTrustRef = %@, certs[0] = %@", trust, SecTrustGetCertificateAtIndex(trust, 0));
             accept = [_delegate server:self
                    acceptWebSocketFrom:address
                            withRequest:request
