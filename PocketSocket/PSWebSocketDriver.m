@@ -417,8 +417,11 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             
             // create handshake
             CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(NULL, NO);
-            CFHTTPMessageAppendBytes(msg, (const UInt8 *)bytes, preBoundaryLength);
-            
+            if (!CFHTTPMessageAppendBytes(msg, (const UInt8 *)bytes, preBoundaryLength)) {
+                PSWebSocketSetOutError(outError, PSWebSocketErrorCodeHandshakeFailed, @"Not a valid HTTP response");
+                CFRelease(msg);
+                return -1;
+            }
             
             // validate complete
             if(!CFHTTPMessageIsHeaderComplete(msg)) {
