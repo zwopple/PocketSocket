@@ -376,6 +376,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
                                          (__bridge CFStringRef)headers[name]);
     }
     CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Connection"), CFSTR("Close"));
+    CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Content-Length"), CFSTR("0"));
     NSData *data = CFBridgingRelease(CFHTTPMessageCopySerializedMessage(msg));
     CFRelease(msg);
     [connection.outputBuffer appendData:data];
