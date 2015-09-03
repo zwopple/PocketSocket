@@ -167,18 +167,31 @@
         [self connect];
     }];
 }
+
+- (void)_send:(id)message {
+    if([message isKindOfClass:[NSString class]]) {
+        [_driver sendText:message];
+    } else if([message isKindOfClass:[NSData class]]) {
+        [_driver sendBinary:message];
+    } else {
+        [NSException raise:@"Invalid Message" format:@"Messages must be instances of NSString or NSData"];
+    }
+}
+
 - (void)send:(id)message {
     NSParameterAssert(message);
     [self executeWork:^{
-        if([message isKindOfClass:[NSString class]]) {
-            [_driver sendText:message];
-        } else if([message isKindOfClass:[NSData class]]) {
-            [_driver sendBinary:message];
-        } else {
-            [NSException raise:@"Invalid Message" format:@"Messages must be instances of NSString or NSData"];
-        }
+        [self _send:message];
     }];
 }
+
+- (void)sendAndWait:(id)message {
+    NSParameterAssert(message);
+    [self executeWorkAndWait:^{
+        [self _send:message];
+    }];
+}
+
 - (void)ping:(NSData *)pingData handler:(void (^)(NSData *pongData))handler {
     [self executeWork:^{
         if(handler) {

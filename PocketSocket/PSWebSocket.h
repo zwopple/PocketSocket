@@ -92,11 +92,18 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 - (void)open;
 
 /**
- *  Send a message over the websocket
+ *  Send a message over the websocket (asynchronously)
  *
  *  @param message an instance of NSData or NSString to send
  */
 - (void)send:(id)message;
+
+/**
+ *  Send a message over the websocket (synchronously)
+ *
+ *  @param message an instance of NSData or NSString to send
+ */
+- (void)sendAndWait:(id)message;
 
 /**
  *  Send a ping over the websocket
