@@ -168,7 +168,7 @@
     }];
 }
 
-- (void)_send:(id)message {
+- (BOOL)_send:(id)message {
     if([message isKindOfClass:[NSString class]]) {
         [_driver sendText:message];
     } else if([message isKindOfClass:[NSData class]]) {
@@ -176,6 +176,8 @@
     } else {
         [NSException raise:@"Invalid Message" format:@"Messages must be instances of NSString or NSData"];
     }
+    
+    return !_failed;
 }
 
 - (void)send:(id)message {
@@ -185,11 +187,14 @@
     }];
 }
 
-- (void)sendAndWait:(id)message {
+- (BOOL)sendAndWait:(id)message {
     NSParameterAssert(message);
+    __block BOOL result = NO;
     [self executeWorkAndWait:^{
-        [self _send:message];
+        result = [self _send:message];
     }];
+    
+    return result;
 }
 
 - (void)ping:(NSData *)pingData handler:(void (^)(NSData *pongData))handler {

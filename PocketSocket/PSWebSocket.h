@@ -103,7 +103,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  *
  *  @param message an instance of NSData or NSString to send
  */
-- (void)sendAndWait:(id)message;
+- (BOOL)sendAndWait:(id)message;
 
 /**
  *  Send a ping over the websocket
