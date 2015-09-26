@@ -13,9 +13,23 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.8'
   s.tvos.deployment_target = '9.0'
 
-  s.public_header_files = 'PocketSocket/PSWebSocket.h', 'PocketSocket/PSWebSocketDriver.h', 'PocketSocket/PSWebSocketTypes.h', 'PocketSocket/PSWebSocketServer.h'
-  s.source_files = 'PocketSocket/PS*.{h,m,c}'
-  
-  s.frameworks = 'CFNetwork', 'Foundation', 'Security'
-  s.libraries = 'z', 'system'
+  s.subspec 'Core' do |ss|
+    ss.public_header_files = 'PocketSocket/PSWebSocketDriver.h', 'PocketSocket/PSWebSocketTypes.h'
+    ss.source_files = 'PocketSocket/PSWebSocketDriver.{h,m}', 'PocketSocket/PSWebSocketTypes.{h,m}', 'PocketSocket/PSWebSocketBuffer.{h,m}', 'PocketSocket/PSWebSocketDeflater.{h,m}', 'PocketSocket/PSWebSocketInflater.{h,m}', 'PocketSocket/PSWebSocketUTF8Decoder.{h,m}', 'PocketSocket/PSWebSocketInternal.h'
+
+    ss.frameworks = 'CFNetwork', 'Foundation', 'Security'
+    ss.libraries = 'z', 'system'
+  end
+
+  s.subspec 'Client' do |ss|
+    ss.dependency 'PocketSocket/Core'
+    ss.public_header_files = 'PocketSocket/PSWebSocket.h'
+    ss.source_files = 'PocketSocket/PSWebSocket.{h,m}', 'PocketSocket/PSWebSocketNetworkThread.{h,m}'
+  end
+
+  s.subspec 'Server' do |ss|
+    ss.dependency 'PocketSocket/Client'
+    ss.public_header_files = 'PocketSocket/PSWebSocketServer.h'
+    ss.source_files = 'PocketSocket/PSWebSocketServer.{h,m}'
+  end
 end
