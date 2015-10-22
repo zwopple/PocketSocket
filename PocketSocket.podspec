@@ -11,6 +11,7 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'
+  s.tvos.deployment_target = '9.0'
 
   s.public_header_files = 'PocketSocket/PSWebSocket.h', 'PocketSocket/PSWebSocketDriver.h', 'PocketSocket/PSWebSocketTypes.h', 'PocketSocket/PSWebSocketServer.h'
   s.source_files = 'PocketSocket/PS*.{h,m,c}'
