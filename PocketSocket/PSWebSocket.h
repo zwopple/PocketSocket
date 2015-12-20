@@ -34,7 +34,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 - (void)webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
 - (void)webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
 - (void)webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
-
+@optional
+- (void)webSocketIsHungry:(PSWebSocket *)webSocket;
+- (BOOL)webSocket:(PSWebSocket *)webSocket validateServerTrust: (SecTrustRef)trust;
 @end
 
 /**
@@ -53,11 +55,20 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  */
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request;
 
++ (NSData*) peerAddressOfStream: (NSInputStream*)inputStream;
+
 #pragma mark - Properties
 
 @property (nonatomic, assign, readonly) PSWebSocketReadyState readyState;
 @property (nonatomic, weak) id <PSWebSocketDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
+
+@property (nonatomic, strong, readonly) NSURLRequest* URLRequest;
+@property (nonatomic, strong, readonly) NSData* remoteAddress;
+@property (nonatomic, strong, readonly) NSString* remoteHost;
+@property (nonatomic, strong) NSArray* SSLClientCertificates;
+
+@property (nonatomic, strong) NSString* protocol;
 
 #pragma mark - Initialization
 
@@ -92,11 +103,25 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 - (void)open;
 
 /**
- *  Send a message over the websocket
+  * Setting this property to YES stops the WebSocket from reading data from the TCP stream.
+  * This can be useful for flow control, if messages are arriving faster than the application
+  * can process them, so the messages don't pile up in memory.
+  */
+@property BOOL readPaused;
+
+/**
+ *  Send a message over the websocket (asynchronously)
  *
  *  @param message an instance of NSData or NSString to send
  */
 - (void)send:(id)message;
+
+/**
+ *  Send a message over the websocket (synchronously)
+ *
+ *  @param message an instance of NSData or NSString to send
+ */
+- (BOOL)sendAndWait:(id)message;
 
 /**
  *  Send a ping over the websocket

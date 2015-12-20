@@ -41,3 +41,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketStatusCode) {
 
 #define PSWebSocketGUID @"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 #define PSWebSocketErrorDomain @"PSWebSocketErrorDomain"
+
+// NSError userInfo keys, used with PSWebSocketErrorCodeHandshakeFailed:
+#define PSHTTPStatusErrorKey @"HTTPStatus"      // The HTTP status (404, etc.)
+#define PSHTTPResponseErrorKey @"HTTPResponse"  // The entire HTTP response as an CFHTTPMessageRef
