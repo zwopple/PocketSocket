@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'PocketSocket'
-  s.version  = '0.6.4'
+  s.version  = '0.6.6'
   s.license  = 'Apache 2.0'
   s.summary  = 'Objective-C websocket client/server library for building things that work in realtime on iOS and OS X.'
   s.description = 'Objective-C websocket client/server library. Conforms fully to RFC6455 websocket protocol, support for websocket compression via the permessage-deflate extension, passes all ~355 Autobahn tests with 100% compliance and comes with a driver level BYO networking API.'

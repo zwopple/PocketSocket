@@ -15,6 +15,7 @@
 #import <Foundation/Foundation.h>
 #import <Foundation/Foundation.h>
 #import "PSWebSocketTypes.h"
+#import "PSWebSocketDriver.h"
 
 typedef NS_ENUM(uint8_t, PSWebSocketOpCode) {
     PSWebSocketOpCodeContinuation = 0x0,
@@ -35,7 +36,7 @@ static const uint8_t PSWebSocketRsv3Mask = 0x10;
 static const uint8_t PSWebSocketMaskMask = 0x80;
 static const uint8_t PSWebSocketPayloadLenMask = 0x7F;
 
-#define PSWebSocketSetOutError(e, c, d) if(e){ *e = [NSError errorWithDomain:PSWebSocketErrorDomain code:c userInfo:@{NSLocalizedDescriptionKey: d}]; }
+#define PSWebSocketSetOutError(e, c, d) if(e){ *e = [PSWebSocketDriver PSErrorWithCode:c reason:d]; }
 
 static inline void _PSWebSocketLog(id self, NSString *format, ...) {
     __block va_list arg_list;
