@@ -181,8 +181,10 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
                          remainingRange:&remainingRange];
         NSAssert(success, @"Failed to write reason when sending close frame");
         NSAssert(remainingRange.length == 0, @"Failed to write reason when sending close frame");
-        
-        success = YES;
+        if (!success) {
+            NSLog(@"Failed to write websocket close reason when sending frame");
+        }
+//        success = YES;
         data.length = usedLength + sizeof(uint16_t);
     }
     [self writeMessageWithOpCode:PSWebSocketOpCodeClose data:data];
