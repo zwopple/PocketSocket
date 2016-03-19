@@ -175,11 +175,15 @@ Lastly we're set out to create the full picture from client to server all in a s
 
 ### Authors
 
-* Robert Payne
+* Robert Payne (@robertjpayne)
+
+### Contributors
+
+* Jens Alfke (@snej)
 
 ### License
 
-Copyright 2014 Zwopple Limited
+Copyright 2016 Zwopple Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
