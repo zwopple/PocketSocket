@@ -35,13 +35,14 @@
 #pragma mark - Class Methods
 
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request;
++ (NSError *)errorWithCode:(NSInteger)code reason:(NSString *)reason;
 
 #pragma mark - Properties
 
 @property (nonatomic, assign, readonly) PSWebSocketMode mode;
 @property (nonatomic, weak) id <PSWebSocketDriverDelegate> delegate;
 
-@property (nonatomic, strong, readonly) NSString *protocol;
+@property (nonatomic, strong) NSString *protocol;
 
 #pragma mark - Initialization
 
