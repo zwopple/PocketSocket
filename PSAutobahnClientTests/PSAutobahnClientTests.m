@@ -154,15 +154,24 @@
     }
 }
 - (void)runOperation:(NSOperation *)operation timeout:(NSTimeInterval)timeout {
+    static NSOperationQueue *queue = nil;
+    static dispatch_once_t once = 0;
+    dispatch_once(&once, ^{
+        queue = [[NSOperationQueue alloc] init];
+        queue.maxConcurrentOperationCount = NSOperationQueueDefaultMaxConcurrentOperationCount;
+    });
+    
+    
     NSCondition *condition = [[NSCondition alloc] init];
     [condition lock];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
         [condition lock];
-        [operation start];
-        [operation waitUntilFinished];
         [condition signal];
         [condition unlock];
-    });
+    }];
+    [op addDependency:operation];
+    [queue addOperation:operation];
+    [queue addOperation:op];
     XCTAssertTrue([condition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:timeout]], @"Timed out");
     [condition unlock];
 }

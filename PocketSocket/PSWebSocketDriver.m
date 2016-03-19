@@ -882,9 +882,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
 }
 - (BOOL)pmdConfigureWithExtensionsHeaderComponents:(NSOrderedSet *)components {
     _pmdEnabled = NO;
-    _pmdClientWindowBits = -11;
+    _pmdClientWindowBits = -15;
     _pmdClientNoContextTakeover = NO;
-    _pmdServerWindowBits = -11;
+    _pmdServerWindowBits = -15;
     _pmdServerNoContextTakeover = NO;
     
     for(NSString *component in components) {
