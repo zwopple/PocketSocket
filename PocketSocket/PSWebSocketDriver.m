@@ -82,10 +82,15 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
 
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request {
     NSDictionary *headers = request.allHTTPHeaderFields;
+    
+    NSSet *version = PSHTTPHeaderFieldValues([headers[@"Sec-WebSocket-Version"] lowercaseString]);
+    NSSet *upgrade = PSHTTPHeaderFieldValues([headers[@"Upgrade"] lowercaseString]);
+    NSSet *connection = PSHTTPHeaderFieldValues([headers[@"Connection"] lowercaseString]);
+    
     if(headers[@"Sec-WebSocket-Key"] &&
-       [headers[@"Sec-WebSocket-Version"] isEqualToString:@"13"] &&
-       [[headers[@"Connection"] lowercaseString] isEqualToString:@"upgrade"] &&
-       [[headers[@"Upgrade"] lowercaseString] isEqualToString:@"websocket"] &&
+       [version containsObject:@"13"] &&
+       [connection containsObject:@"upgrade"] &&
+       [upgrade containsObject:@"websocket"] &&
        [request.HTTPMethod.lowercaseString isEqualToString:@"get"] &&
        request.HTTPBody.length == 0) {
         return YES;
@@ -255,7 +260,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     }
     
     // validate extensions
-    NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
+    NSLog(@"%@", [headers[@"Sec-WebSocket-Extensions"] lowercaseString]);
+    NSOrderedSet *extensionComponents = PSHTTPHeaderFieldValues([headers[@"Sec-WebSocket-Extensions"] lowercaseString]);
     if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
         [self failWithErrorCode:PSWebSocketErrorCodeHandshakeFailed reason:@"invalid permessage-deflate extension parameters"];
         return;
@@ -480,7 +486,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             }
 
             // extensions
-            NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
+            NSOrderedSet *extensionComponents = PSHTTPHeaderFieldValues([headers[@"Sec-WebSocket-Extensions"] lowercaseString]);
             
             // per-message deflate
             if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
@@ -874,7 +880,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     }
     return @[];
 }
-- (BOOL)pmdConfigureWithExtensionsHeaderComponents:(NSArray *)components {
+- (BOOL)pmdConfigureWithExtensionsHeaderComponents:(NSOrderedSet *)components {
     _pmdEnabled = NO;
     _pmdClientWindowBits = -11;
     _pmdClientNoContextTakeover = NO;
@@ -905,12 +911,14 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         return NO;
     }
     
-    if(_mode == PSWebSocketModeClient) {
-        _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdClientWindowBits];
-        _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdServerWindowBits memoryLevel:8];
-    } else {
-        _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdServerWindowBits];
-        _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdClientWindowBits memoryLevel:8];
+    if (_pmdEnabled) {
+        if(_mode == PSWebSocketModeClient) {
+            _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdClientWindowBits];
+            _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdServerWindowBits memoryLevel:8];
+        } else {
+            _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdServerWindowBits];
+            _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdClientWindowBits memoryLevel:8];
+        }
     }
     
     return YES;

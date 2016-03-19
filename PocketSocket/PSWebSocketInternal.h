@@ -90,6 +90,23 @@ static inline BOOL PSWebSocketCloseCodeIsValid(NSInteger closeCode) {
     return NO;
 }
 
+static inline NSOrderedSet* PSHTTPHeaderFieldValues(NSString *header) {
+    NSMutableOrderedSet *components = [NSMutableOrderedSet orderedSet];
+    [[header componentsSeparatedByString:@";"] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *str = obj;
+        while ([str hasPrefix:@" "] && str.length > 1) {
+            str = [str substringWithRange:NSMakeRange(1, str.length - 1)];
+        }
+        while ([str hasSuffix:@" "] && str.length > 1) {
+            str = [str substringWithRange:NSMakeRange(0, str.length - 1)];
+        }
+        if ([str length] > 0 && ![str isEqualToString:@" "]) {
+            [components addObject:str];
+        }
+    }];
+    return components;
+}
+
 static inline NSData* PSPeerAddressOfInputStream(NSInputStream *stream) {
     // First recover the socket handle from the stream:
     NSData* handleData = CFBridgingRelease(CFReadStreamCopyProperty((__bridge CFReadStreamRef)stream,
