@@ -256,7 +256,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     }
     
     // validate extensions
-    NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
+    NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@";"];
     if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
         [self failWithErrorCode:PSWebSocketErrorCodeHandshakeFailed reason:@"invalid permessage-deflate extension parameters"];
         return;
@@ -469,7 +469,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             }
             
             // extensions
-            NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@"; "];
+            NSArray *extensionComponents = [headers[@"Sec-WebSocket-Extensions"] componentsSeparatedByString:@";"];
             
             // per-message deflate
             if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
@@ -853,17 +853,19 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     for(NSString *component in components) {
         // split to key & value
-        NSArray *subcomponents = [component componentsSeparatedByString:@"="];
+        NSString *trimmedComponent = [component stringByTrimmingCharactersInSet:
+                                      [NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        NSArray *subcomponents = [trimmedComponent componentsSeparatedByString:@"="];
         
-        if([component isEqualToString:@"permessage-deflate"]) {
+        if([trimmedComponent isEqualToString:@"permessage-deflate"]) {
             _pmdEnabled = YES;
-        } else if([component isEqualToString:@"client_max_window_bits"] && subcomponents.count > 1) {
+        } else if([trimmedComponent isEqualToString:@"client_max_window_bits"] && subcomponents.count > 1) {
             _pmdClientWindowBits = -[subcomponents[0] integerValue];
-        } else if([component isEqualToString:@"server_max_window_bits"] && subcomponents.count > 1) {
+        } else if([trimmedComponent isEqualToString:@"server_max_window_bits"] && subcomponents.count > 1) {
             _pmdServerWindowBits = -[subcomponents[0] integerValue];
-        } else if([component isEqualToString:@"client_no_context_takeover"] && _mode == PSWebSocketModeClient) {
+        } else if([trimmedComponent isEqualToString:@"client_no_context_takeover"] && _mode == PSWebSocketModeClient) {
             _pmdClientNoContextTakeover = YES;
-        } else if([component isEqualToString:@"server_no_context_takeover"] && _mode == PSWebSocketModeClient) {
+        } else if([trimmedComponent isEqualToString:@"server_no_context_takeover"] && _mode == PSWebSocketModeClient) {
             _pmdServerNoContextTakeover = YES;
         }
     }
