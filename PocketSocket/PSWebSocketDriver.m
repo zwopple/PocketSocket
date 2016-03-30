@@ -39,6 +39,7 @@
     uint32_t maskOffset;
     NSMutableData *buffer;
     NSUInteger payloadRemainingLength;
+    BOOL pmd;
 }
 @end
 @implementation PSWebSocketFrame
@@ -61,7 +62,6 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     NSString *_handshakeSecKey;
     
-    PSWebSocketFrame *_initialFrame;
     NSMutableArray *_frames;
     
     BOOL _pmdEnabled;
@@ -74,6 +74,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     uint32_t _utf8DecoderState;
     uint32_t _utf8DecoderCodePoint;
+    
+    NSInteger _numFramesProcessed;
 }
 @end
 @implementation PSWebSocketDriver
@@ -601,12 +603,13 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             frame->payloadRemainingLength = (NSUInteger)payloadLength;
             frame->headerExtraLength = headerExtraLength;
             frame->control = control;
+            frame->pmd = (_pmdEnabled && !control && rsv1);
             
             if(!frame->control && _frames.count > 0) {
-                _initialFrame = [_frames lastObject];
-                frame->rsv1 = _initialFrame->rsv1;
-                frame->opcode = _initialFrame->opcode;
-                frame->buffer = _initialFrame->buffer;
+                PSWebSocketFrame *lastFrame = [_frames lastObject];
+                frame->pmd = (_pmdEnabled && (rsv1 || lastFrame->pmd));
+                frame->opcode = lastFrame->opcode;
+                frame->buffer = lastFrame->buffer;
             } else {
                 frame->buffer = [NSMutableData data];
             }
@@ -684,7 +687,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             }
             
             // inflate if necessary
-            if(_pmdEnabled && !frame->control && (frame->rsv1 || _initialFrame->rsv1)) {
+            if(frame->pmd) {
                 // reset inflater if we need to
                 if((_pmdClientNoContextTakeover && _mode == PSWebSocketModeServer) ||
                    (_pmdServerNoContextTakeover && _mode == PSWebSocketModeClient)) {
@@ -762,12 +765,18 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         return YES;
     }
     
+    // close off pmd for zero-length frames that have a buffer otherwise they are orphaned
+    if (frame->pmd && frame->payloadLength == 0 && frame->buffer.length > 0) {
+        if (![_inflater end:outError]) {
+            return -1;
+        }
+    }
+    
     // remove frames
     if(frame->control) {
         [_frames removeLastObject];
     } else {
         [_frames removeAllObjects];
-        _initialFrame = nil;
         _utf8DecoderState = 0;
         _utf8DecoderCodePoint = 0;
     }
@@ -892,15 +901,15 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         // split to key & value
         NSArray *subcomponents = [component componentsSeparatedByString:@"="];
         
-        if([component isEqualToString:@"permessage-deflate"]) {
+        if([subcomponents[0] isEqualToString:@"permessage-deflate"]) {
             _pmdEnabled = YES;
-        } else if([component isEqualToString:@"client_max_window_bits"] && subcomponents.count > 1) {
-            _pmdClientWindowBits = -[subcomponents[0] integerValue];
-        } else if([component isEqualToString:@"server_max_window_bits"] && subcomponents.count > 1) {
-            _pmdServerWindowBits = -[subcomponents[0] integerValue];
-        } else if([component isEqualToString:@"client_no_context_takeover"] && _mode == PSWebSocketModeClient) {
+        } else if([subcomponents[0] isEqualToString:@"client_max_window_bits"] && subcomponents.count > 1) {
+            _pmdClientWindowBits = -[subcomponents[1] integerValue];
+        } else if([subcomponents[0] isEqualToString:@"server_max_window_bits"] && subcomponents.count > 1) {
+            _pmdServerWindowBits = -[subcomponents[1] integerValue];
+        } else if([subcomponents[0] isEqualToString:@"client_no_context_takeover"] && _mode == PSWebSocketModeClient) {
             _pmdClientNoContextTakeover = YES;
-        } else if([component isEqualToString:@"server_no_context_takeover"] && _mode == PSWebSocketModeClient) {
+        } else if([subcomponents[0] isEqualToString:@"server_no_context_takeover"] && _mode == PSWebSocketModeClient) {
             _pmdServerNoContextTakeover = YES;
         }
     }
@@ -914,11 +923,11 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     if (_pmdEnabled) {
         if(_mode == PSWebSocketModeClient) {
-            _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdClientWindowBits];
-            _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdServerWindowBits memoryLevel:8];
-        } else {
             _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdServerWindowBits];
             _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdClientWindowBits memoryLevel:8];
+        } else {
+            _inflater = [[PSWebSocketInflater alloc] initWithWindowBits:_pmdClientWindowBits];
+            _deflater = [[PSWebSocketDeflater alloc] initWithWindowBits:_pmdServerWindowBits memoryLevel:8];
         }
     }
     
