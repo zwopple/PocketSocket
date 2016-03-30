@@ -13,10 +13,12 @@
 //  limitations under the License.
 
 #import "PSWebSocket.h"
-#import "PSWebSocketNetworkThread.h"
 #import "PSWebSocketInternal.h"
 #import "PSWebSocketDriver.h"
 #import "PSWebSocketBuffer.h"
+#import <sys/socket.h>
+#import <arpa/inet.h>
+
 
 @interface PSWebSocket() <NSStreamDelegate, PSWebSocketDriverDelegate> {
     PSWebSocketMode _mode;
@@ -35,6 +37,8 @@
     BOOL _failed;
     BOOL _pumpingInput;
     BOOL _pumpingOutput;
+    BOOL _readPaused;
+    BOOL _serverUnvalidated;
     NSInteger _closeCode;
     NSString *_closeReason;
     NSMutableArray *_pingHandlers;
@@ -48,15 +52,25 @@
     return [PSWebSocketDriver isWebSocketRequest:request];
 }
 
-#pragma mark - Class Properties
-
-+ (NSRunLoop *)runLoop {
-    return [[PSWebSocketNetworkThread sharedNetworkThread] runLoop];
++ (NSData*) peerAddressOfStream: (NSInputStream*)inputStream {
+    // First recover the socket handle from the stream:
+    NSData* handleData = CFBridgingRelease(CFReadStreamCopyProperty(
+                                                                    (__bridge CFReadStreamRef)inputStream,
+                                                                    kCFStreamPropertySocketNativeHandle));
+    if (!handleData || handleData.length != sizeof(CFSocketNativeHandle))
+        return nil;
+    CFSocketNativeHandle socketHandle = *(const CFSocketNativeHandle*)handleData.bytes;
+    // Get the remote/peer address in binary form:
+    struct sockaddr_in addr;
+    unsigned addrLen = sizeof(addr);
+    if (getpeername(socketHandle, (struct sockaddr*)&addr,&addrLen) < 0)
+        return nil;
+    return [NSData dataWithBytes: &addr length: addr.sin_len];
 }
 
 #pragma mark - Properties
 
-@dynamic readyState;
+@synthesize URLRequest=_request, SSLClientCertificates=_SSLClientCertificates;
 
 - (PSWebSocketReadyState)readyState {
     __block PSWebSocketReadyState value = 0;
@@ -66,6 +80,22 @@
     return value;
 }
 
+- (NSData*) remoteAddress {
+    return [[self class] peerAddressOfStream: _inputStream];
+}
+
+- (NSString*) remoteHost {
+    NSData* addrData = self.remoteAddress;
+    if (!addrData)
+        return nil;
+    const struct sockaddr_in *addr = addrData.bytes;
+    // Format it in readable (e.g. dotted-quad) form, with the port number:
+    char nameBuf[INET6_ADDRSTRLEN];
+    if (inet_ntop(addr->sin_family, &addr->sin_addr, nameBuf, (socklen_t)sizeof(nameBuf)) == NULL)
+        return nil;
+    return [NSString stringWithFormat: @"%s:%hu", nameBuf, ntohs(addr->sin_port)];
+}
+
 #pragma mark - Initialization
 
 - (instancetype)initWithMode:(PSWebSocketMode)mode request:(NSURLRequest *)request {
@@ -73,7 +103,8 @@
         _mode = mode;
         _request = [request mutableCopy];
 		_readyState = PSWebSocketReadyStateConnecting;
-        _workQueue = dispatch_queue_create(nil, nil);
+        NSString* name = [NSString stringWithFormat: @"PSWebSocket <%@>", request.URL];
+        _workQueue = dispatch_queue_create(name.UTF8String, nil);
         if(_mode == PSWebSocketModeClient) {
             _driver = [PSWebSocketDriver clientDriverWithRequest:_request];
         } else {
@@ -123,21 +154,7 @@
         
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
-        
-        if(_secure) {
-            NSMutableDictionary *opts = [NSMutableDictionary dictionary];
-            
-            opts[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
-            
-            // @TODO PINNED SSL
-            
-#if DEBUG
-            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
-            NSLog(@"PSWebSocket: debug mode allowing all SSL certificates");
-#endif
-            [_outputStream setProperty:opts forKey:(__bridge id)kCFStreamPropertySSLSettings];
-        }
-	}
+    }
 	return self;
 }
 
@@ -148,8 +165,22 @@
     if((self = [self initWithMode:PSWebSocketModeServer request:request])) {
         _inputStream = inputStream;
         _outputStream = outputStream;
+
+        // Get the client's SSL cert, if any:
+        NSDictionary* ssl = [inputStream propertyForKey: (__bridge id)kCFStreamPropertySSLSettings];
+        if (ssl) {
+            _SSLClientCertificates = ssl[(__bridge id)kCFStreamSSLCertificates];
+        }
     }
     return self;
+}
+
+- (NSString*)protocol {
+    return _driver.protocol;
+}
+
+- (void) setProtocol:(NSString *)protocol {
+    _driver.protocol = protocol;
 }
 
 #pragma mark - Actions
@@ -202,6 +233,7 @@
         
         // send close code if we're not connecting
         if(!connecting) {
+            _closeCode = code;
             [_driver sendCloseCode:code reason:reason];
         }
         
@@ -210,7 +242,7 @@
         
         // disconnect hard in 30 seconds
         __weak typeof(self)weakSelf = self;
-        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 30.0 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_walltime(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf)strongSelf = weakSelf;
             if(!strongSelf) return;
             
@@ -246,6 +278,19 @@
 #pragma mark - Connection
 
 - (void)connect {
+    if(_secure && _mode==PSWebSocketModeClient) {
+        NSMutableDictionary *opts = [NSMutableDictionary dictionary];
+        opts[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
+        // disable automatic SSL cert validation if my delegate wants to do it
+        if ([_delegate respondsToSelector: @selector(webSocket:validateServerTrust:)]) {
+            _serverUnvalidated = YES;
+            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
+        }
+        if (_SSLClientCertificates)
+            opts[(__bridge id)kCFStreamSSLCertificates] = _SSLClientCertificates;
+        [_outputStream setProperty:opts forKey:(__bridge id)kCFStreamPropertySSLSettings];
+    }
+
     // delegate
     _inputStream.delegate = self;
     _outputStream.delegate = self;
@@ -254,9 +299,9 @@
     [_driver start];
     
     // schedule streams
-    [_inputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream scheduleInRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    
+    CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)_inputStream, _workQueue);
+    CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)_outputStream, _workQueue);
+
     // open streams
     if(_inputStream.streamStatus == NSStreamStatusNotOpen) {
         [_inputStream open];
@@ -272,7 +317,7 @@
     // prepare timeout
     if(_request.timeoutInterval > 0.0) {
         __weak typeof(self)weakSelf = self;
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _request.timeoutInterval * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(_request.timeoutInterval * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             __strong typeof(weakSelf)strongSelf = weakSelf;
             if(strongSelf) {
                 [strongSelf executeWork:^{
@@ -295,9 +340,6 @@
     [_inputStream close];
     [_outputStream close];
     
-    [_inputStream removeFromRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    [_outputStream removeFromRunLoop:[[self class] runLoop] forMode:NSDefaultRunLoopMode];
-    
     _inputStream = nil;
     _outputStream = nil;
 }
@@ -305,38 +347,30 @@
 #pragma mark - Pumping
 
 - (void)pumpInput {
-    if(_readyState >= PSWebSocketReadyStateClosing) {
+    if(_readyState >= PSWebSocketReadyStateClosing
+            || _pumpingInput || _readPaused
+            || !_inputStream.hasBytesAvailable)
         return;
-    }
-    if(_pumpingInput) {
-        return;
-    }
+
     _pumpingInput = YES;
-    
     @autoreleasepool {
         uint8_t chunkBuffer[4096];
-        while(_inputStream.hasBytesAvailable) {
-            NSInteger readLength = [_inputStream read:chunkBuffer maxLength:sizeof(chunkBuffer)];
-            if(readLength > 0) {
-                if(!_inputBuffer.hasBytesAvailable) {
-                    NSInteger consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
-                    if(consumedLength < readLength) {
-                        NSInteger offset = MAX(0, consumedLength);
-                        NSInteger remaining = readLength - offset;
-                        [_inputBuffer appendBytes:chunkBuffer + offset length:remaining];
-                    }
-                } else {
-                    [_inputBuffer appendBytes:chunkBuffer length:readLength];
+        NSInteger readLength = [_inputStream read:chunkBuffer maxLength:sizeof(chunkBuffer)];
+        if(readLength > 0) {
+            if(!_inputBuffer.hasBytesAvailable) {
+                NSInteger consumedLength = [_driver execute:chunkBuffer maxLength:readLength];
+                if(consumedLength < readLength) {
+                    NSInteger offset = MAX(0, consumedLength);
+                    NSInteger remaining = readLength - offset;
+                    [_inputBuffer appendBytes:chunkBuffer + offset length:remaining];
                 }
-            } else if(readLength < 0) {
-                [self failWithError:_inputStream.streamError];
-                break;
+            } else {
+                [_inputBuffer appendBytes:chunkBuffer length:readLength];
             }
-            if(readLength < sizeof(chunkBuffer)) {
-                break;
-            }
+        } else if(readLength < 0) {
+            [self failWithError:_inputStream.streamError];
         }
-        
+
         while(_inputBuffer.hasBytesAvailable) {
             NSInteger readLength = [_driver execute:_inputBuffer.mutableBytes maxLength:_inputBuffer.bytesAvailable];
             if(readLength <= 0) {
@@ -344,64 +378,83 @@
             }
             _inputBuffer.offset += readLength;
         }
-        
-        
+
         [_inputBuffer compact];
     }
-    
     _pumpingInput = NO;
-    if(_inputStream.hasBytesAvailable) {
-        [self pumpInput];
-    }
 }
+
 - (void)pumpOutput {
     if(_pumpingOutput) {
         return;
     }
     _pumpingOutput = YES;
-    
-    while(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
-        NSInteger writeLength = [_outputStream write:_outputBuffer.bytes maxLength:_outputBuffer.bytesAvailable];
-        if(writeLength <= -1) {
-            _failed = YES;
+    do {
+        while(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
+            NSInteger writeLength = [_outputStream write:_outputBuffer.bytes maxLength:_outputBuffer.bytesAvailable];
+            if(writeLength <= -1) {
+                _failed = YES;
+                [self disconnect];
+                NSString *reason = @"Failed to write to output stream";
+                NSError* error = [PSWebSocketDriver PSErrorWithCode:PSWebSocketErrorCodeConnectionFailed reason:reason];
+                [self notifyDelegateDidFailWithError:error];
+                return;
+            }
+            _outputBuffer.offset += writeLength;
+        }
+        if(_closeWhenFinishedOutput &&
+           !_outputBuffer.hasBytesAvailable &&
+           (_inputStream.streamStatus != NSStreamStatusNotOpen &&
+            _inputStream.streamStatus != NSStreamStatusClosed) &&
+           !_sentClose) {
+            _sentClose = YES;
+            
             [self disconnect];
-            NSString *reason = @"Failed to write to output stream";
-            NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
-            [self notifyDelegateDidFailWithError:error];
-            return;
+            
+            if(!_failed) {
+                [self notifyDelegateDidCloseWithCode:_closeCode reason:_closeReason wasClean:YES];
+            }
         }
-        _outputBuffer.offset += writeLength;
-    }
-    if(_closeWhenFinishedOutput &&
-       !_outputBuffer.hasBytesAvailable &&
-       (_inputStream.streamStatus != NSStreamStatusNotOpen &&
-        _inputStream.streamStatus != NSStreamStatusClosed) &&
-       !_sentClose) {
-        _sentClose = YES;
         
-        [self disconnect];
-        
-        if(!_failed) {
-            [self notifyDelegateDidCloseWithCode:_closeCode reason:_closeReason wasClean:YES];
+        [_outputBuffer compact];
+
+        if(_readyState == PSWebSocketReadyStateOpen &&
+           _outputStream.hasSpaceAvailable &&
+           !_outputBuffer.hasBytesAvailable &&
+           [_delegate respondsToSelector: @selector(webSocketIsHungry:)]) {
+            [self executeDelegate:^{
+                [_delegate webSocketIsHungry: self];
+            }];
         }
-    }
-    
-    [_outputBuffer compact];
-    
+    } while (_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable);
     _pumpingOutput = NO;
-    if(_outputStream.hasSpaceAvailable && _outputBuffer.hasBytesAvailable) {
-        [self pumpOutput];
-    }
+}
+
+- (BOOL) readPaused {
+    __block BOOL result;
+    [self executeWorkAndWait: ^{
+        result = _readPaused;
+    }];
+    return result;
+}
+
+- (void) setReadPaused: (BOOL)paused {
+    [self executeWork: ^{
+        if (paused != _readPaused) {
+            _readPaused = paused;
+            if (!paused)
+                [self pumpInput];
+        }
+    }];
 }
 
 #pragma mark - Failing
 
 - (void)failWithCode:(NSInteger)code reason:(NSString *)reason {
-    NSDictionary *userInfo = @{NSLocalizedDescriptionKey: reason};
-    [self failWithError:[NSError errorWithDomain:PSWebSocketErrorDomain code:code userInfo:userInfo]];
+    [self failWithError:[PSWebSocketDriver PSErrorWithCode:code reason:reason]];
 }
 - (void)failWithError:(NSError *)error {
-    if(error.code == PSWebSocketStatusCodeProtocolError) {
+    if(error.code == PSWebSocketStatusCodeProtocolError && [error.domain isEqualToString:PSWebSocketErrorDomain]) {
         [self executeDelegate:^{
             _closeCode = error.code;
             _closeReason = error.localizedDescription;
@@ -477,54 +530,58 @@
 #pragma mark - NSStreamDelegate
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)event {
-    // @TODO HANDLE PINNED SSL CERTIFICATES
-    [self executeWork:^{
-        switch(event) {
-            case NSStreamEventOpenCompleted: {
-                if(_mode != PSWebSocketModeClient) {
-                    [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."];
-                    return;
-                }
-                if(_readyState >= PSWebSocketReadyStateClosing) {
-                    return;
-                }
-                [self pumpOutput];
-                [self pumpInput];
-                break;
+    // This is invoked on the work queue.
+    switch(event) {
+        case NSStreamEventOpenCompleted: {
+            if(_mode != PSWebSocketModeClient) {
+                [NSException raise:@"Invalid State" format:@"Server mode should have already opened streams."];
+                return;
             }
-            case NSStreamEventErrorOccurred: {
-                [self failWithError:stream.streamError];
-                [_inputBuffer reset];
-                break;
+            if(_readyState >= PSWebSocketReadyStateClosing) {
+                return;
             }
-            case NSStreamEventEndEncountered: {
-                [self pumpInput];
-                if(stream.streamError) {
-                    [self failWithError:stream.streamError];
-                } else {
-                    _readyState = PSWebSocketReadyStateClosed;
-                    if(!_sentClose && !_failed) {
-                        _failed = YES;
-                        [self disconnect];
-                        NSString *reason = [NSString stringWithFormat:@"%@ stream end encountered", (stream == _inputStream) ? @"Input" : @"Output"];
-                        NSError *error = [NSError errorWithDomain:PSWebSocketErrorDomain code:PSWebSocketErrorCodeConnectionFailed userInfo:@{NSLocalizedDescriptionKey: reason}];
-                        [self notifyDelegateDidFailWithError:error];
-                    }
-                }
-                break;
-            }
-            case NSStreamEventHasBytesAvailable: {
-                [self pumpInput];
-                break;
-            }
-            case NSStreamEventHasSpaceAvailable: {
-                [self pumpOutput];
-                break;
-            }
-            default:
-                break;
+            [self pumpOutput];
+            [self pumpInput];
+            break;
         }
-    }];
+        case NSStreamEventErrorOccurred: {
+            [self failWithError:stream.streamError];
+            [_inputBuffer reset];
+            break;
+        }
+        case NSStreamEventEndEncountered: {
+            [self pumpInput];
+            if(stream.streamError) {
+                [self failWithError:stream.streamError];
+            } else {
+                _readyState = PSWebSocketReadyStateClosed;
+                if(!_sentClose && !_failed) {
+                    _failed = YES;
+                    [self disconnect];
+                    NSString *reason = [NSString stringWithFormat:@"%@ stream end encountered", (stream == _inputStream) ? @"Input" : @"Output"];
+                    NSError *error = [PSWebSocketDriver PSErrorWithCode:PSWebSocketErrorCodeConnectionFailed reason:reason];
+                    [self notifyDelegateDidFailWithError:error];
+                }
+            }
+            break;
+        }
+        case NSStreamEventHasBytesAvailable: {
+            if (_serverUnvalidated)
+                [self askDelegateToValidateServerTrust: stream];
+            else
+                [self pumpInput];
+            break;
+        }
+        case NSStreamEventHasSpaceAvailable: {
+            if (_serverUnvalidated)
+                [self askDelegateToValidateServerTrust: stream];
+            else
+                [self pumpOutput];
+            break;
+        }
+        default:
+            break;
+    }
 }
 
 #pragma mark - Delegation
@@ -547,6 +604,29 @@
 - (void)notifyDelegateDidCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     [self executeDelegate:^{
         [_delegate webSocket:self didCloseWithCode:code reason:reason wasClean:wasClean];
+    }];
+}
+
+- (void) askDelegateToValidateServerTrust: (NSStream*)stream {
+    if (!_serverUnvalidated)
+        return;
+    SecTrustRef trust = (__bridge SecTrustRef)[stream propertyForKey: (__bridge id)kCFStreamPropertySSLPeerTrust];
+    NSAssert(trust != nil, @"Couldn't get SSL trust");
+    [self executeDelegate:^{
+        BOOL ok = [_delegate webSocket: self validateServerTrust: trust];
+        [self executeWork:^{
+            if (ok) {
+                _serverUnvalidated = NO;
+                [self pumpOutput];
+                [self pumpInput];
+            } else {
+                NSDictionary* userInfo = @{NSURLErrorFailingURLStringErrorKey: _request.URL.absoluteString};
+                NSError* error = [NSError errorWithDomain: NSURLErrorDomain
+                                                     code: NSURLErrorServerCertificateUntrusted
+                                                 userInfo: userInfo];
+                [self failWithError: error];
+            }
+        }];
     }];
 }
 
