@@ -307,8 +307,8 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     uint8_t *headerBytes = header.mutableBytes;
     
     headerBytes[0] |= PSWebSocketFinMask;
-    //  headerBytes[0] |= (ZWPWebSocketRsv2Mask);
-    //  headerBytes[0] |= (ZWPWebSocketRsv3Mask);
+    //  headerBytes[0] |= (PSWebSocketRsv2Mask);
+    //  headerBytes[0] |= (PSWebSocketRsv3Mask);
     headerBytes[0] |= (PSWebSocketOpCodeMask & opcode);
     
     // determine payload payload
@@ -604,6 +604,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
             
             if(!frame->control && _frames.count > 0) {
                 _initialFrame = [_frames lastObject];
+                frame->rsv1 = _initialFrame->rsv1;
                 frame->opcode = _initialFrame->opcode;
                 frame->buffer = _initialFrame->buffer;
             } else {
