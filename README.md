@@ -7,13 +7,13 @@ Objective-C websocket library for building things that work in realtime on iOS a
 
 * Conforms fully to [RFC6455](http://tools.ietf.org/html/rfc6455) websocket protocol
 * Support for websocket compression via the [permessage-deflate](http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-17) extension
-* Passes all ~519 Autobahn [Client Tests](http://zwopple.github.io/PocketSocket/results/client/) & [Server Tests](http://zwopple.github.io/PocketSocket/results/server/) with 100% compliance*
+* Passes all ~519 Autobahn [Client Tests](http://zwopple.github.io/PocketSocket/results/client/) & [Server Tests](http://zwopple.github.io/PocketSocket/results/server/) with 100% compliance<sup>1</sup>
 * Client & Server modes (see notes below)
 * TLS/SSL support
 * Asynchronous IO
 * Standalone `PSWebSocketDriver` for easy “Bring your own” networking IO
 
-> * Some server tests are non-strict and drop connections earlier when receiving malformed WebSocket payloads.
+> <sup>1</sup>Some server tests are non-strict and drop connections earlier when receiving malformed WebSocket payloads.
 
 ### Dependencies
 
