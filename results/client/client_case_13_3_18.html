@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="utf-8" />
+      <style lang="css">
+body {
+   background-color: #F4F4F4;
+   color: #333;
+   font-family: Segoe UI,Tahoma,Arial,Verdana,sans-serif;
+}
+
+p#intro {
+   font-family: Cambria,serif;
+   font-size: 1.1em;
+   color: #444;
+}
+
+p#intro a {
+   color: #444;
+}
+
+p#intro a:visited {
+   color: #444;
+}
+
+.block {
+   background-color: #e0e0e0;
+   padding: 16px;
+   margin: 20px;
+}
+
+p.case_text_block {
+   border-radius: 10px;
+   border: 1px solid #aaa;
+   padding: 16px;
+   margin: 4px 20px;
+   color: #444;
+}
+
+p.case_desc {
+}
+
+p.case_expect {
+}
+
+p.case_outcome {
+}
+
+p.case_closing_beh {
+}
+
+pre.http_dump {
+   font-family: Consolas, "Courier New", monospace;
+   font-size: 0.8em;
+   color: #333;
+   border-radius: 10px;
+   border: 1px solid #aaa;
+   padding: 16px;
+   margin: 4px 20px;
+}
+
+span.case_pickle {
+   font-family: Consolas, "Courier New", monospace;
+   font-size: 0.7em;
+   color: #000;
+}
+
+p#case_result,p#close_result {
+   border-radius: 10px;
+   background-color: #e8e2d1;
+   padding: 20px;
+   margin: 20px;
+}
+
+h1 {
+   margin-left: 60px;
+}
+
+h2 {
+   margin-left: 30px;
+}
+
+h3 {
+   margin-left: 50px;
+}
+
+a.up {
+   float: right;
+   border-radius: 16px;
+   margin-top: 16px;
+   margin-bottom: 10px;
+
+   margin-right: 30px;
+   padding-left: 10px;
+   padding-right: 10px;
+   padding-bottom: 2px;
+   padding-top: 2px;
+   background-color: #666;
+   color: #fff;
+   text-decoration: none;
+   font-size: 0.8em;
+}
+
+a.up:visited {
+}
+
+a.up:hover {
+   background-color: #028ec9;
+}
+</style>
+      <style lang="css">
+p.case {
+   color: #fff;
+   border-radius: 10px;
+   padding: 20px;
+   margin: 12px 20px;
+   font-size: 1.2em;
+}
+
+p.case_ok {
+   background-color: #0a0;
+}
+
+p.case_non_strict, p.case_no_close {
+   background-color: #9a0;
+}
+
+p.case_info {
+   background-color: #4095BF;
+}
+
+p.case_failed {
+   background-color: #900;
+}
+
+table {
+   border-collapse: collapse;
+   border-spacing: 0px;
+   margin-left: 80px;
+   margin-bottom: 12px;
+   margin-top: 0px;
+}
+
+td
+{
+   margin: 0;
+   font-size: 0.8em;
+   border: 1px #fff solid;
+   padding-top: 6px;
+   padding-bottom: 6px;
+   padding-left: 16px;
+   padding-right: 16px;
+   text-align: right;
+}
+
+td.right {
+   text-align: right;
+}
+
+td.left {
+   text-align: left;
+}
+
+tr.stats_header {
+   color: #eee;
+   background-color: #000;
+}
+
+tr.stats_row {
+   color: #000;
+   background-color: #fc3;
+}
+
+tr.stats_total {
+   color: #fff;
+   background-color: #888;
+}
+
+div#wirelog {
+   margin-top: 20px;
+   margin-bottom: 80px;
+}
+
+pre.wirelog_rx_octets {color: #aaa; margin: 0; background-color: #060; padding: 2px;}
+pre.wirelog_tx_octets {color: #aaa; margin: 0; background-color: #600; padding: 2px;}
+pre.wirelog_tx_octets_sync {color: #aaa; margin: 0; background-color: #606; padding: 2px;}
+
+pre.wirelog_rx_frame {color: #fff; margin: 0; background-color: #0a0; padding: 2px;}
+pre.wirelog_tx_frame {color: #fff; margin: 0; background-color: #a00; padding: 2px;}
+pre.wirelog_tx_frame_sync {color: #fff; margin: 0; background-color: #a0a; padding: 2px;}
+
+pre.wirelog_delay {color: #fff; margin: 0; background-color: #000; padding: 2px;}
+pre.wirelog_kill_after {color: #fff; margin: 0; background-color: #000; padding: 2px;}
+
+pre.wirelog_tcp_closed_by_me {color: #fff; margin: 0; background-color: #008; padding: 2px;}
+pre.wirelog_tcp_closed_by_peer {color: #fff; margin: 0; background-color: #000; padding: 2px;}
+</style>
+   </head>
+   <body>
+      <a name="top"></a>
+      <br/>
+      <center><a href="http://autobahn.ws/testsuite" title="Autobahn WebSockets Testsuite"><img src="http://autobahn.ws/static/img/ws_protocol_test_report.png"          border="0" width="820" height="46" alt="Autobahn WebSockets Testsuite Report"></img></a></center>
+      <center><a href="http://autobahn.ws"           title="Autobahn WebSockets">          <img src="http://autobahn.ws/static/img/ws_protocol_test_report_autobahn.png" border="0" width="300" height="68" alt="Autobahn WebSockets">                 </img></a></center>
+      <br/>
+      <p class="case case_ok">PocketSocketClient - <span style="font-size: 1.3em;"><b>Case 13.3.18</b></span> : Pass - <span style="font-size: 0.9em;"><b>11338</b> ms @ 2016-03-30T11:26:39.928Z</a></p>
+      <p class="case_text_block case_desc"><b>Case Description</b><br/><br/>Send 1000 compressed messages each of payload size 131072, auto-fragment to 32768 octets. Use permessage-deflate client offers (requestNoContextTakeover, requestMaxWindowBits): [(False, 8)]</p>
+      <p class="case_text_block case_expect"><b>Case Expectation</b><br/><br/>Receive echo'ed messages (with payload as sent). Timeout case after 480 secs.</p>
+
+      <p class="case_text_block case_outcome">
+         <b>Case Outcome</b><br/><br/>Ok, received all echo'ed messages in time.<br/><br/>
+         <i>Expected:</i><br/><span class="case_pickle">{}</span><br/><br/>
+         <i>Observed:</i><br><span class="case_pickle">[]</span>
+      </p>
+      <p class="case_text_block case_closing_beh"><b>Case Closing Behavior</b><br/><br/>Connection was properly closed (OK)</p>
+      <br/><hr/>
+      <h2>Opening Handshake</h2>
+      <pre class="http_dump">GET /runCase?case=447&agent=PocketSocketClient HTTP/1.1
+Host: localhost:9001
+Sec-WebSocket-Key: wZecTvZ7f1Ly+IZq6EYruA==
+Sec-WebSocket-Version: 13
+Upgrade: websocket
+Origin: http://localhost:9001
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits
+Connection: upgrade</pre>
+      <pre class="http_dump">HTTP/1.1 101 Switching Protocols
+Server: AutobahnTestSuite/0.7.5-0.10.9
+X-Powered-By: AutobahnPython/0.10.9
+Upgrade: WebSocket
+Connection: Upgrade
+Sec-WebSocket-Accept: SiwYpcNx6OlvYxOU5B2gnGOp4aY=
+Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits=8</pre>
+      <br/><hr/>
+      <h2>Closing Behavior</h2>
+      <table>
+         <tr class="stats_header"><td>Key</td><td class="left">Value</td><td class="left">Description</td></tr>
+         <tr class="stats_row"><td>isServer</td><td class="left">True</td><td class="left">True, iff I (the fuzzer) am a server, and the peer is a client.</td></tr>
+         <tr class="stats_row"><td>closedByMe</td><td class="left">True</td><td class="left">True, iff I have initiated closing handshake (that is, did send close first).</td></tr>
+         <tr class="stats_row"><td>failedByMe</td><td class="left">False</td><td class="left">True, iff I have failed the WS connection (i.e. due to protocol error). Failing can be either by initiating closing handshake or brutal drop TCP.</td></tr>
+         <tr class="stats_row"><td>droppedByMe</td><td class="left">True</td><td class="left">True, iff I dropped the TCP connection.</td></tr>
+         <tr class="stats_row"><td>wasClean</td><td class="left">True</td><td class="left">True, iff full WebSockets closing handshake was performed (close frame sent and received) _and_ the server dropped the TCP (which is its responsibility).</td></tr>
+         <tr class="stats_row"><td>wasNotCleanReason</td><td class="left">None</td><td class="left">When wasClean == False, the reason what happened.</td></tr>
+         <tr class="stats_row"><td>wasServerConnectionDropTimeout</td><td class="left">False</td><td class="left">When we are a client, and we expected the server to drop the TCP, but that didn't happen in time, this gets True.</td></tr>
+         <tr class="stats_row"><td>wasOpenHandshakeTimeout</td><td class="left">False</td><td class="left">When performing the opening handshake, but the peer did not finish in time, this gets True.</td></tr>
+         <tr class="stats_row"><td>wasCloseHandshakeTimeout</td><td class="left">False</td><td class="left">When we initiated a closing handshake, but the peer did not respond in time, this gets True.</td></tr>
+         <tr class="stats_row"><td>localCloseCode</td><td class="left">1000</td><td class="left">The close code I sent in close frame (if any).</td></tr>
+         <tr class="stats_row"><td>localCloseReason</td><td class="left">None</td><td class="left">The close reason I sent in close frame (if any).</td></tr>
+         <tr class="stats_row"><td>remoteCloseCode</td><td class="left">1000</td><td class="left">The close code the peer sent me in close frame (if any).</td></tr>
+         <tr class="stats_row"><td>remoteCloseReason</td><td class="left">None</td><td class="left">The close reason the peer sent me in close frame (if any).</td></tr>
+      </table>      <br/><hr/>
+      <h2>Wire Statistics</h2>
+      <h3>Octets Received by Chop Size</h3>
+      <table>
+         <tr class="stats_header"><td>Chop Size</td><td>Count</td><td>Octets</td></tr>
+         <tr class="stats_row"><td>8</td><td>11</td><td>88</td></tr>
+         <tr class="stats_row"><td>300</td><td>1</td><td>300</td></tr>
+         <tr class="stats_row"><td>7427</td><td>1</td><td>7427</td></tr>
+         <tr class="stats_row"><td>7428</td><td>2</td><td>14856</td></tr>
+         <tr class="stats_row"><td>7429</td><td>2</td><td>14858</td></tr>
+         <tr class="stats_row"><td>7430</td><td>2</td><td>14860</td></tr>
+         <tr class="stats_row"><td>7431</td><td>3</td><td>22293</td></tr>
+         <tr class="stats_row"><td>7432</td><td>4</td><td>29728</td></tr>
+         <tr class="stats_row"><td>7433</td><td>1</td><td>7433</td></tr>
+         <tr class="stats_row"><td>7434</td><td>4</td><td>29736</td></tr>
+         <tr class="stats_row"><td>7435</td><td>3</td><td>22305</td></tr>
+         <tr class="stats_row"><td>7436</td><td>1</td><td>7436</td></tr>
+         <tr class="stats_row"><td>7437</td><td>4</td><td>29748</td></tr>
+         <tr class="stats_row"><td>7438</td><td>3</td><td>22314</td></tr>
+         <tr class="stats_row"><td>7439</td><td>3</td><td>22317</td></tr>
+         <tr class="stats_row"><td>7440</td><td>5</td><td>37200</td></tr>
+         <tr class="stats_row"><td>7441</td><td>5</td><td>37205</td></tr>
+         <tr class="stats_row"><td>7442</td><td>5</td><td>37210</td></tr>
+         <tr class="stats_row"><td>7443</td><td>9</td><td>66987</td></tr>
+         <tr class="stats_row"><td>7444</td><td>3</td><td>22332</td></tr>
+         <tr class="stats_row"><td>7445</td><td>3</td><td>22335</td></tr>
+         <tr class="stats_row"><td>7446</td><td>1</td><td>7446</td></tr>
+         <tr class="stats_row"><td>7447</td><td>1</td><td>7447</td></tr>
+         <tr class="stats_row"><td>7451</td><td>1</td><td>7451</td></tr>
+         <tr class="stats_row"><td>7455</td><td>3</td><td>22365</td></tr>
+         <tr class="stats_row"><td>7456</td><td>1</td><td>7456</td></tr>
+         <tr class="stats_row"><td>7458</td><td>3</td><td>22374</td></tr>
+         <tr class="stats_row"><td>7459</td><td>3</td><td>22377</td></tr>
+         <tr class="stats_row"><td>7460</td><td>3</td><td>22380</td></tr>
+         <tr class="stats_row"><td>7461</td><td>2</td><td>14922</td></tr>
+         <tr class="stats_row"><td>7462</td><td>4</td><td>29848</td></tr>
+         <tr class="stats_row"><td>7463</td><td>1</td><td>7463</td></tr>
+         <tr class="stats_row"><td>7464</td><td>2</td><td>14928</td></tr>
+         <tr class="stats_row"><td>7465</td><td>3</td><td>22395</td></tr>
+         <tr class="stats_row"><td>7466</td><td>1</td><td>7466</td></tr>
+         <tr class="stats_row"><td>7467</td><td>7</td><td>52269</td></tr>
+         <tr class="stats_row"><td>7468</td><td>2</td><td>14936</td></tr>
+         <tr class="stats_row"><td>7469</td><td>2</td><td>14938</td></tr>
+         <tr class="stats_row"><td>7470</td><td>5</td><td>37350</td></tr>
+         <tr class="stats_row"><td>7471</td><td>1</td><td>7471</td></tr>
+         <tr class="stats_row"><td>7472</td><td>2</td><td>14944</td></tr>
+         <tr class="stats_row"><td>7473</td><td>5</td><td>37365</td></tr>
+         <tr class="stats_row"><td>7474</td><td>3</td><td>22422</td></tr>
+         <tr class="stats_row"><td>7475</td><td>1</td><td>7475</td></tr>
+         <tr class="stats_row"><td>7476</td><td>1</td><td>7476</td></tr>
+         <tr class="stats_row"><td>7479</td><td>1</td><td>7479</td></tr>
+         <tr class="stats_row"><td>7481</td><td>1</td><td>7481</td></tr>
+         <tr class="stats_row"><td>7484</td><td>3</td><td>22452</td></tr>
+         <tr class="stats_row"><td>7487</td><td>1</td><td>7487</td></tr>
+         <tr class="stats_row"><td>7488</td><td>3</td><td>22464</td></tr>
+         <tr class="stats_row"><td>7489</td><td>1</td><td>7489</td></tr>
+         <tr class="stats_row"><td>7491</td><td>2</td><td>14982</td></tr>
+         <tr class="stats_row"><td>7493</td><td>1</td><td>7493</td></tr>
+         <tr class="stats_row"><td>7495</td><td>1</td><td>7495</td></tr>
+         <tr class="stats_row"><td>7496</td><td>5</td><td>37480</td></tr>
+         <tr class="stats_row"><td>7497</td><td>2</td><td>14994</td></tr>
+         <tr class="stats_row"><td>7498</td><td>1</td><td>7498</td></tr>
+         <tr class="stats_row"><td>7505</td><td>1</td><td>7505</td></tr>
+         <tr class="stats_row"><td>7508</td><td>1</td><td>7508</td></tr>
+         <tr class="stats_row"><td>7510</td><td>2</td><td>15020</td></tr>
+         <tr class="stats_row"><td>7511</td><td>2</td><td>15022</td></tr>
+         <tr class="stats_row"><td>7512</td><td>4</td><td>30048</td></tr>
+         <tr class="stats_row"><td>7513</td><td>4</td><td>30052</td></tr>
+         <tr class="stats_row"><td>7514</td><td>3</td><td>22542</td></tr>
+         <tr class="stats_row"><td>7515</td><td>2</td><td>15030</td></tr>
+         <tr class="stats_row"><td>7516</td><td>4</td><td>30064</td></tr>
+         <tr class="stats_row"><td>7517</td><td>3</td><td>22551</td></tr>
+         <tr class="stats_row"><td>7518</td><td>3</td><td>22554</td></tr>
+         <tr class="stats_row"><td>7519</td><td>1</td><td>7519</td></tr>
+         <tr class="stats_row"><td>7521</td><td>6</td><td>45126</td></tr>
+         <tr class="stats_row"><td>7523</td><td>1</td><td>7523</td></tr>
+         <tr class="stats_row"><td>7524</td><td>3</td><td>22572</td></tr>
+         <tr class="stats_row"><td>7525</td><td>2</td><td>15050</td></tr>
+         <tr class="stats_row"><td>7527</td><td>1</td><td>7527</td></tr>
+         <tr class="stats_row"><td>7528</td><td>2</td><td>15056</td></tr>
+         <tr class="stats_row"><td>7531</td><td>1</td><td>7531</td></tr>
+         <tr class="stats_row"><td>7533</td><td>2</td><td>15066</td></tr>
+         <tr class="stats_row"><td>7534</td><td>1</td><td>7534</td></tr>
+         <tr class="stats_row"><td>7535</td><td>2</td><td>15070</td></tr>
+         <tr class="stats_row"><td>7538</td><td>1</td><td>7538</td></tr>
+         <tr class="stats_row"><td>7539</td><td>1</td><td>7539</td></tr>
+         <tr class="stats_row"><td>7541</td><td>1</td><td>7541</td></tr>
+         <tr class="stats_row"><td>7542</td><td>1</td><td>7542</td></tr>
+         <tr class="stats_row"><td>7544</td><td>1</td><td>7544</td></tr>
+         <tr class="stats_row"><td>7545</td><td>2</td><td>15090</td></tr>
+         <tr class="stats_row"><td>7546</td><td>2</td><td>15092</td></tr>
+         <tr class="stats_row"><td>7547</td><td>6</td><td>45282</td></tr>
+         <tr class="stats_row"><td>7548</td><td>1</td><td>7548</td></tr>
+         <tr class="stats_row"><td>7549</td><td>3</td><td>22647</td></tr>
+         <tr class="stats_row"><td>7550</td><td>2</td><td>15100</td></tr>
+         <tr class="stats_row"><td>7551</td><td>2</td><td>15102</td></tr>
+         <tr class="stats_row"><td>7552</td><td>2</td><td>15104</td></tr>
+         <tr class="stats_row"><td>7553</td><td>1</td><td>7553</td></tr>
+         <tr class="stats_row"><td>7555</td><td>1</td><td>7555</td></tr>
+         <tr class="stats_row"><td>7557</td><td>1</td><td>7557</td></tr>
+         <tr class="stats_row"><td>7558</td><td>1</td><td>7558</td></tr>
+         <tr class="stats_row"><td>7559</td><td>1</td><td>7559</td></tr>
+         <tr class="stats_row"><td>7560</td><td>1</td><td>7560</td></tr>
+         <tr class="stats_row"><td>7561</td><td>1</td><td>7561</td></tr>
+         <tr class="stats_row"><td>7562</td><td>1</td><td>7562</td></tr>
+         <tr class="stats_row"><td>7563</td><td>1</td><td>7563</td></tr>
+         <tr class="stats_row"><td>7564</td><td>5</td><td>37820</td></tr>
+         <tr class="stats_row"><td>7565</td><td>1</td><td>7565</td></tr>
+         <tr class="stats_row"><td>7566</td><td>4</td><td>30264</td></tr>
+         <tr class="stats_row"><td>7567</td><td>4</td><td>30268</td></tr>
+         <tr class="stats_row"><td>7568</td><td>4</td><td>30272</td></tr>
+         <tr class="stats_row"><td>7569</td><td>2</td><td>15138</td></tr>
+         <tr class="stats_row"><td>7570</td><td>6</td><td>45420</td></tr>
+         <tr class="stats_row"><td>7571</td><td>2</td><td>15142</td></tr>
+         <tr class="stats_row"><td>7572</td><td>1</td><td>7572</td></tr>
+         <tr class="stats_row"><td>7573</td><td>6</td><td>45438</td></tr>
+         <tr class="stats_row"><td>7575</td><td>9</td><td>68175</td></tr>
+         <tr class="stats_row"><td>7576</td><td>1</td><td>7576</td></tr>
+         <tr class="stats_row"><td>7579</td><td>1</td><td>7579</td></tr>
+         <tr class="stats_row"><td>7580</td><td>3</td><td>22740</td></tr>
+         <tr class="stats_row"><td>7581</td><td>1</td><td>7581</td></tr>
+         <tr class="stats_row"><td>7582</td><td>1</td><td>7582</td></tr>
+         <tr class="stats_row"><td>7583</td><td>1</td><td>7583</td></tr>
+         <tr class="stats_row"><td>7584</td><td>2</td><td>15168</td></tr>
+         <tr class="stats_row"><td>7585</td><td>5</td><td>37925</td></tr>
+         <tr class="stats_row"><td>7587</td><td>2</td><td>15174</td></tr>
+         <tr class="stats_row"><td>7591</td><td>1</td><td>7591</td></tr>
+         <tr class="stats_row"><td>7599</td><td>1</td><td>7599</td></tr>
+         <tr class="stats_row"><td>7600</td><td>1</td><td>7600</td></tr>
+         <tr class="stats_row"><td>7602</td><td>1</td><td>7602</td></tr>
+         <tr class="stats_row"><td>7606</td><td>1</td><td>7606</td></tr>
+         <tr class="stats_row"><td>7614</td><td>1</td><td>7614</td></tr>
+         <tr class="stats_row"><td>7616</td><td>1</td><td>7616</td></tr>
+         <tr class="stats_row"><td>7618</td><td>2</td><td>15236</td></tr>
+         <tr class="stats_row"><td>7620</td><td>2</td><td>15240</td></tr>
+         <tr class="stats_row"><td>7622</td><td>1</td><td>7622</td></tr>
+         <tr class="stats_row"><td>7623</td><td>2</td><td>15246</td></tr>
+         <tr class="stats_row"><td>7624</td><td>2</td><td>15248</td></tr>
+         <tr class="stats_row"><td>7625</td><td>2</td><td>15250</td></tr>
+         <tr class="stats_row"><td>7626</td><td>2</td><td>15252</td></tr>
+         <tr class="stats_row"><td>7627</td><td>1</td><td>7627</td></tr>
+         <tr class="stats_row"><td>7628</td><td>1</td><td>7628</td></tr>
+         <tr class="stats_row"><td>7629</td><td>1</td><td>7629</td></tr>
+         <tr class="stats_row"><td>7630</td><td>1</td><td>7630</td></tr>
+         <tr class="stats_row"><td>7633</td><td>1</td><td>7633</td></tr>
+         <tr class="stats_row"><td>7634</td><td>1</td><td>7634</td></tr>
+         <tr class="stats_row"><td>7635</td><td>1</td><td>7635</td></tr>
+         <tr class="stats_row"><td>7636</td><td>2</td><td>15272</td></tr>
+         <tr class="stats_row"><td>7637</td><td>1</td><td>7637</td></tr>
+         <tr class="stats_row"><td>7638</td><td>2</td><td>15276</td></tr>
+         <tr class="stats_row"><td>7639</td><td>6</td><td>45834</td></tr>
+         <tr class="stats_row"><td>7640</td><td>3</td><td>22920</td></tr>
+         <tr class="stats_row"><td>7642</td><td>2</td><td>15284</td></tr>
+         <tr class="stats_row"><td>7643</td><td>3</td><td>22929</td></tr>
+         <tr class="stats_row"><td>7644</td><td>1</td><td>7644</td></tr>
+         <tr class="stats_row"><td>7645</td><td>1</td><td>7645</td></tr>
+         <tr class="stats_row"><td>7646</td><td>4</td><td>30584</td></tr>
+         <tr class="stats_row"><td>7647</td><td>1</td><td>7647</td></tr>
+         <tr class="stats_row"><td>7648</td><td>2</td><td>15296</td></tr>
+         <tr class="stats_row"><td>7649</td><td>2</td><td>15298</td></tr>
+         <tr class="stats_row"><td>7650</td><td>1</td><td>7650</td></tr>
+         <tr class="stats_row"><td>7651</td><td>1</td><td>7651</td></tr>
+         <tr class="stats_row"><td>7652</td><td>3</td><td>22956</td></tr>
+         <tr class="stats_row"><td>7654</td><td>2</td><td>15308</td></tr>
+         <tr class="stats_row"><td>7655</td><td>2</td><td>15310</td></tr>
+         <tr class="stats_row"><td>7660</td><td>1</td><td>7660</td></tr>
+         <tr class="stats_row"><td>7662</td><td>1</td><td>7662</td></tr>
+         <tr class="stats_row"><td>7663</td><td>1</td><td>7663</td></tr>
+         <tr class="stats_row"><td>7664</td><td>1</td><td>7664</td></tr>
+         <tr class="stats_row"><td>7665</td><td>2</td><td>15330</td></tr>
+         <tr class="stats_row"><td>7666</td><td>3</td><td>22998</td></tr>
+         <tr class="stats_row"><td>7667</td><td>5</td><td>38335</td></tr>
+         <tr class="stats_row"><td>7668</td><td>3</td><td>23004</td></tr>
+         <tr class="stats_row"><td>7669</td><td>5</td><td>38345</td></tr>
+         <tr class="stats_row"><td>7670</td><td>10</td><td>76700</td></tr>
+         <tr class="stats_row"><td>7671</td><td>11</td><td>84381</td></tr>
+         <tr class="stats_row"><td>7672</td><td>3</td><td>23016</td></tr>
+         <tr class="stats_row"><td>7673</td><td>5</td><td>38365</td></tr>
+         <tr class="stats_row"><td>7674</td><td>9</td><td>69066</td></tr>
+         <tr class="stats_row"><td>7675</td><td>7</td><td>53725</td></tr>
+         <tr class="stats_row"><td>7676</td><td>1</td><td>7676</td></tr>
+         <tr class="stats_row"><td>7677</td><td>4</td><td>30708</td></tr>
+         <tr class="stats_row"><td>7678</td><td>3</td><td>23034</td></tr>
+         <tr class="stats_row"><td>7679</td><td>7</td><td>53753</td></tr>
+         <tr class="stats_row"><td>7680</td><td>1</td><td>7680</td></tr>
+         <tr class="stats_row"><td>7681</td><td>2</td><td>15362</td></tr>
+         <tr class="stats_row"><td>7682</td><td>6</td><td>46092</td></tr>
+         <tr class="stats_row"><td>7683</td><td>2</td><td>15366</td></tr>
+         <tr class="stats_row"><td>7684</td><td>3</td><td>23052</td></tr>
+         <tr class="stats_row"><td>7685</td><td>5</td><td>38425</td></tr>
+         <tr class="stats_row"><td>7686</td><td>8</td><td>61488</td></tr>
+         <tr class="stats_row"><td>7687</td><td>3</td><td>23061</td></tr>
+         <tr class="stats_row"><td>7688</td><td>7</td><td>53816</td></tr>
+         <tr class="stats_row"><td>7689</td><td>4</td><td>30756</td></tr>
+         <tr class="stats_row"><td>7690</td><td>3</td><td>23070</td></tr>
+         <tr class="stats_row"><td>7691</td><td>6</td><td>46146</td></tr>
+         <tr class="stats_row"><td>7692</td><td>11</td><td>84612</td></tr>
+         <tr class="stats_row"><td>7694</td><td>9</td><td>69246</td></tr>
+         <tr class="stats_row"><td>7695</td><td>10</td><td>76950</td></tr>
+         <tr class="stats_row"><td>7696</td><td>2</td><td>15392</td></tr>
+         <tr class="stats_row"><td>7697</td><td>9</td><td>69273</td></tr>
+         <tr class="stats_row"><td>7698</td><td>7</td><td>53886</td></tr>
+         <tr class="stats_row"><td>7699</td><td>4</td><td>30796</td></tr>
+         <tr class="stats_row"><td>7700</td><td>9</td><td>69300</td></tr>
+         <tr class="stats_row"><td>7701</td><td>8</td><td>61608</td></tr>
+         <tr class="stats_row"><td>7702</td><td>2</td><td>15404</td></tr>
+         <tr class="stats_row"><td>7703</td><td>2</td><td>15406</td></tr>
+         <tr class="stats_row"><td>7704</td><td>4</td><td>30816</td></tr>
+         <tr class="stats_row"><td>7705</td><td>7</td><td>53935</td></tr>
+         <tr class="stats_row"><td>7706</td><td>1</td><td>7706</td></tr>
+         <tr class="stats_row"><td>7707</td><td>5</td><td>38535</td></tr>
+         <tr class="stats_row"><td>7708</td><td>1</td><td>7708</td></tr>
+         <tr class="stats_row"><td>7709</td><td>4</td><td>30836</td></tr>
+         <tr class="stats_row"><td>7710</td><td>3</td><td>23130</td></tr>
+         <tr class="stats_row"><td>7711</td><td>3</td><td>23133</td></tr>
+         <tr class="stats_row"><td>7712</td><td>2</td><td>15424</td></tr>
+         <tr class="stats_row"><td>7713</td><td>9</td><td>69417</td></tr>
+         <tr class="stats_row"><td>7714</td><td>5</td><td>38570</td></tr>
+         <tr class="stats_row"><td>7715</td><td>2</td><td>15430</td></tr>
+         <tr class="stats_row"><td>7716</td><td>3</td><td>23148</td></tr>
+         <tr class="stats_row"><td>7717</td><td>3</td><td>23151</td></tr>
+         <tr class="stats_row"><td>7718</td><td>3</td><td>23154</td></tr>
+         <tr class="stats_row"><td>7719</td><td>4</td><td>30876</td></tr>
+         <tr class="stats_row"><td>7720</td><td>3</td><td>23160</td></tr>
+         <tr class="stats_row"><td>7721</td><td>4</td><td>30884</td></tr>
+         <tr class="stats_row"><td>7722</td><td>6</td><td>46332</td></tr>
+         <tr class="stats_row"><td>7723</td><td>3</td><td>23169</td></tr>
+         <tr class="stats_row"><td>7724</td><td>2</td><td>15448</td></tr>
+         <tr class="stats_row"><td>7725</td><td>4</td><td>30900</td></tr>
+         <tr class="stats_row"><td>7726</td><td>1</td><td>7726</td></tr>
+         <tr class="stats_row"><td>7727</td><td>8</td><td>61816</td></tr>
+         <tr class="stats_row"><td>7728</td><td>3</td><td>23184</td></tr>
+         <tr class="stats_row"><td>7729</td><td>6</td><td>46374</td></tr>
+         <tr class="stats_row"><td>7730</td><td>4</td><td>30920</td></tr>
+         <tr class="stats_row"><td>7731</td><td>3</td><td>23193</td></tr>
+         <tr class="stats_row"><td>7732</td><td>1</td><td>7732</td></tr>
+         <tr class="stats_row"><td>7733</td><td>1</td><td>7733</td></tr>
+         <tr class="stats_row"><td>7734</td><td>6</td><td>46404</td></tr>
+         <tr class="stats_row"><td>7735</td><td>2</td><td>15470</td></tr>
+         <tr class="stats_row"><td>7736</td><td>1</td><td>7736</td></tr>
+         <tr class="stats_row"><td>7737</td><td>5</td><td>38685</td></tr>
+         <tr class="stats_row"><td>7739</td><td>4</td><td>30956</td></tr>
+         <tr class="stats_row"><td>7740</td><td>3</td><td>23220</td></tr>
+         <tr class="stats_row"><td>7741</td><td>5</td><td>38705</td></tr>
+         <tr class="stats_row"><td>7742</td><td>5</td><td>38710</td></tr>
+         <tr class="stats_row"><td>7743</td><td>1</td><td>7743</td></tr>
+         <tr class="stats_row"><td>7744</td><td>4</td><td>30976</td></tr>
+         <tr class="stats_row"><td>7745</td><td>2</td><td>15490</td></tr>
+         <tr class="stats_row"><td>7746</td><td>1</td><td>7746</td></tr>
+         <tr class="stats_row"><td>7747</td><td>3</td><td>23241</td></tr>
+         <tr class="stats_row"><td>7748</td><td>2</td><td>15496</td></tr>
+         <tr class="stats_row"><td>7749</td><td>3</td><td>23247</td></tr>
+         <tr class="stats_row"><td>7750</td><td>4</td><td>31000</td></tr>
+         <tr class="stats_row"><td>7751</td><td>2</td><td>15502</td></tr>
+         <tr class="stats_row"><td>7752</td><td>1</td><td>7752</td></tr>
+         <tr class="stats_row"><td>7753</td><td>4</td><td>31012</td></tr>
+         <tr class="stats_row"><td>7755</td><td>3</td><td>23265</td></tr>
+         <tr class="stats_row"><td>7756</td><td>7</td><td>54292</td></tr>
+         <tr class="stats_row"><td>7757</td><td>4</td><td>31028</td></tr>
+         <tr class="stats_row"><td>7758</td><td>6</td><td>46548</td></tr>
+         <tr class="stats_row"><td>7759</td><td>6</td><td>46554</td></tr>
+         <tr class="stats_row"><td>7760</td><td>8</td><td>62080</td></tr>
+         <tr class="stats_row"><td>7761</td><td>10</td><td>77610</td></tr>
+         <tr class="stats_row"><td>7762</td><td>6</td><td>46572</td></tr>
+         <tr class="stats_row"><td>7763</td><td>10</td><td>77630</td></tr>
+         <tr class="stats_row"><td>7764</td><td>6</td><td>46584</td></tr>
+         <tr class="stats_row"><td>7765</td><td>10</td><td>77650</td></tr>
+         <tr class="stats_row"><td>7766</td><td>8</td><td>62128</td></tr>
+         <tr class="stats_row"><td>7767</td><td>9</td><td>69903</td></tr>
+         <tr class="stats_row"><td>7768</td><td>5</td><td>38840</td></tr>
+         <tr class="stats_row"><td>7769</td><td>11</td><td>85459</td></tr>
+         <tr class="stats_row"><td>7770</td><td>7</td><td>54390</td></tr>
+         <tr class="stats_row"><td>7771</td><td>5</td><td>38855</td></tr>
+         <tr class="stats_row"><td>7772</td><td>9</td><td>69948</td></tr>
+         <tr class="stats_row"><td>7773</td><td>14</td><td>108822</td></tr>
+         <tr class="stats_row"><td>7774</td><td>5</td><td>38870</td></tr>
+         <tr class="stats_row"><td>7775</td><td>13</td><td>101075</td></tr>
+         <tr class="stats_row"><td>7776</td><td>5</td><td>38880</td></tr>
+         <tr class="stats_row"><td>7777</td><td>1</td><td>7777</td></tr>
+         <tr class="stats_row"><td>7778</td><td>2</td><td>15556</td></tr>
+         <tr class="stats_row"><td>7779</td><td>4</td><td>31116</td></tr>
+         <tr class="stats_row"><td>7780</td><td>2</td><td>15560</td></tr>
+         <tr class="stats_row"><td>7781</td><td>2</td><td>15562</td></tr>
+         <tr class="stats_row"><td>7783</td><td>4</td><td>31132</td></tr>
+         <tr class="stats_row"><td>7784</td><td>1</td><td>7784</td></tr>
+         <tr class="stats_row"><td>7785</td><td>1</td><td>7785</td></tr>
+         <tr class="stats_row"><td>7786</td><td>8</td><td>62288</td></tr>
+         <tr class="stats_row"><td>7787</td><td>2</td><td>15574</td></tr>
+         <tr class="stats_row"><td>7788</td><td>1</td><td>7788</td></tr>
+         <tr class="stats_row"><td>7789</td><td>1</td><td>7789</td></tr>
+         <tr class="stats_row"><td>7790</td><td>2</td><td>15580</td></tr>
+         <tr class="stats_row"><td>7791</td><td>3</td><td>23373</td></tr>
+         <tr class="stats_row"><td>7793</td><td>1</td><td>7793</td></tr>
+         <tr class="stats_row"><td>7804</td><td>1</td><td>7804</td></tr>
+         <tr class="stats_row"><td>7807</td><td>2</td><td>15614</td></tr>
+         <tr class="stats_row"><td>7813</td><td>2</td><td>15626</td></tr>
+         <tr class="stats_row"><td>7814</td><td>2</td><td>15628</td></tr>
+         <tr class="stats_row"><td>7815</td><td>2</td><td>15630</td></tr>
+         <tr class="stats_row"><td>7816</td><td>6</td><td>46896</td></tr>
+         <tr class="stats_row"><td>7817</td><td>3</td><td>23451</td></tr>
+         <tr class="stats_row"><td>7818</td><td>1</td><td>7818</td></tr>
+         <tr class="stats_row"><td>7819</td><td>7</td><td>54733</td></tr>
+         <tr class="stats_row"><td>7820</td><td>4</td><td>31280</td></tr>
+         <tr class="stats_row"><td>7821</td><td>3</td><td>23463</td></tr>
+         <tr class="stats_row"><td>7822</td><td>6</td><td>46932</td></tr>
+         <tr class="stats_row"><td>7823</td><td>1</td><td>7823</td></tr>
+         <tr class="stats_row"><td>7824</td><td>2</td><td>15648</td></tr>
+         <tr class="stats_row"><td>7825</td><td>3</td><td>23475</td></tr>
+         <tr class="stats_row"><td>7826</td><td>2</td><td>15652</td></tr>
+         <tr class="stats_row"><td>7827</td><td>5</td><td>39135</td></tr>
+         <tr class="stats_row"><td>7828</td><td>3</td><td>23484</td></tr>
+         <tr class="stats_row"><td>7829</td><td>5</td><td>39145</td></tr>
+         <tr class="stats_row"><td>7830</td><td>4</td><td>31320</td></tr>
+         <tr class="stats_row"><td>7831</td><td>2</td><td>15662</td></tr>
+         <tr class="stats_row"><td>7832</td><td>2</td><td>15664</td></tr>
+         <tr class="stats_row"><td>7833</td><td>1</td><td>7833</td></tr>
+         <tr class="stats_row"><td>7837</td><td>3</td><td>23511</td></tr>
+         <tr class="stats_total"><td>Total</td><td>1012</td><td>7663324</td></tr>
+      </table>
+      <h3>Octets Transmitted by Chop Size</h3>
+      <table>
+         <tr class="stats_header"><td>Chop Size</td><td>Count</td><td>Octets</td></tr>
+         <tr class="stats_row"><td>4</td><td>1</td><td>4</td></tr>
+         <tr class="stats_row"><td>278</td><td>1</td><td>278</td></tr>
+         <tr class="stats_row"><td>5575</td><td>2</td><td>11150</td></tr>
+         <tr class="stats_row"><td>5576</td><td>2</td><td>11152</td></tr>
+         <tr class="stats_row"><td>5577</td><td>1</td><td>5577</td></tr>
+         <tr class="stats_row"><td>5578</td><td>1</td><td>5578</td></tr>
+         <tr class="stats_row"><td>5579</td><td>2</td><td>11158</td></tr>
+         <tr class="stats_row"><td>5580</td><td>5</td><td>27900</td></tr>
+         <tr class="stats_row"><td>5581</td><td>6</td><td>33486</td></tr>
+         <tr class="stats_row"><td>5582</td><td>5</td><td>27910</td></tr>
+         <tr class="stats_row"><td>5583</td><td>4</td><td>22332</td></tr>
+         <tr class="stats_row"><td>5584</td><td>1</td><td>5584</td></tr>
+         <tr class="stats_row"><td>5585</td><td>6</td><td>33510</td></tr>
+         <tr class="stats_row"><td>5586</td><td>8</td><td>44688</td></tr>
+         <tr class="stats_row"><td>5587</td><td>6</td><td>33522</td></tr>
+         <tr class="stats_row"><td>5588</td><td>4</td><td>22352</td></tr>
+         <tr class="stats_row"><td>5589</td><td>10</td><td>55890</td></tr>
+         <tr class="stats_row"><td>5590</td><td>9</td><td>50310</td></tr>
+         <tr class="stats_row"><td>5591</td><td>7</td><td>39137</td></tr>
+         <tr class="stats_row"><td>5592</td><td>6</td><td>33552</td></tr>
+         <tr class="stats_row"><td>5593</td><td>6</td><td>33558</td></tr>
+         <tr class="stats_row"><td>5594</td><td>4</td><td>22376</td></tr>
+         <tr class="stats_row"><td>5595</td><td>4</td><td>22380</td></tr>
+         <tr class="stats_row"><td>5596</td><td>5</td><td>27980</td></tr>
+         <tr class="stats_row"><td>5597</td><td>4</td><td>22388</td></tr>
+         <tr class="stats_row"><td>5598</td><td>8</td><td>44784</td></tr>
+         <tr class="stats_row"><td>5599</td><td>17</td><td>95183</td></tr>
+         <tr class="stats_row"><td>5600</td><td>16</td><td>89600</td></tr>
+         <tr class="stats_row"><td>5601</td><td>14</td><td>78414</td></tr>
+         <tr class="stats_row"><td>5602</td><td>13</td><td>72826</td></tr>
+         <tr class="stats_row"><td>5603</td><td>6</td><td>33618</td></tr>
+         <tr class="stats_row"><td>5604</td><td>6</td><td>33624</td></tr>
+         <tr class="stats_row"><td>5605</td><td>11</td><td>61655</td></tr>
+         <tr class="stats_row"><td>5606</td><td>15</td><td>84090</td></tr>
+         <tr class="stats_row"><td>5607</td><td>13</td><td>72891</td></tr>
+         <tr class="stats_row"><td>5608</td><td>9</td><td>50472</td></tr>
+         <tr class="stats_row"><td>5609</td><td>6</td><td>33654</td></tr>
+         <tr class="stats_row"><td>5610</td><td>6</td><td>33660</td></tr>
+         <tr class="stats_row"><td>5611</td><td>6</td><td>33666</td></tr>
+         <tr class="stats_row"><td>5612</td><td>2</td><td>11224</td></tr>
+         <tr class="stats_row"><td>5613</td><td>4</td><td>22452</td></tr>
+         <tr class="stats_row"><td>5614</td><td>5</td><td>28070</td></tr>
+         <tr class="stats_row"><td>5615</td><td>4</td><td>22460</td></tr>
+         <tr class="stats_row"><td>5616</td><td>5</td><td>28080</td></tr>
+         <tr class="stats_row"><td>5617</td><td>4</td><td>22468</td></tr>
+         <tr class="stats_row"><td>5619</td><td>2</td><td>11238</td></tr>
+         <tr class="stats_row"><td>5620</td><td>2</td><td>11240</td></tr>
+         <tr class="stats_row"><td>5622</td><td>2</td><td>11244</td></tr>
+         <tr class="stats_row"><td>5624</td><td>1</td><td>5624</td></tr>
+         <tr class="stats_row"><td>5625</td><td>1</td><td>5625</td></tr>
+         <tr class="stats_row"><td>5627</td><td>3</td><td>16881</td></tr>
+         <tr class="stats_row"><td>5629</td><td>3</td><td>16887</td></tr>
+         <tr class="stats_row"><td>5630</td><td>2</td><td>11260</td></tr>
+         <tr class="stats_row"><td>5632</td><td>1</td><td>5632</td></tr>
+         <tr class="stats_row"><td>5634</td><td>2</td><td>11268</td></tr>
+         <tr class="stats_row"><td>5635</td><td>1</td><td>5635</td></tr>
+         <tr class="stats_row"><td>5637</td><td>2</td><td>11274</td></tr>
+         <tr class="stats_row"><td>5638</td><td>3</td><td>16914</td></tr>
+         <tr class="stats_row"><td>5639</td><td>1</td><td>5639</td></tr>
+         <tr class="stats_row"><td>5640</td><td>2</td><td>11280</td></tr>
+         <tr class="stats_row"><td>5641</td><td>2</td><td>11282</td></tr>
+         <tr class="stats_row"><td>5642</td><td>1</td><td>5642</td></tr>
+         <tr class="stats_row"><td>5643</td><td>2</td><td>11286</td></tr>
+         <tr class="stats_row"><td>5644</td><td>1</td><td>5644</td></tr>
+         <tr class="stats_row"><td>5645</td><td>3</td><td>16935</td></tr>
+         <tr class="stats_row"><td>5646</td><td>1</td><td>5646</td></tr>
+         <tr class="stats_row"><td>5647</td><td>3</td><td>16941</td></tr>
+         <tr class="stats_row"><td>5648</td><td>6</td><td>33888</td></tr>
+         <tr class="stats_row"><td>5649</td><td>2</td><td>11298</td></tr>
+         <tr class="stats_row"><td>5650</td><td>3</td><td>16950</td></tr>
+         <tr class="stats_row"><td>5651</td><td>1</td><td>5651</td></tr>
+         <tr class="stats_row"><td>5657</td><td>1</td><td>5657</td></tr>
+         <tr class="stats_row"><td>5664</td><td>1</td><td>5664</td></tr>
+         <tr class="stats_row"><td>5665</td><td>2</td><td>11330</td></tr>
+         <tr class="stats_row"><td>5667</td><td>1</td><td>5667</td></tr>
+         <tr class="stats_row"><td>5668</td><td>1</td><td>5668</td></tr>
+         <tr class="stats_row"><td>5670</td><td>1</td><td>5670</td></tr>
+         <tr class="stats_row"><td>5671</td><td>2</td><td>11342</td></tr>
+         <tr class="stats_row"><td>5673</td><td>3</td><td>17019</td></tr>
+         <tr class="stats_row"><td>5674</td><td>1</td><td>5674</td></tr>
+         <tr class="stats_row"><td>5675</td><td>1</td><td>5675</td></tr>
+         <tr class="stats_row"><td>5676</td><td>2</td><td>11352</td></tr>
+         <tr class="stats_row"><td>5677</td><td>3</td><td>17031</td></tr>
+         <tr class="stats_row"><td>5678</td><td>9</td><td>51102</td></tr>
+         <tr class="stats_row"><td>5679</td><td>5</td><td>28395</td></tr>
+         <tr class="stats_row"><td>5680</td><td>3</td><td>17040</td></tr>
+         <tr class="stats_row"><td>5681</td><td>11</td><td>62491</td></tr>
+         <tr class="stats_row"><td>5682</td><td>9</td><td>51138</td></tr>
+         <tr class="stats_row"><td>5683</td><td>15</td><td>85245</td></tr>
+         <tr class="stats_row"><td>5684</td><td>20</td><td>113680</td></tr>
+         <tr class="stats_row"><td>5685</td><td>14</td><td>79590</td></tr>
+         <tr class="stats_row"><td>5686</td><td>16</td><td>90976</td></tr>
+         <tr class="stats_row"><td>5687</td><td>14</td><td>79618</td></tr>
+         <tr class="stats_row"><td>5688</td><td>21</td><td>119448</td></tr>
+         <tr class="stats_row"><td>5689</td><td>26</td><td>147914</td></tr>
+         <tr class="stats_row"><td>5690</td><td>17</td><td>96730</td></tr>
+         <tr class="stats_row"><td>5691</td><td>11</td><td>62601</td></tr>
+         <tr class="stats_row"><td>5692</td><td>26</td><td>147992</td></tr>
+         <tr class="stats_row"><td>5693</td><td>21</td><td>119553</td></tr>
+         <tr class="stats_row"><td>5694</td><td>23</td><td>130962</td></tr>
+         <tr class="stats_row"><td>5695</td><td>16</td><td>91120</td></tr>
+         <tr class="stats_row"><td>5696</td><td>25</td><td>142400</td></tr>
+         <tr class="stats_row"><td>5697</td><td>24</td><td>136728</td></tr>
+         <tr class="stats_row"><td>5698</td><td>24</td><td>136752</td></tr>
+         <tr class="stats_row"><td>5699</td><td>11</td><td>62689</td></tr>
+         <tr class="stats_row"><td>5700</td><td>18</td><td>102600</td></tr>
+         <tr class="stats_row"><td>5701</td><td>19</td><td>108319</td></tr>
+         <tr class="stats_row"><td>5702</td><td>14</td><td>79828</td></tr>
+         <tr class="stats_row"><td>5703</td><td>9</td><td>51327</td></tr>
+         <tr class="stats_row"><td>5704</td><td>25</td><td>142600</td></tr>
+         <tr class="stats_row"><td>5705</td><td>24</td><td>136920</td></tr>
+         <tr class="stats_row"><td>5706</td><td>16</td><td>91296</td></tr>
+         <tr class="stats_row"><td>5707</td><td>12</td><td>68484</td></tr>
+         <tr class="stats_row"><td>5708</td><td>12</td><td>68496</td></tr>
+         <tr class="stats_row"><td>5709</td><td>8</td><td>45672</td></tr>
+         <tr class="stats_row"><td>5710</td><td>9</td><td>51390</td></tr>
+         <tr class="stats_row"><td>5711</td><td>13</td><td>74243</td></tr>
+         <tr class="stats_row"><td>5712</td><td>4</td><td>22848</td></tr>
+         <tr class="stats_row"><td>5713</td><td>6</td><td>34278</td></tr>
+         <tr class="stats_row"><td>5714</td><td>3</td><td>17142</td></tr>
+         <tr class="stats_row"><td>5715</td><td>1</td><td>5715</td></tr>
+         <tr class="stats_row"><td>5716</td><td>2</td><td>11432</td></tr>
+         <tr class="stats_row"><td>5717</td><td>2</td><td>11434</td></tr>
+         <tr class="stats_row"><td>5718</td><td>5</td><td>28590</td></tr>
+         <tr class="stats_row"><td>5719</td><td>3</td><td>17157</td></tr>
+         <tr class="stats_row"><td>5720</td><td>3</td><td>17160</td></tr>
+         <tr class="stats_row"><td>5721</td><td>5</td><td>28605</td></tr>
+         <tr class="stats_row"><td>5722</td><td>4</td><td>22888</td></tr>
+         <tr class="stats_row"><td>5723</td><td>12</td><td>68676</td></tr>
+         <tr class="stats_row"><td>5724</td><td>10</td><td>57240</td></tr>
+         <tr class="stats_row"><td>5725</td><td>7</td><td>40075</td></tr>
+         <tr class="stats_row"><td>5726</td><td>11</td><td>62986</td></tr>
+         <tr class="stats_row"><td>5727</td><td>9</td><td>51543</td></tr>
+         <tr class="stats_row"><td>5728</td><td>2</td><td>11456</td></tr>
+         <tr class="stats_row"><td>5729</td><td>3</td><td>17187</td></tr>
+         <tr class="stats_row"><td>5731</td><td>2</td><td>11462</td></tr>
+         <tr class="stats_row"><td>5732</td><td>3</td><td>17196</td></tr>
+         <tr class="stats_row"><td>5733</td><td>1</td><td>5733</td></tr>
+         <tr class="stats_row"><td>5746</td><td>1</td><td>5746</td></tr>
+         <tr class="stats_row"><td>5747</td><td>1</td><td>5747</td></tr>
+         <tr class="stats_row"><td>5748</td><td>1</td><td>5748</td></tr>
+         <tr class="stats_row"><td>5750</td><td>3</td><td>17250</td></tr>
+         <tr class="stats_row"><td>5751</td><td>2</td><td>11502</td></tr>
+         <tr class="stats_row"><td>5753</td><td>1</td><td>5753</td></tr>
+         <tr class="stats_row"><td>5761</td><td>1</td><td>5761</td></tr>
+         <tr class="stats_row"><td>5762</td><td>2</td><td>11524</td></tr>
+         <tr class="stats_total"><td>Total</td><td>1002</td><td>5668369</td></tr>
+      </table>
+      <h3>Frames Received by Opcode</h3>
+      <table>
+         <tr class="stats_header"><td>Opcode</td><td>Count</td></tr>
+         <tr class="stats_row"><td>1</td><td>1000</td></tr>
+         <tr class="stats_row"><td>8</td><td>1</td></tr>
+         <tr class="stats_total"><td>Total</td><td>1001</td></tr>
+      </table>
+      <h3>Frames Transmitted by Opcode</h3>
+      <table>
+         <tr class="stats_header"><td>Opcode</td><td>Count</td></tr>
+         <tr class="stats_row"><td>1</td><td>1000</td></tr>
+         <tr class="stats_row"><td>8</td><td>1</td></tr>
+         <tr class="stats_total"><td>Total</td><td>1001</td></tr>
+      </table>
+      <br/><hr/>
+      <h2>Wire Log</h2>
+      <div id="wirelog">
+         <pre class="wirelog_rx_octets">000 RX OCTETS: 474554202f72756e436173653f636173653d343437266167656e743d636f6d2e7a776f70706c652e5053576562536f636b65</pre>
+         <pre class="wirelog_rx_octets">               7420485454502f312e310d0a486f ...</pre>
+         <pre class="wirelog_tx_octets">001 TX OCTETS: 485454502f312e312031303120537769746368696e672050726f746f636f6c730d0a5365727665723a204175746f6261686e</pre>
+         <pre class="wirelog_tx_octets">               5465737453756974652f302e372e ...</pre>
+         <pre class="wirelog_delay">002 WIRELOG DISABLED</pre>
+         <pre class="wirelog_kill_after">003 CLOSE CONNECTION AFTER 480.000000 sec</pre>
+         <pre class="wirelog_delay">004 WIRELOG ENABLED</pre>
+         <pre class="wirelog_tx_frame">005 TX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASK=None, PAYLOAD-REPEAT-LEN=None, CHOPSIZE=None, SYNC=False</pre>
+         <pre class="wirelog_tx_frame">               0x03e8</pre>
+         <pre class="wirelog_tx_octets">006 TX OCTETS: 880203e8</pre>
+         <pre class="wirelog_rx_octets">007 RX OCTETS: 8882797df8d97a95</pre>
+         <pre class="wirelog_rx_frame">008 RX FRAME : OPCODE=8, FIN=True, RSV=0, PAYLOAD-LEN=2, MASKED=True, MASK=3739376466386439</pre>
+         <pre class="wirelog_rx_frame">               0x03e8</pre>
+         <pre class="wirelog_tcp_closed_by_me">009 TCP DROPPED BY ME</pre>
+      </div>
+      <br/><hr/>
+   </body>
+</html>

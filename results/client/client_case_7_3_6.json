@@ -1,0 +1,120 @@
+{
+   "agent": "PocketSocketClient",
+   "behavior": "OK",
+   "behaviorClose": "OK",
+   "case": 221,
+   "closedByMe": true,
+   "createStats": true,
+   "createWirelog": true,
+   "description": "Send a close frame with close code and close reason which is too long (124) - total frame payload 126 octets",
+   "droppedByMe": true,
+   "duration": 1,
+   "expectation": "Clean close with protocol error code or dropped TCP connection.",
+   "expected": {
+      "OK": []
+   },
+   "expectedClose": {
+      "closeCode": [
+         1002
+      ],
+      "closedByMe": true,
+      "requireClean": false
+   },
+   "failedByMe": false,
+   "httpRequest": "GET /runCase?case=221&agent=PocketSocketClient HTTP/1.1\r\nHost: localhost:9001\r\nSec-WebSocket-Key: EwPndND+tIIHFWxh125MOg==\r\nSec-WebSocket-Version: 13\r\nUpgrade: websocket\r\nOrigin: http://localhost:9001\r\nSec-WebSocket-Extensions: permessage-deflate; client_max_window_bits\r\nConnection: upgrade\r\n\r\n",
+   "httpResponse": "HTTP/1.1 101 Switching Protocols\r\nServer: AutobahnTestSuite/0.7.5-0.10.9\r\nX-Powered-By: AutobahnPython/0.10.9\r\nUpgrade: WebSocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: l90AaQ4PFn9zsNwwewXtEghibG0=\r\n\r\n",
+   "id": "7.3.6",
+   "isServer": true,
+   "localCloseCode": 1000,
+   "localCloseReason": "****************************************************************************************************************************",
+   "received": [],
+   "remoteCloseCode": 1002,
+   "remoteCloseReason": "Control frames payload must < 126",
+   "reportCompressionRatio": false,
+   "reportTime": false,
+   "result": "Actual events match at least one expected.",
+   "resultClose": "Connection was properly closed",
+   "rxFrameStats": {
+      "8": 1
+   },
+   "rxOctetStats": {
+      "41": 1,
+      "300": 1
+   },
+   "started": "2016-03-30T11:13:50.249Z",
+   "trafficStats": null,
+   "txFrameStats": {
+      "8": 1
+   },
+   "txOctetStats": {
+      "130": 1,
+      "206": 1
+   },
+   "wasClean": true,
+   "wasCloseHandshakeTimeout": false,
+   "wasNotCleanReason": null,
+   "wasOpenHandshakeTimeout": false,
+   "wasServerConnectionDropTimeout": false,
+   "wirelog": [
+      [
+         "RO",
+         [
+            300,
+            "474554202f72756e436173653f636173653d323231266167656e743d636f6d2e7a776f70706c652e5053576562536f636b657420485454502f312e310d0a486f ..."
+         ]
+      ],
+      [
+         "TO",
+         [
+            206,
+            "485454502f312e312031303120537769746368696e672050726f746f636f6c730d0a5365727665723a204175746f6261686e5465737453756974652f302e372e ..."
+         ],
+         false
+      ],
+      [
+         "TF",
+         [
+            126,
+            "0x03e82a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a ..."
+         ],
+         8,
+         true,
+         0,
+         null,
+         null,
+         null,
+         false
+      ],
+      [
+         "TO",
+         [
+            130,
+            "887e007e03e82a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a ..."
+         ],
+         false
+      ],
+      [
+         "KL",
+         1
+      ],
+      [
+         "RO",
+         [
+            41,
+            "88a35e2d26f05dc7659f3059549f320d40823f4043837e5d4789324247947e4053832a0d1ad06f1f10"
+         ]
+      ],
+      [
+         "RF",
+         [
+            35,
+            "0x03ea436f6e74726f6c206672616d6573207061796c6f6164206d757374203c20313236"
+         ],
+         8,
+         true,
+         0,
+         true,
+         "5e2d26f0"
+      ]
+   ]
+}
