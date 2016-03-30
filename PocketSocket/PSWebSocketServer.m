@@ -482,6 +482,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 
             // create webSocket
             PSWebSocket *webSocket = [PSWebSocket serverSocketWithRequest:request inputStream:connection.inputStream outputStream:connection.outputStream];
+            webSocket.delegateQueue = _workQueue;
             
             // attach webSocket
             [self attachWebSocket:webSocket];
