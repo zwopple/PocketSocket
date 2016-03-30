@@ -262,7 +262,6 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     }
     
     // validate extensions
-    NSLog(@"%@", [headers[@"Sec-WebSocket-Extensions"] lowercaseString]);
     NSOrderedSet *extensionComponents = PSHTTPHeaderFieldValues([headers[@"Sec-WebSocket-Extensions"] lowercaseString]);
     if(![self pmdConfigureWithExtensionsHeaderComponents:extensionComponents]) {
         [self failWithErrorCode:PSWebSocketErrorCodeHandshakeFailed reason:@"invalid permessage-deflate extension parameters"];
