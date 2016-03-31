@@ -74,8 +74,6 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     uint32_t _utf8DecoderState;
     uint32_t _utf8DecoderCodePoint;
-    
-    NSInteger _numFramesProcessed;
 }
 @end
 @implementation PSWebSocketDriver
