@@ -279,7 +279,6 @@
 
 - (void)connect {
     if(_secure && _mode == PSWebSocketModeClient) {
-        _negotiatedSSL = NO;
         
         __block BOOL customTrustEvaluation = NO;
         [self executeDelegateAndWait:^{
@@ -289,7 +288,10 @@
         NSMutableDictionary *ssl = [NSMutableDictionary dictionary];
         ssl[(__bridge id)kCFStreamSSLLevel] = (__bridge id)kCFStreamSocketSecurityLevelNegotiatedSSL;
         if(customTrustEvaluation) {
+            _negotiatedSSL = NO;
             ssl[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO;
+        } else {
+            _negotiatedSSL = YES;
         }
         
         [_outputStream setProperty:ssl forKey:(__bridge id)kCFStreamPropertySSLSettings];
