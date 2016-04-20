@@ -165,6 +165,30 @@
                                            &readStream,
                                            &writeStream);
         NSAssert(readStream && writeStream, @"Failed to create streams for client socket");
+
+        CFStringRef networkServiceType = nil;
+
+        switch (request.networkServiceType) {
+        case NSURLNetworkServiceTypeDefault:
+            break;
+        case NSURLNetworkServiceTypeVoIP:
+            networkServiceType = kCFStreamNetworkServiceTypeVoIP;
+            break;
+        case NSURLNetworkServiceTypeBackground:
+            networkServiceType = kCFStreamNetworkServiceTypeBackground;
+            break;
+        case NSURLNetworkServiceTypeVoice:
+            networkServiceType = kCFStreamNetworkServiceTypeVoice;
+            break;
+        case NSURLNetworkServiceTypeVideo:
+            networkServiceType = kCFStreamNetworkServiceTypeVideo;
+            break;
+        }
+
+        if (networkServiceType != nil) {
+            CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, networkServiceType);
+            CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, networkServiceType);
+        }
         
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
