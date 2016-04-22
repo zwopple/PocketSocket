@@ -112,10 +112,10 @@
 #pragma mark - Initialization
 
 - (instancetype)initWithMode:(PSWebSocketMode)mode request:(NSURLRequest *)request {
-	if((self = [super init])) {
+    if((self = [super init])) {
         _mode = mode;
         _request = [request mutableCopy];
-		_readyState = PSWebSocketReadyStateConnecting;
+        _readyState = PSWebSocketReadyStateConnecting;
         NSString* name = [NSString stringWithFormat: @"PSWebSocket <%@>", request.URL];
         _workQueue = dispatch_queue_create(name.UTF8String, nil);
         if(_mode == PSWebSocketModeClient) {
@@ -141,15 +141,15 @@
             [_inputBuffer appendData:_request.HTTPBody];
             _request.HTTPBody = nil;
         }
-	}
-	return self;
+    }
+    return self;
 }
 
 + (instancetype)clientSocketWithRequest:(NSURLRequest *)request {
     return [[self alloc] initClientSocketWithRequest:request];
 }
 - (instancetype)initClientSocketWithRequest:(NSURLRequest *)request {
-	if((self = [self initWithMode:PSWebSocketModeClient request:request])) {
+    if((self = [self initWithMode:PSWebSocketModeClient request:request])) {
         NSURL *URL = request.URL;
         NSString *host = URL.host;
         UInt32 port = (UInt32)request.URL.port.integerValue;
@@ -166,34 +166,34 @@
                                            &writeStream);
         NSAssert(readStream && writeStream, @"Failed to create streams for client socket");
 
-        CFStringRef networkServiceType = nil;
+        NSString *networkServiceType = nil;
 
         switch (request.networkServiceType) {
         case NSURLNetworkServiceTypeDefault:
             break;
         case NSURLNetworkServiceTypeVoIP:
-            networkServiceType = kCFStreamNetworkServiceTypeVoIP;
+            networkServiceType = NSStreamNetworkServiceTypeVoIP;
             break;
         case NSURLNetworkServiceTypeBackground:
-            networkServiceType = kCFStreamNetworkServiceTypeBackground;
+            networkServiceType = NSStreamNetworkServiceTypeBackground;
             break;
         case NSURLNetworkServiceTypeVoice:
-            networkServiceType = kCFStreamNetworkServiceTypeVoice;
+            networkServiceType = NSStreamNetworkServiceTypeVoice;
             break;
         case NSURLNetworkServiceTypeVideo:
-            networkServiceType = kCFStreamNetworkServiceTypeVideo;
+            networkServiceType = NSStreamNetworkServiceTypeVideo;
             break;
-        }
-
-        if (networkServiceType != nil) {
-            CFReadStreamSetProperty(readStream, kCFStreamNetworkServiceType, networkServiceType);
-            CFWriteStreamSetProperty(writeStream, kCFStreamNetworkServiceType, networkServiceType);
         }
         
         _inputStream = CFBridgingRelease(readStream);
         _outputStream = CFBridgingRelease(writeStream);
+        
+        if (networkServiceType != nil) {
+            [_inputStream setProperty:networkServiceType forKey:NSStreamNetworkServiceType];
+            [_outputStream setProperty:networkServiceType forKey:NSStreamNetworkServiceType];
+        }
     }
-	return self;
+    return self;
 }
 
 + (instancetype)serverSocketWithRequest:(NSURLRequest *)request inputStream:(NSInputStream *)inputStream outputStream:(NSOutputStream *)outputStream {
