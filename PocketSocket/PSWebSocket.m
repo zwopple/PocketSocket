@@ -43,6 +43,7 @@
     NSInteger _closeCode;
     NSString *_closeReason;
     NSMutableArray *_pingHandlers;
+    NSMutableArray *_sendOnceConnectedQueue;
 }
 @end
 @implementation PSWebSocket
@@ -135,6 +136,7 @@
         _closeCode = 0;
         _closeReason = nil;
         _pingHandlers = [NSMutableArray array];
+        _sendOnceConnectedQueue = [NSMutableArray array];
         _inputBuffer = [[PSWebSocketBuffer alloc] init];
         _outputBuffer = [[PSWebSocketBuffer alloc] init];
         if(_request.HTTPBody.length > 0) {
@@ -200,6 +202,12 @@
 }
 - (void)send:(id)message {
     NSParameterAssert(message);
+    if(_readyState != PSWebSocketReadyStateOpen) {
+        if(_readyState == PSWebSocketReadyStateConnecting) {
+            [_sendOnceConnectedQueue addObject:message];
+        }
+        return;
+    }
     [self executeWork:^{
         if([message isKindOfClass:[NSString class]]) {
             [_driver sendText:message];
@@ -501,6 +509,10 @@
     [self notifyDelegateDidOpen];
     [self pumpInput];
     [self pumpOutput];
+    for (id message in _sendOnceConnectedQueue) {
+        [self send:message];
+    }
+    _sendOnceConnectedQueue = [NSMutableArray array];
 }
 - (void)driver:(PSWebSocketDriver *)driver didFailWithError:(NSError *)error {
     [self failWithError:error];
