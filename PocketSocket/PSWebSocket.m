@@ -201,6 +201,11 @@
 - (void)send:(id)message {
     NSParameterAssert(message);
     [self executeWork:^{
+        if(!_opened || _readyState == PSWebSocketReadyStateConnecting) {
+            [NSException raise:@"Invalid State" format:@"You cannot send a PSWebSocket messages before it is finished opening."];
+            return;
+        }
+        
         if([message isKindOfClass:[NSString class]]) {
             [_driver sendText:message];
         } else if([message isKindOfClass:[NSData class]]) {
