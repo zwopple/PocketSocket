@@ -421,30 +421,50 @@
 		EEE5E32E18B37DD600BAE47A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"ARCHS[sdk=iphoneos*]" = (
+					arm64,
+					armv7,
+				);
+				"ARCHS[sdk=macosx*]" = "$(ARCHS_STANDARD)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DSTROOT = /tmp/PocketSocket.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PocketSocket/PocketSocket-Prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
+				VALID_ARCHS = "x86_64 arm64 armv7s armv7";
+				"VALID_ARCHS[sdk=iphoneos*]" = "arm64 armv7s armv7";
+				"VALID_ARCHS[sdk=macosx*]" = x86_64;
 			};
 			name = Debug;
 		};
 		EEE5E32F18B37DD600BAE47A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"ARCHS[sdk=iphoneos*]" = (
+					arm64,
+					armv7,
+				);
+				"ARCHS[sdk=macosx*]" = "$(ARCHS_STANDARD)";
 				COMBINE_HIDPI_IMAGES = YES;
 				DSTROOT = /tmp/PocketSocket.dst;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "PocketSocket/PocketSocket-Prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "macosx iphoneos iphonesimulator";
+				VALID_ARCHS = "x86_64 arm64 armv7s armv7";
+				"VALID_ARCHS[sdk=iphoneos*]" = "arm64 armv7s armv7";
+				"VALID_ARCHS[sdk=macosx*]" = x86_64;
 			};
 			name = Release;
 		};
