@@ -85,7 +85,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     NSOrderedSet *version = PSHTTPHeaderFieldValues([headers[@"Sec-WebSocket-Version"] lowercaseString]);
     NSOrderedSet *upgrade = PSHTTPHeaderFieldValues([headers[@"Upgrade"] lowercaseString]);
-    NSOrderedSet *connection = PSHTTPHeaderFieldValues([headers[@"Connection"] lowercaseString]);
+    
+    NSString *connectionHeader = [headers[@"Connection"] lowercaseString];
+    NSOrderedSet *connection = PSHTTPHeaderFieldValues([connectionHeader stringByReplacingOccurrencesOfString:@"," withString:@";"]);
     
     if(headers[@"Sec-WebSocket-Key"] &&
        [version containsObject:@"13"] &&
