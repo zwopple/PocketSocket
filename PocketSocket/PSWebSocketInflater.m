@@ -1,4 +1,4 @@
-//  Copyright 2014 Zwopple Limited
+//  Copyright 2014-Present Zwopple Limited
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@
 
 - (BOOL)ensureReady:(NSError *__autoreleasing *)outError {
     if(!_ready) {
-        if(inflateInit2(&_stream, _windowBits) != Z_OK) {
+        if(inflateInit2(&_stream, -MAX_WBITS) != Z_OK) {
             PSWebSocketSetOutError(outError, PSWebSocketStatusCodeProtocolError, @"Failed to initialize inflate stream");
             return NO;
         }

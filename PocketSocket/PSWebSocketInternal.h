@@ -1,4 +1,4 @@
-//  Copyright 2014 Zwopple Limited
+//  Copyright 2014-Present Zwopple Limited
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
 #import <Foundation/Foundation.h>
 #import <Foundation/Foundation.h>
 #import "PSWebSocketTypes.h"
+#import "PSWebSocketDriver.h"
+#import <sys/socket.h>
+#import <arpa/inet.h>
+
 
 typedef NS_ENUM(uint8_t, PSWebSocketOpCode) {
     PSWebSocketOpCodeContinuation = 0x0,
@@ -35,7 +39,7 @@ static const uint8_t PSWebSocketRsv3Mask = 0x10;
 static const uint8_t PSWebSocketMaskMask = 0x80;
 static const uint8_t PSWebSocketPayloadLenMask = 0x7F;
 
-#define PSWebSocketSetOutError(e, c, d) if(e){ *e = [NSError errorWithDomain:PSWebSocketErrorDomain code:c userInfo:@{NSLocalizedDescriptionKey: d}]; }
+#define PSWebSocketSetOutError(e, c, d) if(e){ *e = [PSWebSocketDriver errorWithCode:c reason:d]; }
 
 static inline void _PSWebSocketLog(id self, NSString *format, ...) {
     __block va_list arg_list;
@@ -84,4 +88,50 @@ static inline BOOL PSWebSocketCloseCodeIsValid(NSInteger closeCode) {
         return YES;
     }
     return NO;
+}
+
+static inline NSOrderedSet* PSHTTPHeaderFieldValues(NSString *header) {
+    NSMutableOrderedSet *components = [NSMutableOrderedSet orderedSet];
+    [[header componentsSeparatedByString:@";"] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSString *str = obj;
+        while ([str hasPrefix:@" "] && str.length > 1) {
+            str = [str substringWithRange:NSMakeRange(1, str.length - 1)];
+        }
+        while ([str hasSuffix:@" "] && str.length > 1) {
+            str = [str substringWithRange:NSMakeRange(0, str.length - 1)];
+        }
+        if ([str length] > 0 && ![str isEqualToString:@" "]) {
+            [components addObject:str];
+        }
+    }];
+    return components;
+}
+
+static inline NSData* PSPeerAddressOfInputStream(NSInputStream *stream) {
+    // First recover the socket handle from the stream:
+    NSData* handleData = CFBridgingRelease(CFReadStreamCopyProperty((__bridge CFReadStreamRef)stream,
+                                                                    kCFStreamPropertySocketNativeHandle));
+    if(!handleData || handleData.length != sizeof(CFSocketNativeHandle)) {
+        return nil;
+    }
+    CFSocketNativeHandle socketHandle = *(const CFSocketNativeHandle*)handleData.bytes;
+    struct sockaddr_in addr;
+    unsigned addrLen = sizeof(addr);
+    if(getpeername(socketHandle, (struct sockaddr*)&addr,&addrLen) < 0) {
+        return nil;
+    }
+    return [NSData dataWithBytes: &addr length: addr.sin_len];
+}
+
+static inline NSString* PSPeerHostOfInputStream(NSInputStream *stream) {
+    NSData *peerAddress = PSPeerAddressOfInputStream(stream);
+    if(!peerAddress) {
+        return nil;
+    }
+    const struct sockaddr_in *addr = peerAddress.bytes;
+    char nameBuf[INET6_ADDRSTRLEN];
+    if(inet_ntop(addr->sin_family, &addr->sin_addr, nameBuf, (socklen_t)sizeof(nameBuf)) == NULL) {
+        return nil;
+    }
+    return [NSString stringWithFormat: @"%s:%hu", nameBuf, ntohs(addr->sin_port)];
 }

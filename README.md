@@ -7,11 +7,13 @@ Objective-C websocket library for building things that work in realtime on iOS a
 
 * Conforms fully to [RFC6455](http://tools.ietf.org/html/rfc6455) websocket protocol
 * Support for websocket compression via the [permessage-deflate](http://tools.ietf.org/html/draft-ietf-hybi-permessage-compression-17) extension
-* Passes all ~355 Autobahn [Client Tests](http://zwopple.github.io/PocketSocket/results/client/) & [Server Tests](http://zwopple.github.io/PocketSocket/results/server/) with 100% compliance
+* Passes all ~519 Autobahn [Client Tests](http://zwopple.github.io/PocketSocket/results/client/) & [Server Tests](http://zwopple.github.io/PocketSocket/results/server/) with 100% compliance<sup>1</sup>
 * Client & Server modes (see notes below)
 * TLS/SSL support
 * Asynchronous IO
 * Standalone `PSWebSocketDriver` for easy “Bring your own” networking IO
+
+> <sup>1</sup>Some server tests are non-strict and drop connections earlier when receiving malformed WebSocket payloads.
 
 ### Dependencies
 
@@ -33,7 +35,7 @@ Installation is recommended via cocoapods. Add `pod 'PocketSocket'` to your Podf
 
 ### Using PSWebSocket as a client
 
-The client supports both the `ws` and secure `wss` protocols. It will automatically negotiate the certificates for you from the certificate chain on the device it’s running and support for pinned certificates is planned.
+The client supports both the `ws` and secure `wss` protocols. It will automatically negotiate the certificates for you from the certificate chain on the device it’s running. If you need custom SSL certificate support or pinning look at the `webSocket:evaluateServerTrust:` in `PSWebSocketDelegate`
 
 The client will always request the server turn on compression via the permessage-deflate extension. If the server accepts the request it will be enabled for the entire duration of the connection and used on all messages.
 
@@ -151,8 +153,6 @@ Beyond that have a look at the `PSWebSocketDriverDelegate` methods and the simpl
 
 ### Roadmap
 
-* Add support for pinned SSL certificates
-* Add support for SSL in `PSWebSocketServer`
 * Examples, examples, examples!
 
 ### Running Tests
@@ -175,11 +175,15 @@ Lastly we're set out to create the full picture from client to server all in a s
 
 ### Authors
 
-* Robert Payne
+* Robert Payne (@robertjpayne)
+
+### Contributors
+
+* Jens Alfke (@snej)
 
 ### License
 
-Copyright 2014 Zwopple Limited
+Copyright 2014-Present Zwopple Limited
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

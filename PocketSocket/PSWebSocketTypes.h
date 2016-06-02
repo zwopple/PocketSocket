@@ -1,4 +1,4 @@
-//  Copyright 2014 Zwopple Limited
+//  Copyright 2014-Present Zwopple Limited
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -41,3 +41,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketStatusCode) {
 
 #define PSWebSocketGUID @"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 #define PSWebSocketErrorDomain @"PSWebSocketErrorDomain"
+
+// NSError userInfo keys, used with PSWebSocketErrorCodeHandshakeFailed:
+#define PSHTTPStatusErrorKey @"HTTPStatus"      // The HTTP status (404, etc.)
+#define PSHTTPResponseErrorKey @"HTTPResponse"  // The entire HTTP response as an CFHTTPMessageRef

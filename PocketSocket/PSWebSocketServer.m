@@ -1,4 +1,4 @@
-//  Copyright 2014 Zwopple Limited
+//  Copyright 2014-Present Zwopple Limited
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -171,8 +171,14 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     // bind
     CFSocketError err = CFSocketSetAddress(_socket, (__bridge CFDataRef)_addrData);
     if(err == kCFSocketError) {
+        if(!silent) {
+            [self notifyDelegateFailedToStart:[NSError errorWithDomain:NSPOSIXErrorDomain code:errno userInfo:nil]];
+        }
         return;
     } else if(err == kCFSocketTimeout) {
+        if(!silent) {
+            [self notifyDelegateFailedToStart:[NSError errorWithDomain:NSPOSIXErrorDomain code:ETIME userInfo:nil]];
+        }
         return;
     }
     
@@ -194,7 +200,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     }
     
     for(PSWebSocketServerConnection *connection in _connections.allObjects) {
-        [self disconnectConnectionGracefully:connection statusCode:500 description:@"Service Going Away"];
+        [self disconnectConnectionGracefully:connection statusCode:500 description:@"Service Going Away" headers: nil];
     }
     for(PSWebSocket *webSocket in _webSockets.allObjects) {
         [webSocket close];
@@ -256,9 +262,14 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             
             opts[(__bridge id)kCFStreamSSLIsServer] = @YES;
             opts[(__bridge id)kCFStreamSSLCertificates] = _SSLCertificates;
+            opts[(__bridge id)kCFStreamSSLValidatesCertificateChain] = @NO; // i.e. client certs
             
             CFReadStreamSetProperty(readStream, kCFStreamPropertySSLSettings, (__bridge CFDictionaryRef)opts);
             CFWriteStreamSetProperty(writeStream, kCFStreamPropertySSLSettings, (__bridge CFDictionaryRef)opts);
+
+            SSLContextRef context = (SSLContextRef)CFWriteStreamCopyProperty(writeStream, kCFStreamPropertySSLContext);
+            SSLSetClientSideAuthenticate(context, kTryAuthenticate);
+            CFRelease(context);
         }
         
         // create connection
@@ -284,6 +295,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     }
     [_webSockets addObject:webSocket];
     webSocket.delegate = self;
+    webSocket.delegateQueue = _workQueue;
 }
 - (void)detachWebSocket:(PSWebSocket *)webSocket {
     if(![_webSockets containsObject:webSocket]) {
@@ -308,6 +320,12 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 - (void)webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
     [self detachWebSocket:webSocket];
     [self notifyDelegateWebSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
+}
+- (void)webSocketDidFlushInput:(PSWebSocket *)webSocket {
+    [self notifyDelegateWebSocketDidFlushInput:webSocket];
+}
+- (void)webSocketDidFlushOutput:(PSWebSocket *)webSocket {
+    [self notifyDelegateWebSocketDidFlushOutput:webSocket];
 }
 
 #pragma mark - Connections
@@ -336,18 +354,30 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     connection.inputStream.delegate = nil;
     connection.outputStream.delegate = nil;
 }
-- (void)disconnectConnectionGracefully:(PSWebSocketServerConnection *)connection statusCode:(NSInteger)statusCode description:(NSString *)description {
+- (void)disconnectConnectionGracefully:(PSWebSocketServerConnection *)connection
+                            statusCode:(NSInteger)statusCode
+                           description:(NSString *)description
+                               headers:(NSDictionary*)headers
+{
     if(connection.readyState >= PSWebSocketServerConnectionReadyStateClosing) {
         return;
     }
     connection.readyState = PSWebSocketServerConnectionReadyStateClosing;
+    if (!description)
+        description = [NSHTTPURLResponse localizedStringForStatusCode:statusCode];
     CFHTTPMessageRef msg = CFHTTPMessageCreateResponse(kCFAllocatorDefault, statusCode, (__bridge CFStringRef)description, kCFHTTPVersion1_1);
+    for (NSString* name in headers) {
+        CFHTTPMessageSetHeaderFieldValue(msg, (__bridge CFStringRef)name,
+                                         (__bridge CFStringRef)headers[name]);
+    }
+    CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Connection"), CFSTR("Close"));
+    CFHTTPMessageSetHeaderFieldValue(msg, CFSTR("Content-Length"), CFSTR("0"));
     NSData *data = CFBridgingRelease(CFHTTPMessageCopySerializedMessage(msg));
     CFRelease(msg);
     [connection.outputBuffer appendData:data];
     [self pumpOutput];
     __weak typeof(self)weakSelf = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5.0 * NSEC_PER_SEC), _workQueue, ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), _workQueue, ^{
         __strong typeof(weakSelf)strongSelf = weakSelf;
         if(strongSelf) {
             [strongSelf disconnectConnection:connection];
@@ -387,27 +417,17 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         }
         
         if(connection.inputBuffer.bytesAvailable > 4) {
-            uint8_t boundary[] = {'\r', '\n','\r', '\n'};
-            NSUInteger boundaryOffset = 0;
-            NSUInteger matched = 0;
-            for(NSUInteger i = 0; i < connection.inputBuffer.bytesAvailable; ++i) {
-                const uint8_t byte = ((const uint8_t *)connection.inputBuffer.bytes)[i];
-                const uint8_t boundaryByte = boundary[matched];
-                if(byte == boundaryByte) {
-                    if(++matched == sizeof(boundary)) {
-                        boundaryOffset = i + 1;
-                        break;
-                    }
-                } else {
-                    matched = 0;
-                }
-            }
-            if(boundaryOffset == 0) {
+            void* boundary = memmem(connection.inputBuffer.bytes,
+                                    connection.inputBuffer.bytesAvailable,
+                                    "\r\n\r\n", 4);
+            if (boundary == NULL) {
+                // Haven't reached end of HTTP headers yet
                 if(connection.inputBuffer.bytesAvailable >= 16384) {
                     [self disconnectConnection:connection];
                 }
                 continue;
             }
+            NSUInteger boundaryOffset = boundary + 4 - connection.inputBuffer.bytes;
             
             CFHTTPMessageRef msg = CFHTTPMessageCreateEmpty(kCFAllocatorDefault, YES);
             CFHTTPMessageAppendBytes(msg, connection.inputBuffer.bytes, connection.inputBuffer.bytesAvailable);
@@ -434,29 +454,35 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             }];
             
             if(![PSWebSocket isWebSocketRequest:request]) {
-                [self disconnectConnection:connection];
+                [self disconnectConnectionGracefully:connection
+                                          statusCode:501 description:@"WebSockets only, please"
+                                             headers:nil];
                 CFRelease(msg);
                 continue;
             }
-            
+
+            NSString* protocol = nil;
             if(_delegate) {
-                __block BOOL accept = NO;
-                [self executeDelegateAndWait:^{
-                    accept = [_delegate server:self acceptWebSocketWithRequest:request];
-                }];
-                if(!accept) {
-                    [self disconnectConnection:connection];
+                NSHTTPURLResponse* response = nil;
+                if (![self askDelegateShouldAcceptConnection:connection
+                                                     request:request
+                                                    response:&response]) {
+                    [self disconnectConnectionGracefully:connection
+                                              statusCode:(response.statusCode ?: 403)
+                                             description:nil
+                                                 headers:response.allHeaderFields];
                     CFRelease(msg);
                     continue;
                 }
+                protocol = response.allHeaderFields[@"Sec-WebSocket-Protocol"];
             }
             
             // detach connection
             [self detatchConnection:connection];
-        
-            
+
             // create webSocket
             PSWebSocket *webSocket = [PSWebSocket serverSocketWithRequest:request inputStream:connection.inputStream outputStream:connection.outputStream];
+            webSocket.delegateQueue = _workQueue;
             
             // attach webSocket
             [self attachWebSocket:webSocket];
@@ -558,6 +584,11 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         [_delegate serverDidStart:self];
     }];
 }
+- (void)notifyDelegateFailedToStart:(NSError *)error {
+    [self executeDelegate:^{
+        [_delegate server:self didFailWithError:error];
+    }];
+}
 - (void)notifyDelegateDidStop {
     [self executeDelegate:^{
         [_delegate serverDidStop:self];
@@ -584,6 +615,48 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     [self executeDelegate:^{
         [_delegate server:self webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
     }];
+}
+- (void)notifyDelegateWebSocketDidFlushInput:(PSWebSocket *)webSocket {
+    [self executeDelegate:^{
+        if ([_delegate respondsToSelector: @selector(server:webSocketDidFlushInput:)]) {
+            [_delegate server:self webSocketDidFlushInput:webSocket];
+        };
+    }];
+}
+- (void)notifyDelegateWebSocketDidFlushOutput:(PSWebSocket *)webSocket {
+    [self executeDelegate:^{
+        if ([_delegate respondsToSelector: @selector(server:webSocketDidFlushOutput:)]) {
+            [_delegate server:self webSocketDidFlushOutput:webSocket];
+        }
+    }];
+}
+- (BOOL)askDelegateShouldAcceptConnection:(PSWebSocketServerConnection *)connection
+                                  request: (NSURLRequest *)request
+                                 response:(NSHTTPURLResponse **)outResponse {
+    __block BOOL accept;
+    __block NSHTTPURLResponse* response = nil;
+    [self executeDelegateAndWait:^{
+        if([_delegate respondsToSelector:@selector(server:acceptWebSocketWithRequest:address:trust:response:)]) {
+            NSData* address = PSPeerAddressOfInputStream(connection.inputStream);
+            SecTrustRef trust = (SecTrustRef)CFReadStreamCopyProperty(
+                                                  (__bridge CFReadStreamRef)connection.inputStream,
+                                                  kCFStreamPropertySSLPeerTrust);
+            accept = [_delegate server:self
+            acceptWebSocketWithRequest:request
+                               address:address
+                                 trust:trust
+                              response:&response];
+            if(trust) {
+                CFRelease(trust);
+            }
+        } else if([_delegate respondsToSelector:@selector(server:acceptWebSocketWithRequest:)]) {
+            accept = [_delegate server:self acceptWebSocketWithRequest:request];
+        } else {
+            accept = YES;
+        }
+    }];
+    *outResponse = response;
+    return accept;
 }
 
 #pragma mark - Queueing

@@ -1,4 +1,4 @@
-//  Copyright 2014 Zwopple Limited
+//  Copyright 2014-Present Zwopple Limited
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -35,13 +35,14 @@
 #pragma mark - Class Methods
 
 + (BOOL)isWebSocketRequest:(NSURLRequest *)request;
++ (NSError *)errorWithCode:(NSInteger)code reason:(NSString *)reason;
 
 #pragma mark - Properties
 
 @property (nonatomic, assign, readonly) PSWebSocketMode mode;
 @property (nonatomic, weak) id <PSWebSocketDriverDelegate> delegate;
 
-@property (nonatomic, strong, readonly) NSString *protocol;
+@property (nonatomic, strong) NSString *protocol;
 
 #pragma mark - Initialization
 

@@ -1,4 +1,4 @@
-//  Copyright 2014 Zwopple Limited
+//  Copyright 2014-Present Zwopple Limited
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -34,7 +34,10 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 - (void)webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
 - (void)webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
 - (void)webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
-
+@optional
+- (void)webSocketDidFlushInput:(PSWebSocket *)webSocket;
+- (void)webSocketDidFlushOutput:(PSWebSocket *)webSocket;
+- (BOOL)webSocket:(PSWebSocket *)webSocket evaluateServerTrust:(SecTrustRef)trust;
 @end
 
 /**
@@ -55,9 +58,13 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
 
 #pragma mark - Properties
 
+
 @property (nonatomic, assign, readonly) PSWebSocketReadyState readyState;
 @property (nonatomic, weak) id <PSWebSocketDelegate> delegate;
 @property (nonatomic, strong) dispatch_queue_t delegateQueue;
+
+@property (nonatomic, assign, getter=isInputPaused) BOOL inputPaused;
+@property (nonatomic, assign, getter=isOutputPaused) BOOL outputPaused;
 
 #pragma mark - Initialization
 
@@ -79,7 +86,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketReadyState) {
  *
  *  @return an initialized instance of PSWebSocket in server mode
  */
-+ (instancetype)serverSocketWithRequest:(NSURLRequest *)request inputStream:(NSInputStream *)inputStream outputStream:(NSOutputStream *)outputStream;
++ (instancetype)serverSocketWithRequest:(NSURLRequest *)request
+                            inputStream:(NSInputStream *)inputStream
+                           outputStream:(NSOutputStream *)outputStream;
 
 #pragma mark - Actions
 
