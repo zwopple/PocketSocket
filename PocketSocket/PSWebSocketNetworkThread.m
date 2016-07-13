@@ -68,5 +68,8 @@
     }
 }
 
+- (void)timerFired:(NSTimer *)timer {
+    
+}
 
 @end

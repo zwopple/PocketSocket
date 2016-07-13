@@ -461,7 +461,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
                 continue;
             }
 
-            NSString* protocol = nil;
+//            NSString* protocol = nil;
             if(_delegate) {
                 NSHTTPURLResponse* response = nil;
                 if (![self askDelegateShouldAcceptConnection:connection
@@ -474,7 +474,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
                     CFRelease(msg);
                     continue;
                 }
-                protocol = response.allHeaderFields[@"Sec-WebSocket-Protocol"];
+//                protocol = response.allHeaderFields[@"Sec-WebSocket-Protocol"];
             }
             
             // detach connection
