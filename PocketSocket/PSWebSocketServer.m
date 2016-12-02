@@ -148,6 +148,13 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         [self disconnectGracefully:NO];
     }];
 }
+- (void)sendToAll:(id)message {
+  [self executeWork:^{
+    for(PSWebSocket *socket in _webSockets){
+      [socket send:message];
+    }
+  }];
+}
 
 #pragma mark - Connection
 
