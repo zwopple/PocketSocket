@@ -206,8 +206,10 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     // set handshake sec key
     NSMutableData *secKeyData = [NSMutableData dataWithLength:16];
-    SecRandomCopyBytes(kSecRandomDefault, secKeyData.length, secKeyData.mutableBytes);
-    
+    int result = SecRandomCopyBytes(kSecRandomDefault, secKeyData.length, secKeyData.mutableBytes);
+    if (result != 0) {
+        PSWebSocketLog(@"SecRandomCopyBytes failed with: %d", result);
+    }
     _handshakeSecKey = [self base64EncodedData:secKeyData];
     
     NSURL *URL = _request.URL;
@@ -377,7 +379,10 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         headerBytes[1] |= PSWebSocketMaskMask;
         
         uint8_t maskKey[4];
-        SecRandomCopyBytes(kSecRandomDefault, sizeof(maskKey), maskKey);
+        int result = SecRandomCopyBytes(kSecRandomDefault, sizeof(maskKey), maskKey);
+        if (result != 0) {
+            PSWebSocketLog(@"SecRandomCopyBytes failed with: %d", result);
+        }
         [header appendBytes:maskKey length:sizeof(maskKey)];
         
         // make copy if not already mutable
