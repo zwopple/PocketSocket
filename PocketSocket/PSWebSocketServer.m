@@ -13,7 +13,7 @@
 //  limitations under the License.
 
 #import "PSWebSocketServer.h"
-#import "PSwebSocket.h"
+#import "PSWebSocket.h"
 #import "PSWebSocketDriver.h"
 #import "PSWebSocketInternal.h"
 #import "PSWebSocketBuffer.h"
