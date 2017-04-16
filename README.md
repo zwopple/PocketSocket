@@ -43,7 +43,7 @@ If the initial `NSURLRequest` specifies a timeout greater than 0 the connection 
 
 
 ```objc
-#import <PSWebSocket/PSWebSocket.h>
+# import <PSWebSocket/PSWebSocket.h>
 
 @interface AppDelegate() <PSWebSocketDelegate>
 
@@ -96,7 +96,7 @@ The server currently only supports the `ws` protocol. The server binds to the ho
 
 
 ```objc
-#import <PSWebSocket/PSWebSocketServer.h>
+# import <PSWebSocket/PSWebSocketServer.h>
 
 @interface AppDelegate() <PSWebSocketServerDelegate>
 
