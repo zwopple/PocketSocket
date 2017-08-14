@@ -48,6 +48,9 @@ typedef NS_ENUM(NSInteger, PSWebSocketServerConnectionReadyState) {
 @end
 @implementation PSWebSocketServerConnection
 
+// private member variable
+bool _isV6Address = false;
+
 - (instancetype)init {
     if((self = [super init])) {
         _identifier = [[NSProcessInfo processInfo] globallyUniqueString];
@@ -98,6 +101,8 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 + (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates {
     return [[self alloc] initWithHost:host port:port SSLCertificates:SSLCertificates];
 }
+
+// if "host" is equal to nil or "0.0.0.0" or "::" or any format which means ANY ADDRESS, it will bind to ANY for both IPv4 and IPv6.
 - (instancetype)initWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates {
     NSParameterAssert(port);
     if((self = [super init])) {
@@ -107,22 +112,59 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
         _SSLCertificates = [SSLCertificates copy];
         _secure = (_SSLCertificates != nil);
         
-        // create addr data
-        struct sockaddr_in addr;
-        memset(&addr, 0, sizeof(addr));
-        addr.sin_len = sizeof(addr);
-        addr.sin_family = AF_INET;
-        if(host && ![host isEqualToString:@"0.0.0.0"]) {
-            addr.sin_addr.s_addr = inet_addr(host.UTF8String);
-            if(!addr.sin_addr.s_addr) {
+        bool isAnyAddress = false;
+        bool isV6Address = false;
+        if (host) {
+            if ([host rangeOfString:@":"].location != NSNotFound) {
+                isV6Address = true;
+                if ([host isEqualToString:@"::"]) {
+                    isAnyAddress = true;
+                }
+            } else {
+                if ([host isEqualToString:@"0.0.0.0"]) {
+                    isAnyAddress = true;
+                }
+            }
+        } else {
+            isAnyAddress = true;
+        }
+        
+        // create address data
+        if (isAnyAddress || isV6Address ) { // IPv6 address or address ANY
+            struct sockaddr_in6 addr;
+            memset(&addr, 0, sizeof(addr));
+            addr.sin6_len = sizeof(addr);
+            addr.sin6_family = AF_INET6;
+            addr.sin6_port = htons(port);
+            
+            if (isAnyAddress) {
+                addr.sin6_addr = in6addr_any;
+            } else {
+                // Note: "0::0:0" or "0:0:0:0:0:0:0:0" will also be bound to ANY(*) even isAnyAddress is false
+                int ret = inet_pton(AF_INET6, host.UTF8String, &(addr.sin6_addr));
+                if(ret <= 0) { // only 1 means OK, either 0 or -1 means error
+                    [NSException raise:@"Invalid host" format:@"Could not formulate internet address from host: %@", host];
+                    return nil;
+                }
+            }
+            
+            _addrData = [NSData dataWithBytes:&addr length:sizeof(addr)];
+        } else { // IPv4 address
+            struct sockaddr_in addr;
+            memset(&addr, 0, sizeof(addr));
+            addr.sin_len = sizeof(addr);
+            addr.sin_family = AF_INET;
+            addr.sin_port = htons(port);
+            
+            addr.sin_addr.s_addr = inet_addr(host.UTF8String); // "host" is non-null here
+            if(addr.sin_addr.s_addr == INADDR_NONE) {
                 [NSException raise:@"Invalid host" format:@"Could not formulate internet address from host: %@", host];
                 return nil;
             }
-        } else {
-            addr.sin_addr.s_addr = htonl(INADDR_ANY);
+            
+            _addrData = [NSData dataWithBytes:&addr length:sizeof(addr)];
         }
-        addr.sin_port = htons(port);
-        _addrData = [NSData dataWithBytes:&addr length:sizeof(addr)];
+        _isV6Address = isV6Address;
         
         // create socket context
         _socketContext = (CFSocketContext){0, (__bridge void *)self, NULL, NULL, NULL};
@@ -158,7 +200,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     
     // create socket
     _socket = CFSocketCreate(kCFAllocatorDefault,
-                             PF_INET,
+                             _isV6Address ? PF_INET6 : PF_INET,
                              SOCK_STREAM,
                              IPPROTO_TCP,
                              kCFSocketAcceptCallBack,
