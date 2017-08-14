@@ -13,7 +13,7 @@
 //  limitations under the License.
 
 #import "PSWebSocketServer.h"
-#import "PSwebSocket.h"
+#import "PSWebSocket.h"
 #import "PSWebSocketDriver.h"
 #import "PSWebSocketInternal.h"
 #import "PSWebSocketBuffer.h"
@@ -186,7 +186,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     _socketRunLoopSource = CFSocketCreateRunLoopSource(kCFAllocatorDefault, _socket, 0);
     
     CFRunLoopRef runLoop = [[self runLoop] getCFRunLoop];
-    CFRunLoopAddSource(runLoop, _socketRunLoopSource, kCFRunLoopDefaultMode);
+    CFRunLoopAddSource(runLoop, _socketRunLoopSource, kCFRunLoopCommonModes);
     
     _running = YES;
     
@@ -218,7 +218,7 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 - (void)disconnect:(BOOL)silent {
     if(_socketRunLoopSource) {
         CFRunLoopRef runLoop = [[self runLoop] getCFRunLoop];
-        CFRunLoopRemoveSource(runLoop, _socketRunLoopSource, kCFRunLoopDefaultMode);
+        CFRunLoopRemoveSource(runLoop, _socketRunLoopSource, kCFRunLoopCommonModes);
         CFRelease(_socketRunLoopSource);
         _socketRunLoopSource = nil;
     }

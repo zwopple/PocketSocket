@@ -206,7 +206,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
     
     // set handshake sec key
     NSMutableData *secKeyData = [NSMutableData dataWithLength:16];
-    SecRandomCopyBytes(kSecRandomDefault, secKeyData.length, secKeyData.mutableBytes);
+    (void)SecRandomCopyBytes(kSecRandomDefault, secKeyData.length, secKeyData.mutableBytes);
     
     _handshakeSecKey = [self base64EncodedData:secKeyData];
     
@@ -377,7 +377,7 @@ typedef NS_ENUM(NSInteger, PSWebSocketDriverState) {
         headerBytes[1] |= PSWebSocketMaskMask;
         
         uint8_t maskKey[4];
-        SecRandomCopyBytes(kSecRandomDefault, sizeof(maskKey), maskKey);
+        (void)SecRandomCopyBytes(kSecRandomDefault, sizeof(maskKey), maskKey);
         [header appendBytes:maskKey length:sizeof(maskKey)];
         
         // make copy if not already mutable
