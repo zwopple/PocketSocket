@@ -170,6 +170,7 @@
 
         switch (request.networkServiceType) {
         case NSURLNetworkServiceTypeDefault:
+        case NSURLNetworkServiceTypeCallSignaling:
             break;
         case NSURLNetworkServiceTypeVoIP:
             networkServiceType = NSStreamNetworkServiceTypeVoIP;
