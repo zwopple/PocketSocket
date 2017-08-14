@@ -12,8 +12,8 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 
-#import <Foundation/Foundation.h>
 #import "PSWebSocket.h"
+#import <Foundation/Foundation.h>
 
 @class PSWebSocketServer;
 
@@ -25,29 +25,55 @@
 - (void)server:(PSWebSocketServer *)server didFailWithError:(NSError *)error;
 - (void)serverDidStop:(PSWebSocketServer *)server;
 
-- (void)server:(PSWebSocketServer *)server webSocketDidOpen:(PSWebSocket *)webSocket;
-- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message;
-- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error;
-- (void)server:(PSWebSocketServer *)server webSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean;
+- (void)server:(PSWebSocketServer *)server
+    webSocketDidOpen:(PSWebSocket *)webSocket;
+- (void)server:(PSWebSocketServer *)server
+            webSocket:(PSWebSocket *)webSocket
+    didReceiveMessage:(id)message;
+- (void)server:(PSWebSocketServer *)server
+           webSocket:(PSWebSocket *)webSocket
+    didFailWithError:(NSError *)error;
+- (void)server:(PSWebSocketServer *)server
+           webSocket:(PSWebSocket *)webSocket
+    didCloseWithCode:(NSInteger)code
+              reason:(NSString *)reason
+            wasClean:(BOOL)wasClean;
 
 @optional
-- (void)server:(PSWebSocketServer *)server webSocketDidFlushInput:(PSWebSocket *)webSocket;
-- (void)server:(PSWebSocketServer *)server webSocketDidFlushOutput:(PSWebSocket *)webSocket;
-- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request;
-- (BOOL)server:(PSWebSocketServer *)server acceptWebSocketWithRequest:(NSURLRequest *)request address:(NSData *)address trust:(SecTrustRef)trust response:(NSHTTPURLResponse **)response;
+- (void)server:(PSWebSocketServer *)server
+    webSocketDidFlushInput:(PSWebSocket *)webSocket;
+- (void)server:(PSWebSocketServer *)server
+    webSocketDidFlushOutput:(PSWebSocket *)webSocket;
+- (BOOL)server:(PSWebSocketServer *)server
+    acceptWebSocketWithRequest:(NSURLRequest *)request;
+- (BOOL)server:(PSWebSocketServer *)server
+    acceptWebSocketWithRequest:(NSURLRequest *)request
+                       address:(NSData *)address
+                         trust:(SecTrustRef)trust
+                      response:(NSHTTPURLResponse **)response;
 @end
 
 @interface PSWebSocketServer : NSObject
 
 #pragma mark - Properties
 
-@property (nonatomic, weak) id <PSWebSocketServerDelegate> delegate;
-@property (nonatomic, strong) dispatch_queue_t delegateQueue;
+@property(nonatomic, weak) id<PSWebSocketServerDelegate> delegate;
+@property(nonatomic) dispatch_queue_t delegateQueue;
+/// Expose the current port if the server started with a dynamic port
+@property(nonatomic, readonly) NSInteger port;
 
 #pragma mark - Initialization
-
-+ (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port;
-+ (instancetype)serverWithHost:(NSString *)host port:(NSUInteger)port SSLCertificates:(NSArray *)SSLCertificates;
+/**
+ Returns a local server with a dynamic port assigned by the sytem
+ */
++ (instancetype)localServer;
+/**
+ Set port to 0 to use a dynamic port assigned by the system.
+ */
++ (instancetype)serverWithHost:(NSString *)host port:(NSInteger)port;
++ (instancetype)serverWithHost:(NSString *)host
+                          port:(NSInteger)port
+               SSLCertificates:(NSArray *)SSLCertificates;
 
 #pragma mark - Actions
 
