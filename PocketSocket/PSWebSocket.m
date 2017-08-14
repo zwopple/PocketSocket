@@ -184,6 +184,8 @@
         case NSURLNetworkServiceTypeVideo:
             networkServiceType = NSStreamNetworkServiceTypeVideo;
             break;
+        default:
+            break;
         }
         
         _inputStream = CFBridgingRelease(readStream);
