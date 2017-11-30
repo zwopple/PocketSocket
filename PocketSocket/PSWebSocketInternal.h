@@ -92,7 +92,14 @@ static inline BOOL PSWebSocketCloseCodeIsValid(NSInteger closeCode) {
 
 static inline NSOrderedSet* PSHTTPHeaderFieldValues(NSString *header) {
     NSMutableOrderedSet *components = [NSMutableOrderedSet orderedSet];
-    [[header componentsSeparatedByString:@";"] enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+  
+    //Firefox sends headers separated by ','
+    NSArray *componentValues = [header componentsSeparatedByString:@";"];
+    if (componentValues.count == 1 && [header componentsSeparatedByString:@","].count > 1) {
+        componentValues = [header componentsSeparatedByString:@","];
+    }
+  
+    [componentValues enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
         NSString *str = obj;
         while ([str hasPrefix:@" "] && str.length > 1) {
             str = [str substringWithRange:NSMakeRange(1, str.length - 1)];
