@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		07C803FF2194AEE40038A4AB /* libPocketSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EEE5E30A18B37DD500BAE47A /* libPocketSocket.a */; };
 		275D3ADB1B02811E0013B9A9 /* PSWebSocketBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5E33818B37DEC00BAE47A /* PSWebSocketBuffer.m */; };
 		275D3ADC1B02811E0013B9A9 /* PSWebSocket.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5E35218B37DF300BAE47A /* PSWebSocket.m */; };
 		275D3ADD1B02811E0013B9A9 /* PSWebSocketUTF8Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5E34218B37DEC00BAE47A /* PSWebSocketUTF8Decoder.m */; };
@@ -16,6 +17,7 @@
 		275D3AE11B02811E0013B9A9 /* PSWebSocketNetworkThread.m in Sources */ = {isa = PBXBuildFile; fileRef = EEE5E34018B37DEC00BAE47A /* PSWebSocketNetworkThread.m */; };
 		275D3AE21B02811E0013B9A9 /* PSWebSocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2A05DA18B5BBEC0066EEA4 /* PSWebSocketServer.m */; };
 		275D3AE41B02811E0013B9A9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEE5E30D18B37DD500BAE47A /* Foundation.framework */; };
+		AC576A417BC55056BF0FE522 /* PSWebSocketServerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AC57675323BB4AFDB2A920A8 /* PSWebSocketServerTests.m */; };
 		EE2A05DB18B5BBEC0066EEA4 /* PSWebSocketServer.m in Sources */ = {isa = PBXBuildFile; fileRef = EE2A05DA18B5BBEC0066EEA4 /* PSWebSocketServer.m */; };
 		EE337EC318B4AE1F003F95B9 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = EEE5E38418B385DE00BAE47A /* libz.dylib */; };
 		EE337EC418B4AE23003F95B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EEE5E30D18B37DD500BAE47A /* Foundation.framework */; };
@@ -83,6 +85,7 @@
 
 /* Begin PBXFileReference section */
 		275D3AE91B02811E0013B9A9 /* libPocketSocket-Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPocketSocket-Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC57675323BB4AFDB2A920A8 /* PSWebSocketServerTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWebSocketServerTests.m; sourceTree = "<group>"; };
 		EE2A05D918B5BBEC0066EEA4 /* PSWebSocketServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PSWebSocketServer.h; sourceTree = "<group>"; };
 		EE2A05DA18B5BBEC0066EEA4 /* PSWebSocketServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PSWebSocketServer.m; sourceTree = "<group>"; };
 		EE337EC518B4AE28003F95B9 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -161,6 +164,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07C803FF2194AEE40038A4AB /* libPocketSocket.a in Frameworks */,
 				EE337ECC18B4AE46003F95B9 /* libSystem.dylib in Frameworks */,
 				EE337ECA18B4AE34003F95B9 /* Security.framework in Frameworks */,
 				EE337EC618B4AE28003F95B9 /* CFNetwork.framework in Frameworks */,
@@ -282,6 +286,7 @@
 				EEE5E36A18B37F8700BAE47A /* PSAutobahnClientTests.m */,
 				EEE5E37218B37FC000BAE47A /* PSAutobahnClientWebSocketOperation.h */,
 				EEE5E37318B37FC000BAE47A /* PSAutobahnClientWebSocketOperation.m */,
+				AC57675323BB4AFDB2A920A8 /* PSWebSocketServerTests.m */,
 				EEE5E36518B37F8700BAE47A /* Supporting Files */,
 			);
 			path = PSAutobahnClientTests;
@@ -482,6 +487,7 @@
 				EEE5E37A18B380F200BAE47A /* PSWebSocketInflater.m in Sources */,
 				EEE5E37618B380EA00BAE47A /* PSWebSocket.m in Sources */,
 				EEE5E36B18B37F8700BAE47A /* PSAutobahnClientTests.m in Sources */,
+				AC576A417BC55056BF0FE522 /* PSWebSocketServerTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
