@@ -313,8 +313,8 @@
     if(_secure && _mode == PSWebSocketModeClient) {
         
         __block BOOL customTrustEvaluation = NO;
-        [self executeDelegateAndWait:^{
-            customTrustEvaluation = [_delegate respondsToSelector:@selector(webSocket:evaluateServerTrust:)];
+        [self executeDelegateAndWait:^(id <PSWebSocketDelegate> delegate){
+            customTrustEvaluation = [delegate respondsToSelector:@selector(webSocket:evaluateServerTrust:)];
         }];
         
         NSMutableDictionary *ssl = [NSMutableDictionary dictionary];
@@ -502,7 +502,7 @@
 }
 - (void)failWithError:(NSError *)error {
     if(error.code == PSWebSocketStatusCodeProtocolError && [error.domain isEqualToString:PSWebSocketErrorDomain]) {
-        [self executeDelegate:^{
+        [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
             _closeCode = error.code;
             _closeReason = error.localizedDescription;
             [self closeWithCode:_closeCode reason:_closeReason];
@@ -551,7 +551,7 @@
     [self notifyDelegateDidReceiveMessage:message];
 }
 - (void)driver:(PSWebSocketDriver *)driver didReceivePing:(NSData *)ping {
-    [self executeDelegate:^{
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
         [self executeWork:^{
             [driver sendPong:ping];
         }];
@@ -560,7 +560,7 @@
 - (void)driver:(PSWebSocketDriver *)driver didReceivePong:(NSData *)pong {
     void (^handler)(NSData *pong) = [_pingHandlers firstObject];
     if(handler) {
-        [self executeDelegate:^{
+        [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
             handler(pong);
         }];
         [_pingHandlers removeObjectAtIndex:0];
@@ -636,44 +636,44 @@
 #pragma mark - Delegation
 
 - (void)notifyDelegateDidOpen {
-    [self executeDelegate:^{
-        [_delegate webSocketDidOpen:self];
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
+        [delegate webSocketDidOpen:self];
     }];
 }
 - (void)notifyDelegateDidReceiveMessage:(id)message {
-    [self executeDelegate:^{
-        [_delegate webSocket:self didReceiveMessage:message];
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
+        [delegate webSocket:self didReceiveMessage:message];
     }];
 }
 - (void)notifyDelegateDidFailWithError:(NSError *)error {
-    [self executeDelegate:^{
-        [_delegate webSocket:self didFailWithError:error];
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
+        [delegate webSocket:self didFailWithError:error];
     }];
 }
 - (void)notifyDelegateDidCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    [self executeDelegate:^{
-        [_delegate webSocket:self didCloseWithCode:code reason:reason wasClean:wasClean];
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
+        [delegate webSocket:self didCloseWithCode:code reason:reason wasClean:wasClean];
     }];
 }
 - (void)notifyDelegateDidFlushInput {
-    [self executeDelegate:^{
-        if ([_delegate respondsToSelector:@selector(webSocketDidFlushInput:)]) {
-            [_delegate webSocketDidFlushInput:self];
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
+        if ([delegate respondsToSelector:@selector(webSocketDidFlushInput:)]) {
+            [delegate webSocketDidFlushInput:self];
         }
     }];
 }
 - (void)notifyDelegateDidFlushOutput {
-    [self executeDelegate:^{
-        if ([_delegate respondsToSelector:@selector(webSocketDidFlushOutput:)]) {
-            [_delegate webSocketDidFlushOutput:self];
+    [self executeDelegate:^(id <PSWebSocketDelegate> delegate){
+        if ([delegate respondsToSelector:@selector(webSocketDidFlushOutput:)]) {
+            [delegate webSocketDidFlushOutput:self];
         }
     }];
 }
 - (BOOL)askDelegateToEvaluateServerTrust:(SecTrustRef)trust {
     __block BOOL result = NO;
-    [self executeDelegateAndWait:^{
-        if ([_delegate respondsToSelector:@selector(webSocket:evaluateServerTrust:)]) {
-            result = [_delegate webSocket:self evaluateServerTrust:trust];
+    [self executeDelegateAndWait:^(id <PSWebSocketDelegate> delegate){
+        if ([delegate respondsToSelector:@selector(webSocket:evaluateServerTrust:)]) {
+            result = [delegate webSocket:self evaluateServerTrust:trust];
         }
     }];
     return result;
@@ -689,13 +689,21 @@
     NSParameterAssert(work);
     dispatch_sync(_workQueue, work);
 }
-- (void)executeDelegate:(void (^)(void))work {
+- (void)executeDelegate:(void (^)(id <PSWebSocketDelegate>))work {
     NSParameterAssert(work);
-    dispatch_async((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+    id <PSWebSocketDelegate> delegate = _delegate;
+    void (^workRetainingDelegate)(void) = ^void(void) {
+        work(delegate);
+    };
+    dispatch_async((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), workRetainingDelegate);
 }
-- (void)executeDelegateAndWait:(void (^)(void))work {
+- (void)executeDelegateAndWait:(void (^)(id <PSWebSocketDelegate>))work {
     NSParameterAssert(work);
-    dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+    id <PSWebSocketDelegate> delegate = _delegate;
+    void (^workRetainingDelegate)(void) = ^void(void) {
+        work(delegate);
+    };
+    dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), workRetainingDelegate);
 }
 
 #pragma mark - Dealloc

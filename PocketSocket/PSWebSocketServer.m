@@ -580,53 +580,53 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
 #pragma mark - Delegation
 
 - (void)notifyDelegateDidStart {
-    [self executeDelegate:^{
-        [_delegate serverDidStart:self];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate serverDidStart:self];
     }];
 }
 - (void)notifyDelegateFailedToStart:(NSError *)error {
-    [self executeDelegate:^{
-        [_delegate server:self didFailWithError:error];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate server:self didFailWithError:error];
     }];
 }
 - (void)notifyDelegateDidStop {
-    [self executeDelegate:^{
-        [_delegate serverDidStop:self];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate serverDidStop:self];
     }];
 }
 
 - (void)notifyDelegateWebSocketDidOpen:(PSWebSocket *)webSocket {
-    [self executeDelegate:^{
-        [_delegate server:self webSocketDidOpen:webSocket];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate server:self webSocketDidOpen:webSocket];
     }];
 }
 - (void)notifyDelegateWebSocket:(PSWebSocket *)webSocket didReceiveMessage:(id)message {
-    [self executeDelegate:^{
-        [_delegate server:self webSocket:webSocket didReceiveMessage:message];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate server:self webSocket:webSocket didReceiveMessage:message];
     }];
 }
 
 - (void)notifyDelegateWebSocket:(PSWebSocket *)webSocket didFailWithError:(NSError *)error {
-    [self executeDelegate:^{
-        [_delegate server:self webSocket:webSocket didFailWithError:error];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate server:self webSocket:webSocket didFailWithError:error];
     }];
 }
 - (void)notifyDelegateWebSocket:(PSWebSocket *)webSocket didCloseWithCode:(NSInteger)code reason:(NSString *)reason wasClean:(BOOL)wasClean {
-    [self executeDelegate:^{
-        [_delegate server:self webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        [delegate server:self webSocket:webSocket didCloseWithCode:code reason:reason wasClean:wasClean];
     }];
 }
 - (void)notifyDelegateWebSocketDidFlushInput:(PSWebSocket *)webSocket {
-    [self executeDelegate:^{
-        if ([_delegate respondsToSelector: @selector(server:webSocketDidFlushInput:)]) {
-            [_delegate server:self webSocketDidFlushInput:webSocket];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        if ([delegate respondsToSelector: @selector(server:webSocketDidFlushInput:)]) {
+            [delegate server:self webSocketDidFlushInput:webSocket];
         };
     }];
 }
 - (void)notifyDelegateWebSocketDidFlushOutput:(PSWebSocket *)webSocket {
-    [self executeDelegate:^{
-        if ([_delegate respondsToSelector: @selector(server:webSocketDidFlushOutput:)]) {
-            [_delegate server:self webSocketDidFlushOutput:webSocket];
+    [self executeDelegate:^(id <PSWebSocketServerDelegate> delegate){
+        if ([delegate respondsToSelector: @selector(server:webSocketDidFlushOutput:)]) {
+            [delegate server:self webSocketDidFlushOutput:webSocket];
         }
     }];
 }
@@ -635,13 +635,13 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
                                  response:(NSHTTPURLResponse **)outResponse {
     __block BOOL accept;
     __block NSHTTPURLResponse* response = nil;
-    [self executeDelegateAndWait:^{
-        if([_delegate respondsToSelector:@selector(server:acceptWebSocketWithRequest:address:trust:response:)]) {
+    [self executeDelegateAndWait:^(id <PSWebSocketServerDelegate> delegate){
+        if([delegate respondsToSelector:@selector(server:acceptWebSocketWithRequest:address:trust:response:)]) {
             NSData* address = PSPeerAddressOfInputStream(connection.inputStream);
             SecTrustRef trust = (SecTrustRef)CFReadStreamCopyProperty(
                                                   (__bridge CFReadStreamRef)connection.inputStream,
                                                   kCFStreamPropertySSLPeerTrust);
-            accept = [_delegate server:self
+            accept = [delegate server:self
             acceptWebSocketWithRequest:request
                                address:address
                                  trust:trust
@@ -649,8 +649,8 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
             if(trust) {
                 CFRelease(trust);
             }
-        } else if([_delegate respondsToSelector:@selector(server:acceptWebSocketWithRequest:)]) {
-            accept = [_delegate server:self acceptWebSocketWithRequest:request];
+        } else if([delegate respondsToSelector:@selector(server:acceptWebSocketWithRequest:)]) {
+            accept = [delegate server:self acceptWebSocketWithRequest:request];
         } else {
             accept = YES;
         }
@@ -669,13 +669,24 @@ void PSWebSocketServerAcceptCallback(CFSocketRef s, CFSocketCallBackType type, C
     NSParameterAssert(work);
     dispatch_sync(_workQueue, work);
 }
-- (void)executeDelegate:(void (^)(void))work {
+- (void)executeDelegate:(void (^)(id <PSWebSocketServerDelegate>))work {
     NSParameterAssert(work);
-    dispatch_async((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+    /// The block below captures the `delegate` strongly, so even if the weak `_delegate`
+    /// changes while the block is executing, it won't crash with
+    /// "unrecognized selector sent to instance"
+    id <PSWebSocketServerDelegate> delegate = _delegate;
+    void (^workRetainingDelegate)(void) = ^void(void) {
+        work(delegate);
+    };
+    dispatch_async((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), workRetainingDelegate);
 }
-- (void)executeDelegateAndWait:(void (^)(void))work {
+- (void)executeDelegateAndWait:(void (^)(id <PSWebSocketServerDelegate>))work {
     NSParameterAssert(work);
-    dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), work);
+    id <PSWebSocketServerDelegate> delegate = _delegate;
+    void (^workRetainingDelegate)(void) = ^void(void) {
+        work(delegate);
+    };
+    dispatch_sync((_delegateQueue) ? _delegateQueue : dispatch_get_main_queue(), workRetainingDelegate);
 }
 
 #pragma mark - Dealloc
