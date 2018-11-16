@@ -332,17 +332,32 @@
     
     // driver
     [_driver start];
-    
+
+    // these local variables retain the current streams, so a race condition of clearing
+    // them in another thread and using `nil` here is not possible anymore
+    NSInputStream *inputStream = _inputStream;
+    NSOutputStream *outputStream = _outputStream;
+
+    // disconnect closes and clears both, so we check if at least one of them is `nil` or closed,
+    // in which case `connect` stops
+    const BOOL isDisconnected = (inputStream == nil) || (outputStream == nil)
+        || (inputStream.streamStatus == NSStreamStatusClosed)
+        || (outputStream.streamStatus == NSStreamStatusClosed);
+    if (isDisconnected) {
+        // if we try to use `nil` for a stream in the C functions below, we'll get a crash
+        return;
+    }
+
     // schedule streams
-    CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)_inputStream, _workQueue);
-    CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)_outputStream, _workQueue);
+    CFReadStreamSetDispatchQueue((__bridge CFReadStreamRef)inputStream, _workQueue);
+    CFWriteStreamSetDispatchQueue((__bridge CFWriteStreamRef)outputStream, _workQueue);
 
     // open streams
-    if(_inputStream.streamStatus == NSStreamStatusNotOpen) {
-        [_inputStream open];
+    if(inputStream.streamStatus == NSStreamStatusNotOpen) {
+        [inputStream open];
     }
-    if(_outputStream.streamStatus == NSStreamStatusNotOpen) {
-        [_outputStream open];
+    if(outputStream.streamStatus == NSStreamStatusNotOpen) {
+        [outputStream open];
     }
     
     // pump
